@@ -9,299 +9,200 @@
 <title>clerq — בית</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap"/>
-<link rel="stylesheet" href="./design.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
+:root {
+  --bg:#0D0D14; --bg-card:#16161F; --bg-elevated:#1E1E2A; --bg-input:#12121A;
+  --border:rgba(255,255,255,0.07);
+  --text:#F0F0F8; --text-muted:#8A8AA8; --text-faint:#3A3A5A;
+  --green:#C6F135; --green-bg:rgba(198,241,53,0.08); --green-border:rgba(198,241,53,0.2);
+  --red:#FF4757;
+  --radius:14px; --radius-lg:20px; --radius-full:9999px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Rubik',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;direction:rtl;}
+.app{max-width:430px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;}
 
-  /* ── Hero ── */
-  .hero {
-    padding: 28px 24px 28px;
-    background: linear-gradient(160deg, #1A1A2E 0%, #0D0D14 100%);
-    position: relative; overflow: hidden;
-  }
+/* HERO */
+.hero{padding:28px 24px 24px;background:linear-gradient(160deg,#1A1A2E 0%,#0D0D14 100%);position:relative;overflow:hidden;}
+.hero-orb{position:absolute;width:300px;height:300px;border-radius:50%;top:-120px;left:-80px;background:radial-gradient(circle,rgba(198,241,53,0.08),transparent 70%);pointer-events:none;}
+.hero-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;position:relative;z-index:1;}
+.hero-name{font-size:26px;font-weight:700;letter-spacing:-0.5px;}
+.hero-greet{font-size:14px;color:var(--text-muted);margin-bottom:3px;}
+.hero-av{width:44px;height:44px;border-radius:50%;background:var(--green);color:#111;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;border:none;font-family:inherit;}
 
-  .hero-orb {
-    position: absolute; width: 300px; height: 300px;
-    border-radius: 50%; top: -120px; left: -80px;
-    background: radial-gradient(circle, rgba(198,241,53,0.08), transparent 70%);
-    pointer-events: none;
-  }
+.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;position:relative;z-index:1;}
+.stat{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:var(--radius);padding:14px 10px;text-align:center;}
+.stat-val{font-size:22px;font-weight:700;color:var(--green);line-height:1;}
+.stat-lbl{font-size:11px;color:var(--text-muted);margin-top:4px;}
 
-  .hero-top {
-    display: flex; justify-content: space-between;
-    align-items: center; margin-bottom: 20px;
-    position: relative; z-index: 1;
-  }
+/* ACTIONS */
+.section{padding:20px 20px 0;}
+.section-lbl{font-size:11px;font-weight:600;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;}
 
-  .hero-greeting { font-size: 14px; color: var(--color-text-secondary); }
-  .hero-name { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; margin-top: 2px; }
+.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.action-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 16px;cursor:pointer;transition:all .18s ease;display:flex;flex-direction:column;gap:10px;text-decoration:none;color:inherit;}
+.action-card:active{transform:scale(0.97);}
+.action-card.main{border-color:rgba(198,241,53,0.25);background:linear-gradient(135deg,rgba(198,241,53,0.08),var(--bg-card));grid-column:1/-1;flex-direction:row;align-items:center;gap:16px;}
+.action-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+.action-card.main .action-icon{background:var(--green);}
+.action-card:not(.main) .action-icon{background:var(--bg-elevated);}
+.action-text{flex:1;}
+.action-title{font-size:15px;font-weight:600;}
+.action-desc{font-size:12px;color:var(--text-muted);margin-top:3px;line-height:1.4;}
+.action-arrow{font-size:18px;color:var(--text-faint);}
 
-  .hero-avatar {
-    width: 44px; height: 44px; border-radius: 50%;
-    background: var(--color-brand); color: #111;
-    font-size: 18px; font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; flex-shrink: 0;
-  }
+/* RECENT */
+.recent{padding:20px 20px;flex:1;}
+.hist-item{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:opacity .15s;}
+.hist-item:active{opacity:.7;}
+.hist-item:last-child{border-bottom:none;}
+.hist-icon{width:44px;height:44px;border-radius:12px;background:var(--bg-elevated);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.hist-info{flex:1;min-width:0;}
+.hist-title{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hist-sub{font-size:12px;color:var(--text-muted);margin-top:2px;}
+.hist-amt{font-size:14px;font-weight:600;color:var(--green);flex-shrink:0;}
 
-  .hero-stats {
-    display: grid; grid-template-columns: repeat(3, 1fr);
-    gap: 10px; position: relative; z-index: 1;
-  }
+.empty{display:flex;flex-direction:column;align-items:center;padding:40px 20px;text-align:center;gap:10px;}
+.empty-icon{font-size:44px;opacity:.2;margin-bottom:6px;}
+.empty-title{font-size:16px;font-weight:500;color:var(--text-muted);}
+.empty-sub{font-size:13px;color:var(--text-faint);line-height:1.5;}
 
-  .stat-card {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    padding: 14px 10px; text-align: center;
-  }
+/* NAV */
+.nav{display:flex;background:var(--bg-card);border-top:1px solid var(--border);padding:10px 0 max(24px,env(safe-area-inset-bottom));position:sticky;bottom:0;z-index:100;}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;min-height:44px;padding:6px 0;border:none;background:none;font-family:inherit;font-size:10px;font-weight:500;color:var(--text-faint);cursor:pointer;transition:color .15s;}
+.nav-btn.active{color:var(--green);}
+.nav-icon{font-size:22px;line-height:1;}
 
-  .stat-val {
-    font-size: 22px; font-weight: 700;
-    color: var(--color-brand); line-height: 1;
-  }
-
-  .stat-lbl {
-    font-size: 11px; color: var(--color-text-secondary);
-    margin-top: 4px;
-  }
-
-  /* ── Actions ── */
-  .actions-section { padding: 24px 20px 0; }
-
-  .section-lbl {
-    font-size: 11px; font-weight: 600;
-    color: var(--color-text-tertiary);
-    text-transform: uppercase; letter-spacing: 1px;
-    margin-bottom: 14px;
-  }
-
-  .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-  .action-card {
-    background: var(--color-bg-card);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    padding: 18px 16px; cursor: pointer;
-    transition: all 0.18s ease;
-    display: flex; flex-direction: column; gap: 12px;
-    text-decoration: none;
-  }
-
-  .action-card:active { transform: scale(0.97); }
-
-  .action-card.primary {
-    border-color: rgba(198,241,53,0.25);
-    background: linear-gradient(135deg, rgba(198,241,53,0.08), var(--color-bg-card));
-    grid-column: 1 / -1;
-    flex-direction: row; align-items: center; gap: 16px;
-  }
-
-  .action-icon {
-    width: 48px; height: 48px; border-radius: 14px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 24px; flex-shrink: 0;
-  }
-
-  .action-card.primary .action-icon { background: var(--color-brand); }
-  .action-card:not(.primary) .action-icon { background: var(--color-bg-elevated); }
-
-  .action-text { flex: 1; }
-  .action-title { font-size: 15px; font-weight: 600; }
-  .action-desc  { font-size: 12px; color: var(--color-text-secondary); margin-top: 3px; line-height: 1.4; }
-  .action-arrow { font-size: 18px; color: var(--color-text-tertiary); }
-
-  /* ── Recent ── */
-  .recent-section { padding: 24px 20px; flex: 1; }
-
-  .history-item {
-    display: flex; align-items: center; gap: 14px;
-    padding: 14px 0; border-bottom: 1px solid var(--color-border);
-    cursor: pointer; transition: opacity 0.15s;
-  }
-  .history-item:active { opacity: 0.7; }
-  .history-item:last-child { border-bottom: none; }
-
-  .history-icon {
-    width: 44px; height: 44px; border-radius: 12px;
-    background: var(--color-bg-elevated);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px; flex-shrink: 0;
-  }
-
-  .history-info { flex: 1; min-width: 0; }
-  .history-title { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .history-sub   { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
-  .history-amt   { font-size: 14px; font-weight: 600; color: var(--color-brand); flex-shrink: 0; }
-
-  .empty-state {
-    display: flex; flex-direction: column; align-items: center;
-    padding: 40px 20px; text-align: center; gap: 10px;
-  }
-
-  .empty-icon  { font-size: 44px; opacity: 0.2; margin-bottom: 6px; }
-  .empty-title { font-size: 16px; font-weight: 500; color: var(--color-text-secondary); }
-  .empty-sub   { font-size: 13px; color: var(--color-text-tertiary); line-height: 1.5; }
-
-  /* ── Nav ── */
-  .bottom-nav {
-    display: flex; background: var(--color-bg-card);
-    border-top: 1px solid var(--color-border);
-    padding: 10px 0 max(24px, env(safe-area-inset-bottom));
-    position: sticky; bottom: 0; z-index: 100;
-  }
-
-  .nav-btn {
-    flex: 1; display: flex; flex-direction: column;
-    align-items: center; gap: 3px;
-    min-height: 44px; padding: 6px 0;
-    border: none; background: none;
-    font-family: inherit; font-size: 10px; font-weight: 500;
-    color: var(--color-text-tertiary); cursor: pointer;
-    transition: color 0.15s;
-  }
-
-  .nav-btn.active { color: var(--color-brand); }
-  .nav-btn-icon { font-size: 22px; line-height: 1; }
+/* TOAST */
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg-elevated);color:var(--text);padding:12px 24px;border-radius:var(--radius-full);font-size:14px;font-weight:500;border:1px solid var(--border);box-shadow:0 8px 32px rgba(0,0,0,.5);z-index:9999;pointer-events:none;transition:transform .3s ease;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast.success{border-color:rgba(198,241,53,0.3);color:var(--green);}
+.toast.error{border-color:rgba(255,71,87,0.3);color:var(--red);}
 </style>
 </head>
 <body>
-<div class="app-shell">
 
-  <!-- Hero -->
+<div class="app">
+
+  <!-- HERO -->
   <div class="hero">
-    <div class="hero-orb" aria-hidden="true"></div>
+    <div class="hero-orb"></div>
     <div class="hero-top">
       <div>
-        <div class="hero-greeting">שלום,</div>
-        <div class="hero-name" id="hero-name">
-          <div class="skeleton" style="width:120px;height:28px;border-radius:8px"></div>
-        </div>
+        <div class="hero-greet">שלום,</div>
+        <div class="hero-name" id="hero-name">...</div>
       </div>
-      <div class="hero-avatar" id="hero-avatar" onclick="window.location='./profile.html'" aria-label="פרופיל">?</div>
+      <button class="hero-av" id="hero-av" onclick="window.location.href='./profile.html'">?</button>
     </div>
-
     <div class="hero-stats">
-      <div class="stat-card">
-        <div class="stat-val" id="stat-sessions">—</div>
-        <div class="stat-lbl">חשבונות</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-val" id="stat-total">—</div>
-        <div class="stat-lbl">חולקו</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-val" id="stat-friends">—</div>
-        <div class="stat-lbl">חברים</div>
-      </div>
+      <div class="stat"><div class="stat-val" id="stat-s">0</div><div class="stat-lbl">חשבונות</div></div>
+      <div class="stat"><div class="stat-val" id="stat-t">₪0</div><div class="stat-lbl">חולקו</div></div>
+      <div class="stat"><div class="stat-val" id="stat-f">0</div><div class="stat-lbl">חברים</div></div>
     </div>
   </div>
 
-  <!-- Actions -->
-  <div class="actions-section">
+  <!-- ACTIONS -->
+  <div class="section">
     <div class="section-lbl">מה תרצה לעשות?</div>
     <div class="action-grid">
 
-      <a class="action-card primary" href="./scan.html" aria-label="פתח חשבון חדש">
+      <div class="action-card main" onclick="window.location.href='./scan.html'">
         <div class="action-icon">🧾</div>
         <div class="action-text">
           <div class="action-title">פתח חשבון חדש</div>
           <div class="action-desc">צלם קבלה — AI יקרא ויפצל תוך שניות</div>
         </div>
         <div class="action-arrow">←</div>
-      </a>
+      </div>
 
-      <a class="action-card" href="./join.html" aria-label="הצטרף לחשבון">
+      <div class="action-card" onclick="window.location.href='./join.html'">
         <div class="action-icon">🔢</div>
         <div class="action-text">
           <div class="action-title">הצטרף</div>
           <div class="action-desc">הכנס קוד מחבר</div>
         </div>
-      </a>
+      </div>
 
-      <a class="action-card" href="./profile.html" aria-label="פרופיל והיסטוריה">
+      <div class="action-card" onclick="window.location.href='./profile.html'">
         <div class="action-icon">📋</div>
         <div class="action-text">
           <div class="action-title">היסטוריה</div>
           <div class="action-desc">חשבונות קודמים</div>
         </div>
-      </a>
+      </div>
 
     </div>
   </div>
 
-  <!-- Recent -->
-  <div class="recent-section">
+  <!-- RECENT -->
+  <div class="recent">
     <div class="section-lbl">פעילות אחרונה</div>
     <div id="recent-list">
-      <div class="empty-state">
+      <div class="empty">
         <div class="empty-icon">🧾</div>
         <div class="empty-title">אין חשבונות עדיין</div>
-        <div class="empty-sub">פתח חשבון ראשון<br/>לחץ על "פתח חשבון חדש" למעלה</div>
+        <div class="empty-sub">לחץ על "פתח חשבון חדש"<br/>וצלם את הקבלה הראשונה שלך</div>
       </div>
     </div>
   </div>
 
-  <!-- Bottom Nav -->
-  <nav class="bottom-nav" aria-label="ניווט ראשי">
-    <button class="nav-btn active" aria-label="בית" aria-current="page">
-      <span class="nav-btn-icon" aria-hidden="true">🏠</span>
-      <span>בית</span>
-    </button>
-    <button class="nav-btn" onclick="window.location='./scan.html'" aria-label="סרוק קבלה">
-      <span class="nav-btn-icon" aria-hidden="true">📷</span>
-      <span>סרוק</span>
-    </button>
-    <button class="nav-btn" onclick="window.location='./join.html'" aria-label="הצטרף לחשבון">
-      <span class="nav-btn-icon" aria-hidden="true">🔢</span>
-      <span>הצטרף</span>
-    </button>
-    <button class="nav-btn" onclick="window.location='./profile.html'" aria-label="פרופיל">
-      <span class="nav-btn-icon" aria-hidden="true">👤</span>
-      <span>פרופיל</span>
-    </button>
+  <!-- NAV -->
+  <nav class="nav">
+    <button class="nav-btn active"><span class="nav-icon">🏠</span><span>בית</span></button>
+    <button class="nav-btn" onclick="window.location.href='./scan.html'"><span class="nav-icon">📷</span><span>סרוק</span></button>
+    <button class="nav-btn" onclick="window.location.href='./join.html'"><span class="nav-icon">🔢</span><span>הצטרף</span></button>
+    <button class="nav-btn" onclick="window.location.href='./profile.html'"><span class="nav-icon">👤</span><span>פרופיל</span></button>
   </nav>
 
 </div>
 
-<div id="clerq-toast" class="toast" role="status" aria-live="polite"></div>
+<div class="toast" id="toast"></div>
 
-<script type="module">
-import {
-  db, ref, onValue,
-  getUser, requireAuth,
-  navigate, ROUTES,
-  showToast, registerSW,
-  formatCurrency, formatDateShort,
-  track
-} from './core.js';
+<!-- Firebase Compat (global scope) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 
+<script>
 // ── Auth Guard ──
-const user = requireAuth();
-if (!user) throw new Error('Redirecting to login');
+const user = (function() {
+  try { return JSON.parse(localStorage.getItem('clerq_user')); } catch { return null; }
+})();
 
-// ── Register SW ──
-registerSW();
+if (!user) {
+  window.location.href = './index.html';
+  throw new Error('Not logged in');
+}
+
+// ── Firebase ──
+if (!firebase.apps.length) {
+  firebase.initializeApp({
+    apiKey:            "AIzaSyBWYEntIaNdQio86BGVREmBAAqUo0F6sIw",
+    authDomain:        "clerq-1145a.firebaseapp.com",
+    databaseURL:       "https://clerq-1145a-default-rtdb.firebaseio.com",
+    projectId:         "clerq-1145a",
+    storageBucket:     "clerq-1145a.firebasestorage.app",
+    messagingSenderId: "426819964309",
+    appId:             "1:426819964309:web:adf96da249d35d5d823a9c"
+  });
+}
+const db = firebase.database();
 
 // ── Render user ──
 const initial = (user.name || 'מ')[0].toUpperCase();
 document.getElementById('hero-name').textContent = user.name + ' 👋';
-document.getElementById('hero-avatar').textContent = initial;
-
-track('home_view', { userId: user.id });
+document.getElementById('hero-av').textContent   = initial;
 
 // ── Load stats ──
-const statsRef = ref(db, `users/${user.id}/stats`);
-onValue(statsRef, snap => {
+db.ref('users/' + user.id + '/stats').on('value', snap => {
   const s = snap.val() || {};
-  document.getElementById('stat-sessions').textContent = s.sessions || 0;
-  document.getElementById('stat-total').textContent    = s.total ? '₪' + Math.round(s.total) : '₪0';
-  document.getElementById('stat-friends').textContent  = s.friends || 0;
-}, { onlyOnce: false });
+  document.getElementById('stat-s').textContent = s.sessions || 0;
+  document.getElementById('stat-t').textContent = s.total ? '₪' + Math.round(s.total) : '₪0';
+  document.getElementById('stat-f').textContent = s.friends || 0;
+});
 
 // ── Load recent sessions ──
-const sessionsRef = ref(db, `userSessions/${user.id}`);
-onValue(sessionsRef, snap => {
+db.ref('userSessions/' + user.id).once('value').then(snap => {
   const data = snap.val();
   if (!data) return;
 
@@ -316,26 +217,37 @@ onValue(sessionsRef, snap => {
 
   sessions.forEach(s => {
     const item = document.createElement('div');
-    item.className = 'history-item';
-    item.setAttribute('role', 'button');
-    item.setAttribute('tabindex', '0');
-    item.setAttribute('aria-label', `חשבון מ-${formatDateShort(s.created)}`);
+    item.className = 'hist-item';
+    item.onclick = () => { window.location.href = './session.html?id=' + s.sessionId; };
 
-    item.onclick = () => navigate('./session.html', { id: s.sessionId });
-    item.onkeydown = e => { if (e.key === 'Enter') item.click(); };
+    const d = new Date(s.created);
+    const dateStr = d.toLocaleDateString('he-IL');
 
     item.innerHTML = `
-      <div class="history-icon" aria-hidden="true">🧾</div>
-      <div class="history-info">
-        <div class="history-title">${s.restaurantName || 'חשבון'}</div>
-        <div class="history-sub">${formatDateShort(s.created)} · ${s.members || 1} משתתפים</div>
+      <div class="hist-icon">🧾</div>
+      <div class="hist-info">
+        <div class="hist-title">${esc(s.restaurantName || 'חשבון')}</div>
+        <div class="hist-sub">${dateStr} · ${s.members || 1} משתתפים</div>
       </div>
-      <div class="history-amt">${formatCurrency(s.myTotal || 0)}</div>
+      <div class="hist-amt">₪${Math.round(s.myTotal || 0)}</div>
     `;
-
     list.appendChild(item);
   });
-}, { onlyOnce: true });
+}).catch(e => console.warn('[clerq] sessions:', e.message));
+
+// ── Toast ──
+let _tm;
+function toast(msg, type) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show' + (type ? ' ' + type : '');
+  clearTimeout(_tm);
+  _tm = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
 </script>
 </body>
 </html>
