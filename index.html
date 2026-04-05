@@ -823,44 +823,39 @@ window.handleOTPSubmit = async function() {
 
   setLoading(btn, true);
 
+  // Save user locally immediately — don't wait for Firebase
+  const userId = 'u_' + sanitizePhone(_pendingUser.phone);
+  const userData = {
+    id:        userId,
+    name:      _pendingUser.name || 'משתמש',
+    phone:     sanitizePhone(_pendingUser.phone),
+    created:   Date.now(),
+    lastLogin: Date.now(),
+    stats:     { sessions: 0, total: 0, friends: 0 }
+  };
+
+  saveUser(userData);
+  clearInterval(_resendInterval);
+  showToast(`ברוך הבא, ${userData.name}! 🎉`, 'success', 1500);
+
+  // Sync Firebase in background (non-blocking)
   try {
-    const userId  = 'u_' + sanitizePhone(_pendingUser.phone);
     const userRef = ref(db, 'users/' + userId);
-    const snap    = await get(userRef);
-
-    let userData;
-
-    if (snap.exists()) {
-      userData = snap.val();
-      // Update name if provided in register flow
-      if (_pendingUser.name && _pendingUser.isNew) {
-        userData = { ...userData, name: _pendingUser.name, lastLogin: Date.now() };
-      } else {
-        userData = { ...userData, lastLogin: Date.now() };
-      }
-    } else {
-      userData = {
-        id:        userId,
-        name:      _pendingUser.name || 'משתמש',
-        phone:     sanitizePhone(_pendingUser.phone),
-        created:   Date.now(),
-        lastLogin: Date.now(),
-        stats: { sessions: 0, total: 0, friends: 0 }
-      };
-    }
-
-    await set(userRef, userData);
-    saveUser(userData);
-
-    clearInterval(_resendInterval);
-    track('auth_success', { isNew: _pendingUser.isNew, userId });
-    showToast(`ברוך הבא, ${userData.name}! 🎉`, 'success', 2000);
-
-    setTimeout(() => navigate('./home.html'), 900);
-
+    const snap = await get(userRef);
+    const merged = snap.exists()
+      ? { ...snap.val(), name: userData.name, lastLogin: Date.now() }
+      : userData;
+    saveUser(merged);
+    set(userRef, merged);
   } catch (e) {
-    handleFirebaseError(e, 'שגיאה בכניסה — נסה שוב');
-    setLoading(btn, false);
+    console.warn('[clerq] Firebase sync failed, continuing:', e.message);
+  }
+
+  track('auth_success', { userId });
+
+  // Navigate regardless of Firebase result
+  setTimeout(() => { window.location.href = './home.html'; }, 800);
+
   }
 }
 </script>
