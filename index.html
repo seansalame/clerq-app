@@ -4,6 +4,8 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <meta name="theme-color" content="#0D0D14"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
 <title>clerq — פיצול חשבון חכם</title>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
@@ -12,14 +14,13 @@
   --brd:rgba(255,255,255,.07);--brd-f:rgba(198,241,53,.4);
   --txt:#F0F0F8;--mut:#8A8AA8;--fnt:#3A3A5A;
   --grn:#C6F135;--grnb:rgba(198,241,53,.08);--grnr:rgba(198,241,53,.2);
-  --glow:rgba(198,241,53,.15);--red:#FF4757;
+  --glow:rgba(198,241,53,.15);--red:#FF4757;--red-b:rgba(255,71,87,.1);
+  --cyan:#3DD9D9;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;}
 body{font-family:'Rubik',-apple-system,sans-serif;background:var(--bg);color:var(--txt);
   -webkit-font-smoothing:antialiased;direction:rtl;overflow:hidden;}
-
-/* SHELL */
 .shell{max-width:430px;margin:0 auto;height:100vh;height:100dvh;
   display:flex;flex-direction:column;position:relative;overflow:hidden;}
 
@@ -38,11 +39,10 @@ body{font-family:'Rubik',-apple-system,sans-serif;background:var(--bg);color:var
 @keyframes ring{0%,100%{transform:scale(1);opacity:.3}50%{transform:scale(1.1);opacity:.7}}
 .sp-icon{width:90px;height:90px;}
 .sp-name{font-size:32px;font-weight:700;letter-spacing:-1.5px;}
-.sp-name .g{color:var(--grn);}
+.g{color:var(--grn);}
 .sp-tag{font-size:12px;color:var(--fnt);letter-spacing:3px;text-transform:uppercase;}
 
 /* WELCOME */
-#s-welcome{overflow-y:auto;}
 .wp{flex:1;display:flex;flex-direction:column;
   padding:40px 24px max(40px,env(safe-area-inset-bottom));
   position:relative;min-height:100%;}
@@ -52,7 +52,6 @@ body{font-family:'Rubik',-apple-system,sans-serif;background:var(--bg);color:var
 .o2{width:240px;height:240px;bottom:20%;right:-60px;
   background:radial-gradient(circle,rgba(61,217,217,.06),transparent 70%);}
 .wl{font-size:26px;font-weight:700;letter-spacing:-1px;margin-bottom:48px;position:relative;z-index:1;}
-.wl .g{color:var(--grn);}
 .wh{flex:1;display:flex;flex-direction:column;justify-content:center;gap:20px;position:relative;z-index:1;}
 .wbdg{display:inline-flex;background:var(--grnb);border:1px solid var(--grnr);
   border-radius:9999px;padding:5px 14px;font-size:12px;font-weight:600;color:var(--grn);width:fit-content;}
@@ -65,14 +64,12 @@ body{font-family:'Rubik',-apple-system,sans-serif;background:var(--bg);color:var
 .wcta{display:flex;flex-direction:column;gap:12px;margin-top:40px;position:relative;z-index:1;}
 
 /* AUTH */
-.ap{flex:1;display:flex;flex-direction:column;
-  padding:0 24px max(40px,env(safe-area-inset-bottom));}
+.ap{flex:1;display:flex;flex-direction:column;padding:0 24px max(40px,env(safe-area-inset-bottom));}
 .ah{display:flex;align-items:center;gap:16px;padding:20px 0 32px;}
 .bk{width:44px;height:44px;border-radius:50%;background:var(--card);border:1px solid var(--brd);
   display:flex;align-items:center;justify-content:center;
   cursor:pointer;font-size:18px;color:var(--txt);font-family:inherit;}
 .al{font-size:22px;font-weight:700;letter-spacing:-1px;}
-.al .g{color:var(--grn);}
 .af{flex:1;display:flex;flex-direction:column;gap:20px;}
 .at{font-size:26px;font-weight:700;letter-spacing:-.5px;}
 .as{font-size:14px;color:var(--mut);margin-top:6px;line-height:1.5;}
@@ -98,12 +95,13 @@ body{font-family:'Rubik',-apple-system,sans-serif;background:var(--bg);color:var
 .btn:active{transform:scale(.97);}
 .btnp{background:var(--grn);color:#0D0D14;box-shadow:0 0 32px rgba(198,241,53,.2);}
 .btnp:hover{background:#D4FF47;}
+.btnp:disabled{opacity:.4;cursor:not-allowed;transform:none;}
 .btng{background:transparent;color:var(--mut);border:1px solid var(--brd);}
 .btng:hover{color:var(--txt);}
+.btnr{background:var(--red-b);color:var(--red);border:1px solid rgba(255,71,87,.2);}
 
 .dn{background:rgba(255,165,0,.08);border:1px solid rgba(255,165,0,.2);
-  border-radius:10px;padding:12px 16px;font-size:12px;color:#FFA502;
-  text-align:center;line-height:1.5;}
+  border-radius:10px;padding:12px 16px;font-size:12px;color:#FFA502;text-align:center;line-height:1.5;}
 
 /* OTP */
 .ow{display:flex;gap:10px;justify-content:center;direction:ltr;margin:8px 0;}
@@ -119,61 +117,46 @@ body{font-family:'Rubik',-apple-system,sans-serif;background:var(--bg);color:var
 .rb:disabled{color:var(--fnt);cursor:default;}
 
 /* HOME */
-.hero{padding:28px 24px 24px;
-  background:linear-gradient(160deg,#1A1A2E 0%,#0D0D14 100%);
+.hero{padding:28px 24px 24px;background:linear-gradient(160deg,#1A1A2E 0%,#0D0D14 100%);
   position:relative;overflow:hidden;flex-shrink:0;}
-.horb{position:absolute;width:300px;height:300px;border-radius:50%;
-  top:-120px;left:-80px;
-  background:radial-gradient(circle,rgba(198,241,53,.08),transparent 70%);
-  pointer-events:none;}
-.htop{display:flex;justify-content:space-between;align-items:center;
-  margin-bottom:20px;position:relative;z-index:1;}
+.horb{position:absolute;width:300px;height:300px;border-radius:50%;top:-120px;left:-80px;
+  background:radial-gradient(circle,rgba(198,241,53,.08),transparent 70%);pointer-events:none;}
+.htop{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;position:relative;z-index:1;}
 .hg{font-size:14px;color:var(--mut);}
 .hn{font-size:26px;font-weight:700;letter-spacing:-.5px;margin-top:3px;}
 .hav{width:44px;height:44px;border-radius:50%;background:var(--grn);color:#111;
   font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;
   cursor:pointer;flex-shrink:0;border:none;font-family:inherit;}
-
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;position:relative;z-index:1;}
-.stat{background:rgba(255,255,255,.05);border:1px solid var(--brd);
-  border-radius:14px;padding:14px 10px;text-align:center;}
+.stat{background:rgba(255,255,255,.05);border:1px solid var(--brd);border-radius:14px;padding:14px 10px;text-align:center;}
 .sv{font-size:22px;font-weight:700;color:var(--grn);line-height:1;}
 .sl{font-size:11px;color:var(--mut);margin-top:4px;}
-
 .hsec{padding:20px 20px 0;}
-.hlbl{font-size:11px;font-weight:600;color:var(--fnt);
-  text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;}
+.hlbl{font-size:11px;font-weight:600;color:var(--fnt);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;}
 .agrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .ac{background:var(--card);border:1px solid var(--brd);border-radius:20px;
-  padding:18px 16px;cursor:pointer;transition:all .18s ease;
-  display:flex;flex-direction:column;gap:10px;}
+  padding:18px 16px;cursor:pointer;transition:all .18s ease;display:flex;flex-direction:column;gap:10px;}
 .ac:active{transform:scale(.97);}
 .ac.main{border-color:rgba(198,241,53,.25);
   background:linear-gradient(135deg,rgba(198,241,53,.08),var(--card));
   grid-column:1/-1;flex-direction:row;align-items:center;gap:16px;}
-.aico{width:48px;height:48px;border-radius:14px;
-  display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+.aico{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
 .ac.main .aico{background:var(--grn);}
 .ac:not(.main) .aico{background:var(--up);}
 .atx{flex:1;}
 .atl{font-size:15px;font-weight:600;}
 .adc{font-size:12px;color:var(--mut);margin-top:3px;line-height:1.4;}
 .arr{font-size:18px;color:var(--fnt);}
-
 .hrec{padding:20px 20px;flex:1;}
-.hi{display:flex;align-items:center;gap:14px;padding:14px 0;
-  border-bottom:1px solid var(--brd);cursor:pointer;}
+.hi{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--brd);cursor:pointer;}
 .hi:active{opacity:.7;}
 .hi:last-child{border-bottom:none;}
-.hic{width:44px;height:44px;border-radius:12px;background:var(--up);
-  display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.hic{width:44px;height:44px;border-radius:12px;background:var(--up);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
 .hin{flex:1;min-width:0;}
 .hit{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .his{font-size:12px;color:var(--mut);margin-top:2px;}
 .hia{font-size:14px;font-weight:600;color:var(--grn);flex-shrink:0;}
-
-.empty{display:flex;flex-direction:column;align-items:center;
-  padding:40px 20px;text-align:center;gap:10px;}
+.empty{display:flex;flex-direction:column;align-items:center;padding:40px 20px;text-align:center;gap:10px;}
 .ei{font-size:44px;opacity:.2;margin-bottom:6px;}
 .et{font-size:16px;font-weight:500;color:var(--mut);}
 .es{font-size:13px;color:var(--fnt);line-height:1.5;}
@@ -187,228 +170,469 @@ body{font-family:'Rubik',-apple-system,sans-serif;background:var(--bg);color:var
 .nb.on{color:var(--grn);}
 .ni{font-size:22px;line-height:1;}
 
-/* HOME WRAPPER */
-#s-home{overflow-y:auto;}
-.home-inner{display:flex;flex-direction:column;min-height:100%;}
+/* SCAN */
+.scan-wrap{flex:1;display:flex;flex-direction:column;padding:0 20px max(24px,env(safe-area-inset-bottom));gap:14px;}
+.cam-frame{flex:1;min-height:240px;border-radius:20px;border:1.5px dashed #3A3A3A;
+  background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;cursor:pointer;transition:border-color .2s;overflow:hidden;position:relative;}
+.cam-frame:active{border-color:var(--grn);}
+.cam-frame img{width:100%;height:100%;object-fit:cover;}
+.cam-ov{position:absolute;inset:0;background:rgba(0,0,0,.55);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;}
+.cam-ico{font-size:52px;margin-bottom:8px;}
+.cam-txt{font-size:16px;font-weight:500;}
+.cam-sub{font-size:13px;color:var(--mut);text-align:center;}
+
+/* LOADING */
+.load-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:40px;text-align:center;}
+.loader{width:80px;height:80px;position:relative;}
+.lr-out{position:absolute;inset:0;border:3px solid var(--brd);border-top-color:var(--grn);border-radius:50%;animation:spin .9s linear infinite;}
+.lr-in{position:absolute;inset:14px;border:2px solid var(--brd);border-bottom-color:var(--cyan);border-radius:50%;animation:spin .7s linear infinite reverse;}
+.lr-ico{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:26px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.lt{font-size:20px;font-weight:700;}
+.ls{font-size:14px;color:var(--mut);line-height:1.6;}
+.steps{display:flex;flex-direction:column;gap:8px;width:100%;}
+.step{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;background:var(--card);font-size:13px;color:var(--mut);transition:all .3s;}
+.step.act{background:#1A2A14;color:var(--grn);}
+.step.done{background:#142014;color:#5A9A5A;}
+
+/* SESSION */
+.sess-bar{margin:0 16px 10px;background:#1A2A14;border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px;}
+.sess-code{font-size:20px;font-weight:700;color:var(--grn);letter-spacing:6px;direction:ltr;}
+.sess-lbl{font-size:11px;color:var(--grn);font-weight:600;margin-bottom:2px;}
+.live-bar{margin:0 16px 10px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--mut);}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--grn);animation:pulse 1.5s ease-in-out infinite;flex-shrink:0;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.items-wrap{flex:1;overflow-y:auto;padding:0 16px 10px;}
+.ilbl{font-size:11px;font-weight:600;color:var(--fnt);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+.icard{background:var(--card);border-radius:16px;margin-bottom:6px;overflow:hidden;border:1px solid var(--brd);transition:border-color .2s;animation:slideIn .2s ease both;}
+@keyframes slideIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.icard.sel{border-color:var(--grn);}
+.irow{display:flex;align-items:center;gap:12px;padding:13px 14px;cursor:pointer;user-select:none;}
+.ichk{width:22px;height:22px;border-radius:50%;border:2px solid var(--fnt);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:12px;color:#111;transition:all .2s;}
+.icard.sel .ichk{background:var(--grn);border-color:var(--grn);}
+.iname{flex:1;font-size:14px;font-weight:500;}
+.isub{font-size:11px;color:var(--mut);margin-top:2px;}
+.iprc{font-size:14px;font-weight:600;color:var(--mut);white-space:nowrap;}
+.icard.sel .iprc{color:var(--grn);}
+.spanel{display:none;padding:10px 14px 13px;border-top:1px solid var(--brd);background:#1A2A14;}
+.spanel.open{display:block;}
+.splbl{font-size:12px;color:var(--grn);font-weight:500;margin-bottom:8px;}
+.srow{display:flex;align-items:center;gap:10px;}
+.srow span{font-size:13px;color:var(--mut);}
+.ctr{display:flex;align-items:center;gap:10px;background:var(--inp);border-radius:10px;padding:4px 10px;}
+.cb{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--grn);background:transparent;
+  color:var(--grn);font-size:17px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-family:inherit;transition:all .12s;}
+.cb:active{background:var(--grn);color:#111;}
+.cv{font-size:16px;font-weight:600;min-width:20px;text-align:center;}
+.bot-bar{background:var(--card);border-top:1px solid var(--brd);padding:14px 16px max(24px,env(safe-area-inset-bottom));}
+.bot-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.bot-lbl{font-size:13px;color:var(--mut);}
+.bot-amt{font-size:22px;font-weight:700;color:var(--grn);}
+
+/* JOIN */
+.join-wrap{flex:1;display:flex;flex-direction:column;padding:0 24px max(40px,env(safe-area-inset-bottom));gap:20px;}
+.jico{width:80px;height:80px;border-radius:24px;background:var(--grnb);border:1px solid var(--grnr);
+  display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto;}
+.jcode{display:flex;justify-content:center;gap:10px;direction:ltr;margin:8px 0;}
+.jd{width:48px;height:60px;border-radius:12px;border:1.5px solid var(--brd);background:var(--inp);
+  color:var(--txt);font-size:24px;font-weight:700;text-align:center;font-family:inherit;
+  outline:none;caret-color:var(--grn);transition:border-color .15s,box-shadow .15s;}
+.jd:focus{border-color:var(--brd-f);box-shadow:0 0 0 3px var(--glow);}
+.jd.f{border-color:rgba(198,241,53,.3);}
+.jsep{font-size:22px;color:var(--fnt);display:flex;align-items:center;padding-bottom:4px;}
+.prev-box{background:var(--card);border:1px solid var(--grnr);border-radius:16px;padding:16px 20px;display:none;}
+.prev-box.show{display:block;animation:slideIn .25s ease;}
+.prev-title{font-size:15px;font-weight:600;margin-bottom:4px;}
+.prev-sub{font-size:13px;color:var(--mut);}
+
+/* SUMMARY */
+.sum-hero{padding:48px 20px 28px;text-align:center;position:relative;flex-shrink:0;}
+.sum-lbl{font-size:14px;color:var(--mut);margin-bottom:8px;}
+.sum-amt{font-size:54px;font-weight:300;letter-spacing:-2px;}
+.sum-sub{font-size:13px;color:var(--mut);margin-top:6px;}
+.sum-card{background:var(--card);border-radius:24px 24px 0 0;flex:1;padding:24px 20px;overflow-y:auto;}
+.sumi{display:flex;justify-content:space-between;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--brd);font-size:14px;}
+.sumi:last-child{border-bottom:none;}
+.sumi-name{flex:1;font-weight:500;}
+.sumi-note{font-size:11px;color:var(--mut);margin-top:2px;}
+.sumi-price{color:var(--mut);font-weight:600;flex-shrink:0;}
+
+/* TIP */
+.tip-box{background:var(--inp);border-radius:16px;padding:16px;margin-bottom:14px;}
+.tip-ttl{font-size:13px;font-weight:600;margin-bottom:12px;}
+.tip-modes{display:flex;gap:8px;direction:ltr;margin-bottom:12px;}
+.tm{flex:1;padding:10px 6px;border-radius:10px;border:1px solid var(--brd);background:var(--card);
+  font-size:13px;font-weight:500;color:var(--mut);cursor:pointer;font-family:inherit;text-align:center;transition:all .15s;}
+.tm.on{background:var(--grn);color:#111;border-color:var(--grn);font-weight:700;}
+.tip-inp-row{display:flex;align-items:center;gap:10px;}
+.tip-inp{flex:1;padding:12px 14px;background:var(--card);border:1px solid var(--brd);border-radius:10px;
+  color:var(--txt);font-size:18px;font-weight:500;font-family:inherit;text-align:center;
+  outline:none;transition:border-color .15s;direction:ltr;}
+.tip-inp:focus{border-color:var(--brd-f);}
+.tip-unit{font-size:16px;font-weight:600;color:var(--mut);min-width:28px;}
+.tip-prev{font-size:12px;color:var(--mut);margin-top:8px;text-align:center;}
+
+/* TOTALS */
+.totals{background:var(--inp);border-radius:16px;padding:14px 16px;margin-bottom:20px;}
+.trow{display:flex;justify-content:space-between;font-size:14px;color:var(--mut);padding:5px 0;}
+.trow.fin{font-size:17px;font-weight:700;color:var(--txt);border-top:1px solid var(--brd);margin-top:6px;padding-top:12px;}
+.trow.fin span:last-child{color:var(--grn);}
+
+/* PAY BUTTONS */
+.pay-btns{display:flex;flex-direction:column;gap:10px;margin-bottom:12px;}
+.pay-btn{display:flex;align-items:center;justify-content:center;gap:10px;
+  min-height:54px;border:none;border-radius:14px;font-family:inherit;
+  font-size:16px;font-weight:700;cursor:pointer;transition:all .18s ease;width:100%;}
+.pay-btn:active{transform:scale(.97);}
+.pay-bit{background:var(--grn);color:#0D0D14;}
+.pay-paybox{background:var(--up);color:var(--txt);border:1px solid var(--brd);}
+.demo-note{text-align:center;font-size:11px;color:var(--fnt);margin-bottom:14px;}
 
 /* TOAST */
 .toast{position:fixed;bottom:32px;left:50%;
   transform:translateX(-50%) translateY(100px);
-  background:var(--up);color:var(--txt);padding:12px 24px;
-  border-radius:9999px;font-size:14px;font-weight:500;
-  border:1px solid var(--brd);box-shadow:0 8px 32px rgba(0,0,0,.5);
-  z-index:999;pointer-events:none;transition:transform .3s ease;white-space:nowrap;}
+  background:var(--up);color:var(--txt);padding:12px 24px;border-radius:9999px;
+  font-size:14px;font-weight:500;border:1px solid var(--brd);
+  box-shadow:0 8px 32px rgba(0,0,0,.5);z-index:9999;pointer-events:none;
+  transition:transform .3s ease;white-space:nowrap;}
 .toast.show{transform:translateX(-50%) translateY(0);}
 .toast.ok{border-color:rgba(198,241,53,.3);color:var(--grn);}
 .toast.err{border-color:rgba(255,71,87,.3);color:var(--red);}
 
 .sp{flex:1;}
+.hide{display:none;}
 </style>
 </head>
 <body>
 <div class="shell">
 
-  <!-- SPLASH -->
-  <div class="scr on" id="s-splash">
-    <div class="sp-wrap">
-      <div class="sp-ring"></div>
-      <svg class="sp-icon" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-        <rect width="120" height="120" rx="28" fill="#1A1A2E"/>
-        <rect x="28" y="20" width="52" height="66" rx="7" fill="none" stroke="#C6F135" stroke-width="1.5" opacity="0.6"/>
-        <rect x="36" y="34" width="28" height="3.5" rx="1.75" fill="#C6F135"/>
-        <rect x="36" y="44" width="20" height="2.5" rx="1.25" fill="#fff" opacity=".22"/>
-        <rect x="36" y="51" width="26" height="2.5" rx="1.25" fill="#fff" opacity=".18"/>
-        <rect x="36" y="58" width="16" height="2.5" rx="1.25" fill="#fff" opacity=".18"/>
-        <circle cx="82" cy="88" r="22" fill="#1A1A2E"/>
-        <circle cx="82" cy="88" r="18" fill="#C6F135"/>
-        <path d="M73 88L79 95L92 78" stroke="#111" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-      </svg>
-    </div>
-    <div class="sp-name">cler<span class="g">q</span></div>
-    <div class="sp-tag">split smarter</div>
+<!-- ══ SPLASH ══ -->
+<div class="scr on" id="s-splash">
+  <div class="sp-wrap">
+    <div class="sp-ring"></div>
+    <svg class="sp-icon" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+      <rect width="120" height="120" rx="28" fill="#1A1A2E"/>
+      <rect x="28" y="20" width="52" height="66" rx="7" fill="none" stroke="#C6F135" stroke-width="1.5" opacity="0.6"/>
+      <rect x="36" y="34" width="28" height="3.5" rx="1.75" fill="#C6F135"/>
+      <rect x="36" y="44" width="20" height="2.5" rx="1.25" fill="#fff" opacity=".22"/>
+      <rect x="36" y="51" width="26" height="2.5" rx="1.25" fill="#fff" opacity=".18"/>
+      <rect x="36" y="58" width="16" height="2.5" rx="1.25" fill="#fff" opacity=".18"/>
+      <circle cx="82" cy="88" r="22" fill="#1A1A2E"/>
+      <circle cx="82" cy="88" r="18" fill="#C6F135"/>
+      <path d="M73 88L79 95L92 78" stroke="#111" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>
   </div>
-
-  <!-- WELCOME -->
-  <div class="scr" id="s-welcome">
-    <div class="wp">
-      <div class="orb o1"></div><div class="orb o2"></div>
-      <div class="wl">cler<span class="g">q</span></div>
-      <div class="wh">
-        <div class="wbdg">חדש בישראל 🇮🇱</div>
-        <div class="wt">פיצול חשבון<br/><em>תוך 20 שניות</em></div>
-        <div class="ws">צלם את הקבלה, שתף קוד עם החברים — כל אחד בוחר מה שלו ומשלם בביט.</div>
-        <div class="fts">
-          <div class="ft"><div class="fd"></div>AI קורא את הקבלה תוך שניות</div>
-          <div class="ft"><div class="fd"></div>כולם בוחרים בזמן אמת</div>
-          <div class="ft"><div class="fd"></div>תשלום ישיר בביט ופייבוקס</div>
-        </div>
-      </div>
-      <div class="wcta">
-        <button class="btn btnp" onclick="go('s-reg')">התחל עכשיו — בחינם</button>
-        <button class="btn btng" onclick="go('s-log')">יש לי חשבון — כניסה</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- REGISTER -->
-  <div class="scr" id="s-reg">
-    <div class="ap">
-      <div class="ah">
-        <button class="bk" onclick="go('s-welcome')">←</button>
-        <div class="al">cler<span class="g">q</span></div>
-      </div>
-      <div class="af">
-        <div><div class="at">יצירת חשבון</div><div class="as">הרשמה מהירה — שם ומספר טלפון בלבד</div></div>
-        <div class="fg">
-          <div class="fl">השם שלך</div>
-          <input class="inp" type="text" id="rn" placeholder="לדוגמה: שון" maxlength="30" autocomplete="given-name"/>
-          <div class="fe" id="rne"></div>
-        </div>
-        <div class="fg">
-          <div class="fl">מספר טלפון</div>
-          <div class="pw">
-            <div class="pp">🇮🇱 +972</div>
-            <input class="inp" type="tel" id="rp" placeholder="05X-XXX-XXXX" maxlength="11" inputmode="numeric"/>
-          </div>
-          <div class="fe" id="rpe"></div>
-        </div>
-        <div class="dn">🔧 <strong>מצב דמו:</strong> קוד הוא תמיד <strong>1 2 3 4</strong></div>
-        <div class="sp"></div>
-        <button class="btn btnp" onclick="doReg()">המשך ←</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- LOGIN -->
-  <div class="scr" id="s-log">
-    <div class="ap">
-      <div class="ah">
-        <button class="bk" onclick="go('s-welcome')">←</button>
-        <div class="al">cler<span class="g">q</span></div>
-      </div>
-      <div class="af">
-        <div><div class="at">כניסה</div><div class="as">הכנס את מספר הטלפון שלך</div></div>
-        <div class="fg">
-          <div class="fl">מספר טלפון</div>
-          <div class="pw">
-            <div class="pp">🇮🇱 +972</div>
-            <input class="inp" type="tel" id="lp" placeholder="05X-XXX-XXXX" maxlength="11" inputmode="numeric"/>
-          </div>
-          <div class="fe" id="le"></div>
-        </div>
-        <div class="dn">🔧 <strong>מצב דמו:</strong> קוד הוא תמיד <strong>1 2 3 4</strong></div>
-        <div class="sp"></div>
-        <button class="btn btnp" onclick="doLog()">המשך ←</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- OTP -->
-  <div class="scr" id="s-otp">
-    <div class="ap">
-      <div class="ah">
-        <button class="bk" onclick="backOTP()">←</button>
-        <div class="al">cler<span class="g">q</span></div>
-      </div>
-      <div class="af">
-        <div><div class="at">אימות טלפון</div><div class="as" id="osub">שלחנו קוד SMS</div></div>
-        <div class="fg">
-          <div class="fl" style="text-align:center">הכנס את הקוד</div>
-          <div class="ow">
-            <input class="od" type="tel" id="o0" maxlength="1" inputmode="numeric"/>
-            <input class="od" type="tel" id="o1" maxlength="1" inputmode="numeric"/>
-            <div class="os">·</div>
-            <input class="od" type="tel" id="o2" maxlength="1" inputmode="numeric"/>
-            <input class="od" type="tel" id="o3" maxlength="1" inputmode="numeric"/>
-          </div>
-          <div class="fe" id="oe" style="text-align:center"></div>
-        </div>
-        <div class="rw">
-          לא קיבלת?
-          <button class="rb" id="rb" onclick="resend()" disabled>שלח שוב (<span id="rcd">30</span>)</button>
-        </div>
-        <div class="sp"></div>
-        <button class="btn btnp" onclick="doOTP()">אמת וכנס ✓</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- HOME -->
-  <div class="scr" id="s-home">
-    <div class="home-inner">
-      <div class="hero">
-        <div class="horb"></div>
-        <div class="htop">
-          <div>
-            <div class="hg">שלום,</div>
-            <div class="hn" id="hn">...</div>
-          </div>
-          <button class="hav" id="hav">?</button>
-        </div>
-        <div class="stats">
-          <div class="stat"><div class="sv" id="ss">0</div><div class="sl">חשבונות</div></div>
-          <div class="stat"><div class="sv" id="st">₪0</div><div class="sl">חולקו</div></div>
-          <div class="stat"><div class="sv" id="sf">0</div><div class="sl">חברים</div></div>
-        </div>
-      </div>
-
-      <div class="hsec">
-        <div class="hlbl">מה תרצה לעשות?</div>
-        <div class="agrid">
-          <div class="ac main" onclick="toast('מסך סריקה בקרוב! 🚀','ok')">
-            <div class="aico">🧾</div>
-            <div class="atx">
-              <div class="atl">פתח חשבון חדש</div>
-              <div class="adc">צלם קבלה — AI יקרא ויפצל תוך שניות</div>
-            </div>
-            <div class="arr">←</div>
-          </div>
-          <div class="ac" onclick="toast('מסך הצטרפות בקרוב! 🔢','ok')">
-            <div class="aico">🔢</div>
-            <div class="atx">
-              <div class="atl">הצטרף</div>
-              <div class="adc">הכנס קוד מחבר</div>
-            </div>
-          </div>
-          <div class="ac" onclick="toast('היסטוריה בקרוב! 📋','ok')">
-            <div class="aico">📋</div>
-            <div class="atx">
-              <div class="atl">היסטוריה</div>
-              <div class="adc">חשבונות קודמים</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="hrec">
-        <div class="hlbl">פעילות אחרונה</div>
-        <div id="rlist">
-          <div class="empty">
-            <div class="ei">🧾</div>
-            <div class="et">אין חשבונות עדיין</div>
-            <div class="es">לחץ על "פתח חשבון חדש"<br/>וצלם את הקבלה הראשונה שלך</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="sp"></div>
-
-      <div class="nav">
-        <button class="nb on"><span class="ni">🏠</span><span>בית</span></button>
-        <button class="nb" onclick="toast('סרוק — בקרוב!','ok')"><span class="ni">📷</span><span>סרוק</span></button>
-        <button class="nb" onclick="toast('הצטרף — בקרוב!','ok')"><span class="ni">🔢</span><span>הצטרף</span></button>
-        <button class="nb" onclick="doLogout()"><span class="ni">🚪</span><span>יציאה</span></button>
-      </div>
-    </div>
-  </div>
-
+  <div class="sp-name">cler<span class="g">q</span></div>
+  <div class="sp-tag">split smarter</div>
 </div>
 
+<!-- ══ WELCOME ══ -->
+<div class="scr" id="s-welcome">
+  <div class="wp">
+    <div class="orb o1"></div><div class="orb o2"></div>
+    <div class="wl">cler<span class="g">q</span></div>
+    <div class="wh">
+      <div class="wbdg">חדש בישראל 🇮🇱</div>
+      <div class="wt">פיצול חשבון<br/><em>תוך 20 שניות</em></div>
+      <div class="ws">צלם את הקבלה, שתף קוד עם החברים — כל אחד בוחר מה שלו ומשלם בביט.</div>
+      <div class="fts">
+        <div class="ft"><div class="fd"></div>AI קורא את הקבלה תוך שניות</div>
+        <div class="ft"><div class="fd"></div>כולם בוחרים בזמן אמת</div>
+        <div class="ft"><div class="fd"></div>תשלום ישיר בביט ופייבוקס</div>
+      </div>
+    </div>
+    <div class="wcta">
+      <button class="btn btnp" onclick="go('s-reg')">התחל עכשיו — בחינם</button>
+      <button class="btn btng" onclick="go('s-log')">יש לי חשבון — כניסה</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ REGISTER ══ -->
+<div class="scr" id="s-reg">
+  <div class="ap">
+    <div class="ah">
+      <button class="bk" onclick="go('s-welcome')">←</button>
+      <div class="al">cler<span class="g">q</span></div>
+    </div>
+    <div class="af">
+      <div><div class="at">יצירת חשבון</div><div class="as">הרשמה מהירה — שם ומספר טלפון</div></div>
+      <div class="fg">
+        <div class="fl">השם שלך</div>
+        <input class="inp" type="text" id="rn" placeholder="לדוגמה: שון" maxlength="30" autocomplete="given-name"/>
+        <div class="fe" id="rne"></div>
+      </div>
+      <div class="fg">
+        <div class="fl">מספר טלפון</div>
+        <div class="pw"><div class="pp">🇮🇱 +972</div><input class="inp" type="tel" id="rp" placeholder="05X-XXX-XXXX" maxlength="11" inputmode="numeric"/></div>
+        <div class="fe" id="rpe"></div>
+      </div>
+      <div class="dn">🔧 <strong>מצב דמו:</strong> קוד הוא תמיד <strong>1 2 3 4</strong></div>
+      <div class="sp"></div>
+      <button class="btn btnp" onclick="doReg()">המשך ←</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ LOGIN ══ -->
+<div class="scr" id="s-log">
+  <div class="ap">
+    <div class="ah">
+      <button class="bk" onclick="go('s-welcome')">←</button>
+      <div class="al">cler<span class="g">q</span></div>
+    </div>
+    <div class="af">
+      <div><div class="at">כניסה</div><div class="as">הכנס את מספר הטלפון שלך</div></div>
+      <div class="fg">
+        <div class="fl">מספר טלפון</div>
+        <div class="pw"><div class="pp">🇮🇱 +972</div><input class="inp" type="tel" id="lp" placeholder="05X-XXX-XXXX" maxlength="11" inputmode="numeric"/></div>
+        <div class="fe" id="le"></div>
+      </div>
+      <div class="dn">🔧 <strong>מצב דמו:</strong> קוד הוא תמיד <strong>1 2 3 4</strong></div>
+      <div class="sp"></div>
+      <button class="btn btnp" onclick="doLog()">המשך ←</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ OTP ══ -->
+<div class="scr" id="s-otp">
+  <div class="ap">
+    <div class="ah">
+      <button class="bk" onclick="backOTP()">←</button>
+      <div class="al">cler<span class="g">q</span></div>
+    </div>
+    <div class="af">
+      <div><div class="at">אימות טלפון</div><div class="as" id="osub">שלחנו קוד SMS</div></div>
+      <div class="fg">
+        <div class="fl" style="text-align:center">הכנס את הקוד</div>
+        <div class="ow">
+          <input class="od" type="tel" id="o0" maxlength="1" inputmode="numeric"/>
+          <input class="od" type="tel" id="o1" maxlength="1" inputmode="numeric"/>
+          <div class="os">·</div>
+          <input class="od" type="tel" id="o2" maxlength="1" inputmode="numeric"/>
+          <input class="od" type="tel" id="o3" maxlength="1" inputmode="numeric"/>
+        </div>
+        <div class="fe" id="oe" style="text-align:center"></div>
+      </div>
+      <div class="rw">לא קיבלת? <button class="rb" id="rb" onclick="resend()" disabled>שלח שוב (<span id="rcd">30</span>)</button></div>
+      <div class="sp"></div>
+      <button class="btn btnp" onclick="doOTP()">אמת וכנס ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ HOME ══ -->
+<div class="scr" id="s-home">
+  <div style="display:flex;flex-direction:column;min-height:100%;">
+    <div class="hero">
+      <div class="horb"></div>
+      <div class="htop">
+        <div><div class="hg">שלום,</div><div class="hn" id="hn">...</div></div>
+        <button class="hav" id="hav">?</button>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="sv" id="ss">0</div><div class="sl">חשבונות</div></div>
+        <div class="stat"><div class="sv" id="st">₪0</div><div class="sl">חולקו</div></div>
+        <div class="stat"><div class="sv" id="sf">0</div><div class="sl">חברים</div></div>
+      </div>
+    </div>
+    <div class="hsec">
+      <div class="hlbl">מה תרצה לעשות?</div>
+      <div class="agrid">
+        <div class="ac main" onclick="go('s-scan')">
+          <div class="aico">🧾</div>
+          <div class="atx"><div class="atl">פתח חשבון חדש</div><div class="adc">צלם קבלה — AI יקרא ויפצל תוך שניות</div></div>
+          <div class="arr">←</div>
+        </div>
+        <div class="ac" onclick="go('s-join')">
+          <div class="aico">🔢</div>
+          <div class="atx"><div class="atl">הצטרף</div><div class="adc">הכנס קוד מחבר</div></div>
+        </div>
+        <div class="ac" onclick="doLogout()">
+          <div class="aico">🚪</div>
+          <div class="atx"><div class="atl">יציאה</div><div class="adc">התנתק מהחשבון</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="hrec">
+      <div class="hlbl">פעילות אחרונה</div>
+      <div id="rlist">
+        <div class="empty">
+          <div class="ei">🧾</div>
+          <div class="et">אין חשבונות עדיין</div>
+          <div class="es">לחץ על "פתח חשבון חדש"<br/>וצלם את הקבלה הראשונה שלך</div>
+        </div>
+      </div>
+    </div>
+    <div class="sp"></div>
+    <div class="nav">
+      <button class="nb on"><span class="ni">🏠</span><span>בית</span></button>
+      <button class="nb" onclick="go('s-scan')"><span class="ni">📷</span><span>סרוק</span></button>
+      <button class="nb" onclick="go('s-join')"><span class="ni">🔢</span><span>הצטרף</span></button>
+      <button class="nb" onclick="doLogout()"><span class="ni">🚪</span><span>יציאה</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCAN ══ -->
+<div class="scr" id="s-scan">
+  <div class="ah" style="padding:16px 20px 12px;flex-shrink:0;">
+    <button class="bk" onclick="go('s-home')">←</button>
+    <div class="al">סרוק קבלה</div>
+  </div>
+  <div class="scan-wrap">
+    <label class="cam-frame" id="cam-frame" for="cam-input">
+      <div style="text-align:center" id="cam-ph">
+        <div class="cam-ico">📷</div>
+        <div class="cam-txt">לחץ לצילום או העלאה</div>
+        <div class="cam-sub">פתח מצלמה או גלריה</div>
+      </div>
+    </label>
+    <input type="file" id="cam-input" accept="image/*" style="display:none" onchange="handleImg(this)"/>
+    <button class="btn btnp" id="scan-btn" onclick="startScan()" disabled>סרוק עם AI</button>
+    <button class="btn btng" onclick="loadDemo()">טען דמו (ללא תמונה)</button>
+  </div>
+</div>
+
+<!-- ══ LOADING ══ -->
+<div class="scr" id="s-load">
+  <div class="load-body">
+    <div class="loader">
+      <div class="lr-out"></div>
+      <div class="lr-in"></div>
+      <div class="lr-ico">🧾</div>
+    </div>
+    <div class="lt">קורא את הקבלה...</div>
+    <div class="ls">הבינה המלאכותית מזהה<br/>את הפריטים והמחירים</div>
+    <div class="steps">
+      <div class="step" id="st1"><span>📸</span> מנתח את התמונה</div>
+      <div class="step" id="st2"><span>📋</span> מחלץ פריטים ומחירים</div>
+      <div class="step" id="st3"><span>🔗</span> יוצר סשן וקוד כניסה</div>
+      <div class="step" id="st4"><span>✅</span> מוכן לחלוקה</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SESSION (יוזם) ══ -->
+<div class="scr" id="s-sess">
+  <div class="ah" style="padding:16px 20px 8px;flex-shrink:0;">
+    <button class="bk" onclick="go('s-scan')">←</button>
+    <div class="al" style="flex:1">בחר מנות</div>
+    <span style="font-size:13px;color:var(--mut)" id="item-cnt"></span>
+  </div>
+  <div class="sess-bar">
+    <div style="flex:1">
+      <div class="sess-lbl">קוד הצטרפות לחברים</div>
+      <div class="sess-code" id="sess-code">--- ---</div>
+    </div>
+    <button class="btn btnp" style="width:auto;min-height:36px;padding:0 14px;font-size:13px;border-radius:10px;" onclick="shareCode()">שתף 📤</button>
+    <button class="btn btnr" style="width:auto;min-height:36px;padding:0 12px;font-size:12px;border-radius:10px;margin-right:6px;" onclick="closeSession()">סגור ⛔</button>
+  </div>
+  <div class="live-bar">
+    <div class="live-dot"></div>
+    <span id="live-txt">1 מחובר</span>
+  </div>
+  <div class="items-wrap">
+    <div class="ilbl">הקבלה שלך</div>
+    <div id="items-list"></div>
+  </div>
+  <div class="bot-bar">
+    <div class="bot-row">
+      <span class="bot-lbl">החלק שלי</span>
+      <span class="bot-amt" id="my-sub">₪0.00</span>
+    </div>
+    <button class="btn btnp" onclick="goSummary()">המשך לתשלום ←</button>
+  </div>
+</div>
+
+<!-- ══ JOIN ══ -->
+<div class="scr" id="s-join">
+  <div class="ah" style="padding:16px 20px 12px;flex-shrink:0;">
+    <button class="bk" onclick="go('s-home')">←</button>
+    <div class="al">הצטרף לחשבון</div>
+  </div>
+  <div class="join-wrap">
+    <div class="jico">🔢</div>
+    <div style="text-align:center">
+      <div style="font-size:20px;font-weight:700;margin-bottom:8px">הכנס את הקוד</div>
+      <div style="font-size:14px;color:var(--mut)">6 ספרות שקיבלת מהחבר שפתח</div>
+    </div>
+    <div class="jcode">
+      <input class="jd" type="tel" id="j0" maxlength="1" inputmode="numeric"/>
+      <input class="jd" type="tel" id="j1" maxlength="1" inputmode="numeric"/>
+      <input class="jd" type="tel" id="j2" maxlength="1" inputmode="numeric"/>
+      <div class="jsep">·</div>
+      <input class="jd" type="tel" id="j3" maxlength="1" inputmode="numeric"/>
+      <input class="jd" type="tel" id="j4" maxlength="1" inputmode="numeric"/>
+      <input class="jd" type="tel" id="j5" maxlength="1" inputmode="numeric"/>
+    </div>
+    <div class="fe" id="jerr" style="text-align:center"></div>
+    <div class="prev-box" id="prev-box">
+      <div class="prev-title" id="prev-title">מוצא...</div>
+      <div class="prev-sub" id="prev-sub"></div>
+    </div>
+    <div class="sp"></div>
+    <button class="btn btnp" id="join-btn" onclick="doJoin()" disabled>הצטרף ←</button>
+    <button class="btn btng" onclick="go('s-home')">ביטול</button>
+  </div>
+</div>
+
+<!-- ══ SUMMARY ══ -->
+<div class="scr" id="s-sum">
+  <div class="sum-hero">
+    <button class="bk" style="position:absolute;top:16px;right:20px;" onclick="go('s-sess')">←</button>
+    <div class="sum-lbl">סה״כ לתשלום</div>
+    <div class="sum-amt" id="hero-amt">₪0</div>
+    <div class="sum-sub" id="hero-sub">ללא טיפ</div>
+  </div>
+  <div class="sum-card">
+    <div style="font-size:16px;font-weight:600;margin-bottom:14px;">המנות שלי</div>
+    <div id="sum-list" style="margin-bottom:20px;"></div>
+    <div class="tip-box">
+      <div class="tip-ttl">כמה טיפ?</div>
+      <div class="tip-modes">
+        <button class="tm" id="tm-pct" onclick="setTipMode('pct')">אחוזים %</button>
+        <button class="tm" id="tm-shk" onclick="setTipMode('shk')">שקלים ₪</button>
+        <button class="tm on" id="tm-no" onclick="setTipMode('no')">ללא טיפ</button>
+      </div>
+      <div id="tip-inp-wrap" style="display:none">
+        <div class="tip-inp-row">
+          <input type="number" class="tip-inp" id="tip-num" min="0" step="1" placeholder="0" oninput="calcTotals()"/>
+          <span class="tip-unit" id="tip-unit">%</span>
+        </div>
+        <div class="tip-prev" id="tip-prev"></div>
+      </div>
+    </div>
+    <div class="totals">
+      <div class="trow"><span>סכום ביניים</span><span id="t-sub">₪0.00</span></div>
+      <div class="trow"><span id="t-tip-lbl">טיפ</span><span id="t-tip">₪0.00</span></div>
+      <div class="trow fin"><span>סה״כ</span><span id="t-tot">₪0.00</span></div>
+    </div>
+    <div class="pay-btns">
+      <button class="pay-btn pay-bit" onclick="payBit()">
+        <span style="font-size:20px;font-weight:700;">bit</span> שלם עכשיו
+      </button>
+      <button class="pay-btn pay-paybox" onclick="payPaybox()">
+        שלם דרך פייבוקס
+      </button>
+    </div>
+    <div class="demo-note">* תשלום יפתח את האפליקציה עם הסכום</div>
+    <button class="btn btng" onclick="go('s-home');resetAll()">חלק חשבון חדש</button>
+  </div>
+</div>
+
+</div>
 <div class="toast" id="toast"></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <script>
+// ── Firebase ──
 firebase.initializeApp({
   apiKey:"AIzaSyBWYEntIaNdQio86BGVREmBAAqUo0F6sIw",
   authDomain:"clerq-1145a.firebaseapp.com",
@@ -418,18 +642,20 @@ firebase.initializeApp({
   messagingSenderId:"426819964309",
   appId:"1:426819964309:web:adf96da249d35d5d823a9c"
 });
-const db=firebase.database();
+const db = firebase.database();
 
-// ── helpers ──
+// ── Helpers ──
 function getUser(){try{return JSON.parse(localStorage.getItem('clerq_u'));}catch{return null;}}
 function saveUser(u){localStorage.setItem('clerq_u',JSON.stringify(u));}
 function clearUser(){localStorage.removeItem('clerq_u');}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function fmt(n){return '₪'+(parseFloat(n)||0).toFixed(2);}
 
-let _toastTm;
+let _tm;
 function toast(m,t){
   const el=document.getElementById('toast');
   el.textContent=m;el.className='toast show'+(t?' '+t:'');
-  clearTimeout(_toastTm);_toastTm=setTimeout(()=>el.classList.remove('show'),3000);
+  clearTimeout(_tm);_tm=setTimeout(()=>el.classList.remove('show'),3000);
 }
 
 function go(id){
@@ -438,7 +664,7 @@ function go(id){
   if(el){el.classList.add('on');el.scrollTop=0;}
 }
 
-// ── splash ──
+// ── Splash ──
 window.addEventListener('load',()=>{
   const u=getUser();
   setTimeout(()=>{
@@ -447,7 +673,7 @@ window.addEventListener('load',()=>{
   },1600);
 });
 
-// ── register ──
+// ── Register ──
 function doReg(){
   const name=document.getElementById('rn').value.trim();
   const phone=document.getElementById('rp').value.replace(/\D/g,'');
@@ -455,49 +681,41 @@ function doReg(){
   document.getElementById('rpe').textContent='';
   if(!name||name.length<2){document.getElementById('rne').textContent='הכנס שם תקין';return;}
   if(!phone||phone.length<9||!phone.startsWith('05')){document.getElementById('rpe').textContent='מספר לא תקין (05X...)';return;}
-  _p={name,phone,isNew:true};
-  startOTP();
+  _p={name,phone,isNew:true};startOTP();
 }
 
-// ── login ──
+// ── Login ──
 function doLog(){
   const phone=document.getElementById('lp').value.replace(/\D/g,'');
   document.getElementById('le').textContent='';
   if(!phone||phone.length<9||!phone.startsWith('05')){document.getElementById('le').textContent='מספר לא תקין (05X...)';return;}
-  _p={phone,isNew:false};
-  startOTP();
+  _p={phone,isNew:false};startOTP();
 }
 
-// ── otp ──
+// ── OTP ──
 let _p={},_rtm=null;
 function startOTP(){
   document.getElementById('osub').textContent='שלחנו קוד SMS ל-0'+_p.phone.slice(-9);
   [0,1,2,3].forEach(i=>{const e=document.getElementById('o'+i);e.value='';e.classList.remove('f');});
   document.getElementById('oe').textContent='';
-  startTimer();
-  toast('קוד דמו: 1 2 3 4','ok');
-  go('s-otp');
+  startTimer();toast('קוד דמו: 1 2 3 4','ok');go('s-otp');
   setTimeout(()=>document.getElementById('o0').focus(),300);
 }
-
 function startTimer(){
   let t=30;
   const btn=document.getElementById('rb'),cd=document.getElementById('rcd');
-  btn.disabled=true;cd.textContent=t;
-  clearInterval(_rtm);
+  btn.disabled=true;cd.textContent=t;clearInterval(_rtm);
   _rtm=setInterval(()=>{t--;cd.textContent=t;if(t<=0){clearInterval(_rtm);btn.disabled=false;btn.textContent='שלח שוב';}},1000);
 }
-
 function resend(){startTimer();toast('קוד דמו: 1 2 3 4','ok');}
 function backOTP(){clearInterval(_rtm);go(_p.isNew?'s-reg':'s-log');}
 
-// otp inputs
 window.addEventListener('DOMContentLoaded',()=>{
+  // OTP inputs
   [0,1,2,3].forEach(i=>{
     const el=document.getElementById('o'+i);
     el.addEventListener('input',()=>{
-      const v=el.value.replace(/\D/g,'');
-      el.value=v?v[0]:'';
+      const v=el.value.replace(/\D/g,'');el.value=v?v[0]:'';
       el.classList.toggle('f',!!el.value);
       document.getElementById('oe').textContent='';
       if(el.value&&i<3)document.getElementById('o'+(i+1)).focus();
@@ -506,8 +724,27 @@ window.addEventListener('DOMContentLoaded',()=>{
     });
     el.addEventListener('keydown',e=>{
       if(e.key==='Backspace'&&!el.value&&i>0){
-        const p=document.getElementById('o'+(i-1));
-        p.focus();p.value='';p.classList.remove('f');
+        const p=document.getElementById('o'+(i-1));p.focus();p.value='';p.classList.remove('f');
+      }
+    });
+  });
+
+  // Join inputs
+  [0,1,2,3,4,5].forEach(i=>{
+    const el=document.getElementById('j'+i);
+    if(!el)return;
+    el.addEventListener('input',()=>{
+      const v=el.value.replace(/\D/g,'');el.value=v?v[0]:'';
+      el.classList.toggle('f',!!el.value);
+      document.getElementById('jerr').textContent='';
+      if(el.value&&i<5)document.getElementById('j'+(i+1)).focus();
+      const code=[0,1,2,3,4,5].map(j=>document.getElementById('j'+j).value).join('');
+      if(code.length===6)lookupCode(code);
+      else{document.getElementById('prev-box').classList.remove('show');document.getElementById('join-btn').disabled=true;}
+    });
+    el.addEventListener('keydown',e=>{
+      if(e.key==='Backspace'&&!el.value&&i>0){
+        const p=document.getElementById('j'+(i-1));p.focus();p.value='';p.classList.remove('f');
       }
     });
   });
@@ -519,30 +756,23 @@ function doOTP(){
   if(code!=='1234'){
     document.getElementById('oe').textContent='קוד שגוי — נסה שוב';
     [0,1,2,3].forEach(i=>{const e=document.getElementById('o'+i);e.value='';e.classList.remove('f');});
-    document.getElementById('o0').focus();
-    return;
+    document.getElementById('o0').focus();return;
   }
-  // ✅ correct
   const userId='u_'+_p.phone;
   const user={id:userId,name:_p.name||'משתמש',phone:_p.phone,created:Date.now(),lastLogin:Date.now()};
-  saveUser(user);
-  clearInterval(_rtm);
+  saveUser(user);clearInterval(_rtm);
   toast('ברוך הבא, '+user.name+'! 🎉','ok');
-  // Firebase background
   db.ref('users/'+userId).once('value').then(snap=>{
-    const merged=snap.exists()?{...snap.val(),name:user.name,lastLogin:Date.now()}:user;
-    saveUser(merged);db.ref('users/'+userId).set(merged);
+    const m=snap.exists()?{...snap.val(),name:user.name,lastLogin:Date.now()}:user;
+    saveUser(m);db.ref('users/'+userId).set(m);
   }).catch(()=>{});
-  // Go to home — same page, no navigation!
   setTimeout(()=>{loadHome(user);go('s-home');},600);
 }
 
-// ── home ──
+// ── Home ──
 function loadHome(user){
-  const init=(user.name||'מ')[0].toUpperCase();
   document.getElementById('hn').textContent=user.name+' 👋';
-  document.getElementById('hav').textContent=init;
-  // stats
+  document.getElementById('hav').textContent=(user.name||'מ')[0].toUpperCase();
   db.ref('users/'+user.id+'/stats').on('value',snap=>{
     const s=snap.val()||{};
     document.getElementById('ss').textContent=s.sessions||0;
@@ -551,10 +781,307 @@ function loadHome(user){
   });
 }
 
-function doLogout(){
-  clearUser();
-  toast('יצאת בהצלחה','ok');
-  setTimeout(()=>go('s-welcome'),800);
+function doLogout(){clearUser();toast('יצאת בהצלחה','ok');setTimeout(()=>go('s-welcome'),800);}
+
+// ── SCAN ──
+let _img=null,_mime=null;
+
+function handleImg(input){
+  const file=input.files[0];if(!file)return;
+  _mime=file.type;
+  const r=new FileReader();
+  r.onload=e=>{
+    _img=e.target.result;
+    const frame=document.getElementById('cam-frame');
+    frame.innerHTML=`<img src="${_img}" alt="קבלה"/><div class="cam-ov"><div style="font-size:40px">✅</div><div style="font-size:15px;font-weight:600;margin-top:8px">תמונה נטענה!</div></div>`;
+    document.getElementById('scan-btn').disabled=false;
+  };
+  r.readAsDataURL(file);
+}
+
+async function startScan(){
+  if(!_img)return;
+  go('s-load');
+  await runSteps(async()=>{
+    try{
+      const b64=_img.split(',')[1];
+      const res=await fetch('/api/scan-bill',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({image:b64,mimeType:_mime})
+      });
+      const data=await res.json();
+      _items=data.items&&data.items.length?data.items:demoItems();
+      if(!data.items||!data.items.length)toast('לא נמצאו פריטים — טוען דמו','ok');
+    }catch(e){toast('שגיאה — טוען דמו','err');_items=demoItems();}
+    await createSession();renderItems();go('s-sess');
+  });
+}
+
+function loadDemo(){
+  _items=demoItems();go('s-load');
+  runSteps(async()=>{await createSession();renderItems();go('s-sess');});
+}
+
+function demoItems(){
+  return[
+    {name:'המבורגר 440 גרם',price:89},
+    {name:'המבורגר 220 גרם',price:62},
+    {name:'המבורגר 220 גרם',price:62},
+    {name:"צ'יפס קטן",price:28},
+    {name:"צ'יפס גדול",price:38},
+    {name:'קולה זירו',price:18},
+    {name:'לימונדה',price:22},
+  ];
+}
+
+function runSteps(cb){
+  const ids=['st1','st2','st3','st4'];
+  ids.forEach(id=>document.getElementById(id).className='step');
+  let i=0;
+  return new Promise(res=>{
+    const go=()=>{
+      if(i>0)document.getElementById(ids[i-1]).className='step done';
+      if(i<ids.length){
+        document.getElementById(ids[i]).className='step act';i++;
+        setTimeout(i<ids.length?go:()=>{go();setTimeout(async()=>{await cb();res();},300);},650);
+      }
+    };
+    go();
+  });
+}
+
+// ── SESSION ──
+let _items=[],_picks={},_sessionId=null,_code=null,_tipMode='no';
+const MY_ID='u_'+Math.random().toString(36).substr(2,6);
+const COLORS=['#C6F135','#3DD9D9','#FF8C00','#FF4757'];
+
+function genCode(){return Math.floor(100000+Math.random()*900000).toString();}
+function fmtCode(c){return c?c.slice(0,3)+' '+c.slice(3):'--- ---';}
+
+async function createSession(){
+  _sessionId='sess_'+Date.now();
+  _code=genCode();
+  const oneWeek=7*24*60*60*1000;
+  const user=getUser();
+  const data={
+    id:_sessionId,code:_code,created:Date.now(),expiresAt:Date.now()+oneWeek,
+    closed:false,items:_items,selections:{},
+    users:{[MY_ID]:{name:user?user.name:'יוזם',isHost:true,joined:Date.now()}}
+  };
+  try{
+    await db.ref('sessions/'+_sessionId).set(data);
+    await db.ref('codes/'+_code).set({sessionId:_sessionId,expiresAt:Date.now()+oneWeek,closed:false});
+    listenSession();
+  }catch(e){console.warn('Firebase:',e.message);}
+  document.getElementById('sess-code').textContent=fmtCode(_code);
+}
+
+function listenSession(){
+  db.ref('sessions/'+_sessionId).on('value',snap=>{
+    const d=snap.val();if(!d)return;
+    const users=Object.values(d.users||{});
+    document.getElementById('live-txt').textContent=users.length+' מחובר'+(users.length>1?'ים':'');
+  });
+}
+
+async function closeSession(){
+  if(!confirm('לסגור את החשבון? החברים לא יוכלו להצטרף יותר.'))return;
+  try{
+    await db.ref('sessions/'+_sessionId+'/closed').set(true);
+    await db.ref('codes/'+_code+'/closed').set(true);
+    toast('החשבון נסגר','ok');
+  }catch(e){toast('שגיאה בסגירה','err');}
+}
+
+function shareCode(){
+  const txt=`הצטרף לחשבון ב-clerq!\nקוד: ${fmtCode(_code)}\nפתח את האפליקציה ← הצטרף לחשבון`;
+  if(navigator.share)navigator.share({title:'clerq — קוד חשבון',text:txt});
+  else{navigator.clipboard?.writeText(txt);toast('קוד הועתק! 📋','ok');}
+}
+
+function renderItems(){
+  _picks={};
+  const list=document.getElementById('items-list');list.innerHTML='';
+  _items.forEach((item,idx)=>{
+    const card=document.createElement('div');
+    card.className='icard';card.dataset.idx=idx;card.style.animationDelay=(idx*35)+'ms';
+    card.innerHTML=`
+      <div class="irow" onclick="toggleItem(${idx})">
+        <div class="ichk" id="chk${idx}"></div>
+        <div style="flex:1"><div class="iname">${esc(item.name)}</div><div class="isub" id="sub${idx}"></div></div>
+        <div class="iprc" id="prc${idx}">${fmt(item.price)}</div>
+      </div>
+      <div class="spanel" id="sp${idx}">
+        <div class="splbl">כמה אנשים מתחלקים?</div>
+        <div class="srow">
+          <span>מתחלקים:</span>
+          <div class="ctr">
+            <button class="cb" onclick="chgSplit(${idx},-1,event)">−</button>
+            <span class="cv" id="sv${idx}">1</span>
+            <button class="cb" onclick="chgSplit(${idx},1,event)">+</button>
+          </div>
+          <span id="sd${idx}">רק אני</span>
+        </div>
+      </div>`;
+    list.appendChild(card);
+  });
+  document.getElementById('item-cnt').textContent=_items.length+' פריטים';
+  updateSub();
+}
+
+function toggleItem(idx){
+  const card=document.querySelector('[data-idx="'+idx+'"]');
+  if(idx in _picks){
+    delete _picks[idx];card.classList.remove('sel');
+    document.getElementById('chk'+idx).textContent='';
+    document.getElementById('sp'+idx).classList.remove('open');
+    document.getElementById('prc'+idx).textContent=fmt(_items[idx].price);
+    document.getElementById('sub'+idx).textContent='';
+  }else{
+    _picks[idx]=1;card.classList.add('sel');
+    document.getElementById('chk'+idx).textContent='✓';
+    document.getElementById('sp'+idx).classList.add('open');
+  }
+  updateSub();syncPicks();
+}
+
+function chgSplit(idx,d,e){
+  e.stopPropagation();if(!(idx in _picks))return;
+  _picks[idx]=Math.max(1,Math.min(10,_picks[idx]+d));
+  const n=_picks[idx];
+  document.getElementById('sv'+idx).textContent=n;
+  document.getElementById('sd'+idx).textContent=n===1?'רק אני':n+' אנשים';
+  document.getElementById('prc'+idx).textContent=fmt(_items[idx].price/n)+' לאחד';
+  document.getElementById('sub'+idx).textContent=n>1?'÷'+n+' אנשים':'';
+  updateSub();syncPicks();
+}
+
+function getSub(){return Object.entries(_picks).reduce((s,[i,n])=>s+_items[+i].price/n,0);}
+function updateSub(){document.getElementById('my-sub').textContent=fmt(getSub());}
+
+function syncPicks(){
+  if(!_sessionId)return;
+  const upd={};upd['sessions/'+_sessionId+'/selections/'+MY_ID]=_picks;
+  db.ref().update(upd).catch(()=>{});
+}
+
+// ── SUMMARY ──
+function goSummary(){
+  if(!Object.keys(_picks).length){toast('בחר לפחות מנה אחת','err');return;}
+  buildSummary();go('s-sum');
+}
+
+function buildSummary(){
+  const list=document.getElementById('sum-list');list.innerHTML='';
+  Object.entries(_picks).forEach(([i,n],idx)=>{
+    const item=_items[+i],share=item.price/n;
+    const row=document.createElement('div');row.className='sumi';
+    row.innerHTML=`<div style="flex:1"><div class="sumi-name">${esc(item.name)}</div>${n>1?'<div class="sumi-note">÷'+n+' אנשים</div>':''}</div><div class="sumi-price">${fmt(share)}</div>`;
+    list.appendChild(row);
+  });
+  calcTotals();
+}
+
+function setTipMode(mode){
+  _tipMode=mode;
+  document.querySelectorAll('.tm').forEach(b=>b.classList.remove('on'));
+  document.getElementById('tm-'+mode).classList.add('on');
+  const wrap=document.getElementById('tip-inp-wrap');
+  const num=document.getElementById('tip-num');
+  if(mode==='no'){wrap.style.display='none';num.value='';}
+  else{
+    wrap.style.display='block';
+    document.getElementById('tip-unit').textContent=mode==='pct'?'%':'₪';
+    num.placeholder=mode==='pct'?'12':'10';num.focus();
+  }
+  calcTotals();
+}
+
+function getTip(sub){
+  if(_tipMode==='no')return 0;
+  const v=parseFloat(document.getElementById('tip-num').value)||0;
+  return _tipMode==='pct'?sub*(v/100):v;
+}
+
+function calcTotals(){
+  const sub=getSub(),tip=getTip(sub),tot=sub+tip;
+  const lbl=_tipMode==='no'?'ללא טיפ':_tipMode==='pct'?'טיפ '+( document.getElementById('tip-num').value||0)+'%':'טיפ ₪'+(document.getElementById('tip-num').value||0);
+  if(_tipMode!=='no'){
+    const v=parseFloat(document.getElementById('tip-num').value)||0;
+    document.getElementById('tip-prev').textContent=v>0?'טיפ: '+fmt(tip):'הכנס סכום';
+  }
+  document.getElementById('t-sub').textContent=fmt(sub);
+  document.getElementById('t-tip-lbl').textContent=lbl;
+  document.getElementById('t-tip').textContent=fmt(tip);
+  document.getElementById('t-tot').textContent=fmt(tot);
+  document.getElementById('hero-amt').textContent='₪'+Math.round(tot);
+  document.getElementById('hero-sub').textContent=lbl;
+}
+
+function payBit(){
+  const tot=getSub()+getTip(getSub());
+  toast('פותח ביט עם סכום ₪'+tot.toFixed(2),'ok');
+  setTimeout(()=>{window.open('https://bit.digital/pay','_blank');},500);
+}
+
+function payPaybox(){
+  const tot=getSub()+getTip(getSub());
+  const url='https://www.payboxapp.com/pay?amount='+tot.toFixed(2);
+  toast('פותח פייבוקס...','ok');
+  setTimeout(()=>{window.open(url,'_blank');},500);
+}
+
+// ── JOIN ──
+let _foundSession=null;
+
+async function lookupCode(code){
+  try{
+    const snap=await db.ref('codes/'+code).once('value');
+    if(!snap.exists()){document.getElementById('jerr').textContent='קוד לא קיים';return;}
+    const cd=snap.val();
+    if(Date.now()>cd.expiresAt){document.getElementById('jerr').textContent='הקוד פג תוקף';return;}
+    if(cd.closed){document.getElementById('jerr').textContent='החשבון נסגר';return;}
+    const ssnap=await db.ref('sessions/'+cd.sessionId).once('value');
+    if(!ssnap.exists()){document.getElementById('jerr').textContent='החשבון לא נמצא';return;}
+    _foundSession={...ssnap.val(),sessionId:cd.sessionId};
+    const users=Object.values(_foundSession.users||{});
+    const host=users.find(u=>u.isHost);
+    document.getElementById('prev-title').textContent='חשבון של '+(host?.name||'יוזם');
+    document.getElementById('prev-sub').textContent=(_foundSession.items?.length||0)+' פריטים · '+users.length+' משתתפים';
+    document.getElementById('prev-box').classList.add('show');
+    document.getElementById('join-btn').disabled=false;
+  }catch(e){document.getElementById('jerr').textContent='שגיאה — נסה שוב';}
+}
+
+async function doJoin(){
+  if(!_foundSession)return;
+  const user=getUser();
+  const code=[0,1,2,3,4,5].map(i=>document.getElementById('j'+i).value).join('');
+  try{
+    const upd={};
+    upd['sessions/'+_foundSession.sessionId+'/users/'+MY_ID]={name:user?user.name:'חבר',isHost:false,joined:Date.now()};
+    await db.ref().update(upd);
+    _items=_foundSession.items||[];
+    _sessionId=_foundSession.sessionId;_code=code;
+    renderItems();
+    document.getElementById('sess-code').textContent=fmtCode(code);
+    toast('ברוך הבא לחשבון!','ok');
+    go('s-sess');
+  }catch(e){toast('שגיאה — נסה שוב','err');}
+}
+
+function resetAll(){
+  _items=[];_picks={};_sessionId=null;_code=null;_img=null;_tipMode='no';
+  const frame=document.getElementById('cam-frame');
+  if(frame)frame.innerHTML=`<div style="text-align:center"><div class="cam-ico">📷</div><div class="cam-txt">לחץ לצילום או העלאה</div><div class="cam-sub">פתח מצלמה או גלריה</div></div>`;
+  const scanBtn=document.getElementById('scan-btn');
+  if(scanBtn)scanBtn.disabled=true;
+  const camIn=document.getElementById('cam-input');
+  if(camIn)camIn.value='';
+  [0,1,2,3,4,5].forEach(i=>{const e=document.getElementById('j'+i);if(e){e.value='';e.classList.remove('f');}});
+  document.getElementById('prev-box').classList.remove('show');
+  document.getElementById('join-btn').disabled=true;
+  _foundSession=null;
 }
 </script>
 </body>
