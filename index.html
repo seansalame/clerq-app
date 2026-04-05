@@ -2,119 +2,89 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <meta name="theme-color" content="#0D0D14"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <title>clerq — פיצול חשבון חכם</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
-:root {
-  --bg:#0D0D14; --bg-card:#16161F; --bg-elevated:#1E1E2A; --bg-input:#12121A;
-  --border:rgba(255,255,255,0.07); --border-focus:rgba(198,241,53,0.4);
-  --text:#F0F0F8; --text-muted:#8A8AA8; --text-faint:#3A3A5A;
-  --green:#C6F135; --green-bg:rgba(198,241,53,0.08); --green-border:rgba(198,241,53,0.2);
-  --green-glow:rgba(198,241,53,0.15); --red:#FF4757;
-  --radius:14px; --radius-lg:20px; --radius-full:9999px;
-}
+:root{--bg:#0D0D14;--card:#16161F;--elevated:#1E1E2A;--inp:#12121A;--brd:rgba(255,255,255,.07);--brd-f:rgba(198,241,53,.4);--txt:#F0F0F8;--muted:#8A8AA8;--faint:#3A3A5A;--grn:#C6F135;--grn-bg:rgba(198,241,53,.08);--grn-brd:rgba(198,241,53,.2);--grn-glow:rgba(198,241,53,.15);--red:#FF4757;}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-body{font-family:'Rubik',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;direction:rtl;overflow-x:hidden;}
+body{font-family:'Rubik',-apple-system,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;-webkit-font-smoothing:antialiased;direction:rtl;overflow-x:hidden;}
 .app{max-width:430px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;}
-
-/* SPLASH */
 #splash{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:999;transition:opacity .4s ease;}
 #splash.hide{opacity:0;pointer-events:none;}
-.splash-wrap{position:relative;width:90px;height:90px;}
-.splash-ring{position:absolute;inset:-14px;border-radius:50%;border:1.5px solid var(--green-border);animation:ring 2.5s ease-in-out infinite;}
+.s-wrap{position:relative;width:90px;height:90px;}
+.s-ring{position:absolute;inset:-14px;border-radius:50%;border:1.5px solid var(--grn-brd);animation:ring 2.5s ease-in-out infinite;}
 @keyframes ring{0%,100%{transform:scale(1);opacity:.3}50%{transform:scale(1.1);opacity:.7}}
-.splash-icon{width:90px;height:90px;}
-.splash-name{font-size:32px;font-weight:700;letter-spacing:-1.5px;}
-.splash-name .g{color:var(--green);}
-.splash-tag{font-size:12px;color:var(--text-faint);letter-spacing:3px;text-transform:uppercase;}
-
-/* SCREENS */
-.screen{display:none;flex:1;flex-direction:column;animation:fadein .25s ease;}
+.s-icon{width:90px;height:90px;}
+.s-name{font-size:32px;font-weight:700;letter-spacing:-1.5px;}
+.s-name .g{color:var(--grn);}
+.s-tag{font-size:12px;color:var(--faint);letter-spacing:3px;text-transform:uppercase;}
+.screen{display:none;flex:1;flex-direction:column;animation:fin .25s ease;}
 .screen.active{display:flex;}
-@keyframes fadein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-
-/* WELCOME */
-.w-page{flex:1;display:flex;flex-direction:column;padding:40px 24px max(40px,env(safe-area-inset-bottom));position:relative;overflow:hidden;}
+@keyframes fin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.wp{flex:1;display:flex;flex-direction:column;padding:40px 24px max(40px,env(safe-area-inset-bottom));position:relative;overflow:hidden;}
 .orb{position:absolute;border-radius:50%;filter:blur(70px);pointer-events:none;}
-.orb1{width:300px;height:300px;top:-100px;left:-80px;background:radial-gradient(circle,rgba(198,241,53,0.1),transparent 70%);}
-.orb2{width:240px;height:240px;bottom:20%;right:-60px;background:radial-gradient(circle,rgba(61,217,217,0.06),transparent 70%);}
-.w-logo{font-size:26px;font-weight:700;letter-spacing:-1px;margin-bottom:48px;position:relative;z-index:1;}
-.w-logo .g{color:var(--green);}
-.w-hero{flex:1;display:flex;flex-direction:column;justify-content:center;gap:20px;position:relative;z-index:1;}
-.w-badge{display:inline-flex;align-items:center;background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--radius-full);padding:5px 14px;font-size:12px;font-weight:600;color:var(--green);width:fit-content;}
-.w-title{font-size:clamp(32px,9vw,42px);font-weight:700;letter-spacing:-2px;line-height:1.1;}
-.w-title em{font-style:normal;color:var(--green);}
-.w-sub{font-size:16px;color:var(--text-muted);line-height:1.65;}
-.features{display:flex;flex-direction:column;gap:12px;}
-.feature{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--text-muted);}
-.feature-dot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;}
-.w-cta{display:flex;flex-direction:column;gap:12px;margin-top:40px;position:relative;z-index:1;}
-
-/* AUTH */
-.a-page{flex:1;display:flex;flex-direction:column;padding:0 24px max(40px,env(safe-area-inset-bottom));}
-.a-header{display:flex;align-items:center;gap:16px;padding:20px 0 32px;}
-.back-btn{width:44px;height:44px;border-radius:50%;background:var(--bg-card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:var(--text);font-family:inherit;transition:background .15s;}
-.back-btn:hover{background:var(--bg-elevated);}
-.a-logo{font-size:22px;font-weight:700;letter-spacing:-1px;}
-.a-logo .g{color:var(--green);}
-.a-form{flex:1;display:flex;flex-direction:column;gap:20px;}
-.a-title{font-size:26px;font-weight:700;letter-spacing:-0.5px;}
-.a-sub{font-size:14px;color:var(--text-muted);margin-top:6px;line-height:1.5;}
-
-/* FORM */
+.o1{width:300px;height:300px;top:-100px;left:-80px;background:radial-gradient(circle,rgba(198,241,53,.1),transparent 70%);}
+.o2{width:240px;height:240px;bottom:20%;right:-60px;background:radial-gradient(circle,rgba(61,217,217,.06),transparent 70%);}
+.wl{font-size:26px;font-weight:700;letter-spacing:-1px;margin-bottom:48px;position:relative;z-index:1;}
+.wl .g{color:var(--grn);}
+.wh{flex:1;display:flex;flex-direction:column;justify-content:center;gap:20px;position:relative;z-index:1;}
+.wbdg{display:inline-flex;align-items:center;background:var(--grn-bg);border:1px solid var(--grn-brd);border-radius:9999px;padding:5px 14px;font-size:12px;font-weight:600;color:var(--grn);width:fit-content;}
+.wt{font-size:clamp(32px,9vw,42px);font-weight:700;letter-spacing:-2px;line-height:1.1;}
+.wt em{font-style:normal;color:var(--grn);}
+.ws{font-size:16px;color:var(--muted);line-height:1.65;}
+.fts{display:flex;flex-direction:column;gap:12px;}
+.ft{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--muted);}
+.fd{width:6px;height:6px;border-radius:50%;background:var(--grn);flex-shrink:0;}
+.wcta{display:flex;flex-direction:column;gap:12px;margin-top:40px;position:relative;z-index:1;}
+.ap{flex:1;display:flex;flex-direction:column;padding:0 24px max(40px,env(safe-area-inset-bottom));}
+.ah{display:flex;align-items:center;gap:16px;padding:20px 0 32px;}
+.bk{width:44px;height:44px;border-radius:50%;background:var(--card);border:1px solid var(--brd);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:var(--txt);font-family:inherit;transition:background .15s;}
+.bk:hover{background:var(--elevated);}
+.al{font-size:22px;font-weight:700;letter-spacing:-1px;}
+.al .g{color:var(--grn);}
+.af{flex:1;display:flex;flex-direction:column;gap:20px;}
+.at{font-size:26px;font-weight:700;letter-spacing:-.5px;}
+.as{font-size:14px;color:var(--muted);margin-top:6px;line-height:1.5;}
 .fg{display:flex;flex-direction:column;gap:8px;}
-.flbl{font-size:13px;font-weight:500;color:var(--text-muted);}
-.ferr{font-size:12px;color:var(--red);min-height:16px;}
-.input{width:100%;min-height:50px;padding:0 16px;background:var(--bg-input);border:1.5px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:16px;font-family:inherit;outline:none;transition:border-color .15s,box-shadow .15s;}
-.input::placeholder{color:var(--text-faint);}
-.input:focus{border-color:var(--border-focus);box-shadow:0 0 0 4px var(--green-glow);}
-.phone-wrap{display:flex;gap:10px;}
-.phone-pre{min-height:50px;padding:0 16px;background:var(--bg-elevated);border:1.5px solid var(--border);border-radius:var(--radius);color:var(--text-muted);font-size:16px;display:flex;align-items:center;white-space:nowrap;flex-shrink:0;}
-
-/* BUTTONS */
-.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:0 24px;border:none;border-radius:var(--radius);font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;transition:all .18s ease;width:100%;}
-.btn:active{transform:scale(0.97);}
-.btn-p{background:var(--green);color:#0D0D14;box-shadow:0 0 32px rgba(198,241,53,0.2);}
-.btn-p:hover{background:#D4FF47;}
-.btn-p:disabled{opacity:.4;cursor:not-allowed;transform:none;}
-.btn-g{background:transparent;color:var(--text-muted);border:1px solid var(--border);}
-.btn-g:hover{color:var(--text);}
-
-/* DEMO NOTE */
-.demo-note{background:rgba(255,165,0,0.08);border:1px solid rgba(255,165,0,0.2);border-radius:10px;padding:12px 16px;font-size:12px;color:#FFA502;text-align:center;line-height:1.5;}
-
-/* OTP */
-.otp-wrap{display:flex;gap:10px;justify-content:center;direction:ltr;margin:8px 0;}
-.otp-d{width:52px;height:64px;border-radius:14px;border:1.5px solid var(--border);background:var(--bg-input);color:var(--text);font-size:26px;font-weight:700;text-align:center;font-family:inherit;outline:none;caret-color:var(--green);transition:border-color .15s,box-shadow .15s;}
-.otp-d:focus{border-color:var(--border-focus);box-shadow:0 0 0 3px var(--green-glow);}
-.otp-d.filled{border-color:rgba(198,241,53,0.3);}
-.otp-sep{font-size:22px;color:var(--text-faint);display:flex;align-items:center;padding-bottom:4px;}
-.resend-wrap{text-align:center;font-size:14px;color:var(--text-muted);}
-.resend-btn{color:var(--green);background:none;border:none;font-family:inherit;font-size:14px;cursor:pointer;padding:0;}
-.resend-btn:disabled{color:var(--text-faint);cursor:default;}
-
-/* TOAST */
-.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg-elevated);color:var(--text);padding:12px 24px;border-radius:var(--radius-full);font-size:14px;font-weight:500;border:1px solid var(--border);box-shadow:0 8px 32px rgba(0,0,0,.5);z-index:9999;pointer-events:none;transition:transform .3s ease;white-space:nowrap;}
+.fl{font-size:13px;font-weight:500;color:var(--muted);}
+.fe{font-size:12px;color:var(--red);min-height:16px;}
+.inp{width:100%;min-height:50px;padding:0 16px;background:var(--inp);border:1.5px solid var(--brd);border-radius:14px;color:var(--txt);font-size:16px;font-family:inherit;outline:none;transition:border-color .15s,box-shadow .15s;}
+.inp::placeholder{color:var(--faint);}
+.inp:focus{border-color:var(--brd-f);box-shadow:0 0 0 4px var(--grn-glow);}
+.pw{display:flex;gap:10px;}
+.pp{min-height:50px;padding:0 16px;background:var(--elevated);border:1.5px solid var(--brd);border-radius:14px;color:var(--muted);font-size:16px;display:flex;align-items:center;white-space:nowrap;flex-shrink:0;}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:0 24px;border:none;border-radius:14px;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;transition:all .18s ease;width:100%;}
+.btn:active{transform:scale(.97);}
+.btnp{background:var(--grn);color:#0D0D14;box-shadow:0 0 32px rgba(198,241,53,.2);}
+.btnp:hover{background:#D4FF47;}
+.btng{background:transparent;color:var(--muted);border:1px solid var(--brd);}
+.btng:hover{color:var(--txt);}
+.dn{background:rgba(255,165,0,.08);border:1px solid rgba(255,165,0,.2);border-radius:10px;padding:12px 16px;font-size:12px;color:#FFA502;text-align:center;line-height:1.5;}
+.ow{display:flex;gap:10px;justify-content:center;direction:ltr;margin:8px 0;}
+.od{width:52px;height:64px;border-radius:14px;border:1.5px solid var(--brd);background:var(--inp);color:var(--txt);font-size:26px;font-weight:700;text-align:center;font-family:inherit;outline:none;caret-color:var(--grn);transition:border-color .15s,box-shadow .15s;}
+.od:focus{border-color:var(--brd-f);box-shadow:0 0 0 3px var(--grn-glow);}
+.od.f{border-color:rgba(198,241,53,.3);}
+.os{font-size:22px;color:var(--faint);display:flex;align-items:center;padding-bottom:4px;}
+.rw{text-align:center;font-size:14px;color:var(--muted);}
+.rb{color:var(--grn);background:none;border:none;font-family:inherit;font-size:14px;cursor:pointer;padding:0;}
+.rb:disabled{color:var(--faint);cursor:default;}
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--elevated);color:var(--txt);padding:12px 24px;border-radius:9999px;font-size:14px;font-weight:500;border:1px solid var(--brd);box-shadow:0 8px 32px rgba(0,0,0,.5);z-index:9999;pointer-events:none;transition:transform .3s ease;white-space:nowrap;}
 .toast.show{transform:translateX(-50%) translateY(0);}
-.toast.success{border-color:rgba(198,241,53,0.3);color:var(--green);}
-.toast.error{border-color:rgba(255,71,87,0.3);color:var(--red);}
-
-.spacer{flex:1;}
+.toast.ok{border-color:rgba(198,241,53,.3);color:var(--grn);}
+.toast.err{border-color:rgba(255,71,87,.3);color:var(--red);}
+.sp{flex:1;}
 </style>
 </head>
 <body>
 
-<!-- SPLASH -->
 <div id="splash">
-  <div class="splash-wrap">
-    <div class="splash-ring"></div>
-    <svg class="splash-icon" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <div class="s-wrap">
+    <div class="s-ring"></div>
+    <svg class="s-icon" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
       <rect width="120" height="120" rx="28" fill="#1A1A2E"/>
       <rect x="28" y="20" width="52" height="66" rx="7" fill="none" stroke="#C6F135" stroke-width="1.5" opacity="0.6"/>
       <rect x="36" y="34" width="28" height="3.5" rx="1.75" fill="#C6F135"/>
@@ -123,129 +93,103 @@ body{font-family:'Rubik',-apple-system,sans-serif;background:var(--bg);color:var
       <rect x="36" y="58" width="16" height="2.5" rx="1.25" fill="#fff" opacity=".18"/>
       <circle cx="82" cy="88" r="22" fill="#1A1A2E"/>
       <circle cx="82" cy="88" r="18" fill="#C6F135"/>
-      <path d="M73 88 L79 95 L92 78" stroke="#111" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <path d="M73 88L79 95L92 78" stroke="#111" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
     </svg>
   </div>
-  <div class="splash-name">cler<span class="g">q</span></div>
-  <div class="splash-tag">split smarter</div>
+  <div class="s-name">cler<span class="g">q</span></div>
+  <div class="s-tag">split smarter</div>
 </div>
 
-<!-- APP -->
 <div class="app" id="app" style="display:none">
 
-  <!-- WELCOME -->
   <div class="screen active" id="s-welcome">
-    <div class="w-page">
-      <div class="orb orb1"></div>
-      <div class="orb orb2"></div>
-      <div class="w-logo">cler<span class="g">q</span></div>
-      <div class="w-hero">
-        <div class="w-badge">חדש בישראל 🇮🇱</div>
-        <div class="w-title">פיצול חשבון<br/><em>תוך 20 שניות</em></div>
-        <div class="w-sub">צלם את הקבלה, שתף קוד עם החברים — כל אחד בוחר מה שלו ומשלם בביט.</div>
-        <div class="features">
-          <div class="feature"><div class="feature-dot"></div>AI קורא את הקבלה תוך שניות</div>
-          <div class="feature"><div class="feature-dot"></div>כולם בוחרים בזמן אמת</div>
-          <div class="feature"><div class="feature-dot"></div>תשלום ישיר בביט ופייבוקס</div>
+    <div class="wp">
+      <div class="orb o1"></div><div class="orb o2"></div>
+      <div class="wl">cler<span class="g">q</span></div>
+      <div class="wh">
+        <div class="wbdg">חדש בישראל 🇮🇱</div>
+        <div class="wt">פיצול חשבון<br/><em>תוך 20 שניות</em></div>
+        <div class="ws">צלם את הקבלה, שתף קוד עם החברים — כל אחד בוחר מה שלו ומשלם בביט.</div>
+        <div class="fts">
+          <div class="ft"><div class="fd"></div>AI קורא את הקבלה תוך שניות</div>
+          <div class="ft"><div class="fd"></div>כולם בוחרים בזמן אמת</div>
+          <div class="ft"><div class="fd"></div>תשלום ישיר בביט ופייבוקס</div>
         </div>
       </div>
-      <div class="w-cta">
-        <button class="btn btn-p" onclick="go('s-register')">התחל עכשיו — בחינם</button>
-        <button class="btn btn-g" onclick="go('s-login')">יש לי חשבון — כניסה</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- REGISTER -->
-  <div class="screen" id="s-register">
-    <div class="a-page">
-      <div class="a-header">
-        <button class="back-btn" onclick="go('s-welcome')">←</button>
-        <div class="a-logo">cler<span class="g">q</span></div>
-      </div>
-      <div class="a-form">
-        <div>
-          <div class="a-title">יצירת חשבון</div>
-          <div class="a-sub">הרשמה מהירה — שם ומספר טלפון בלבד</div>
-        </div>
-        <div class="fg">
-          <div class="flbl">השם שלך</div>
-          <input class="input" type="text" id="reg-name" placeholder="לדוגמה: שון" maxlength="30" autocomplete="given-name"/>
-          <div class="ferr" id="reg-name-err"></div>
-        </div>
-        <div class="fg">
-          <div class="flbl">מספר טלפון</div>
-          <div class="phone-wrap">
-            <div class="phone-pre">🇮🇱 +972</div>
-            <input class="input" type="tel" id="reg-phone" placeholder="05X-XXX-XXXX" maxlength="11" inputmode="numeric"/>
-          </div>
-          <div class="ferr" id="reg-phone-err"></div>
-        </div>
-        <div class="demo-note">🔧 <strong>מצב דמו:</strong> קוד האימות הוא תמיד <strong>1 2 3 4</strong></div>
-        <div class="spacer"></div>
-        <button class="btn btn-p" onclick="doRegister()">המשך ←</button>
+      <div class="wcta">
+        <button class="btn btnp" onclick="go('s-reg')">התחל עכשיו — בחינם</button>
+        <button class="btn btng" onclick="go('s-log')">יש לי חשבון — כניסה</button>
       </div>
     </div>
   </div>
 
-  <!-- LOGIN -->
-  <div class="screen" id="s-login">
-    <div class="a-page">
-      <div class="a-header">
-        <button class="back-btn" onclick="go('s-welcome')">←</button>
-        <div class="a-logo">cler<span class="g">q</span></div>
+  <div class="screen" id="s-reg">
+    <div class="ap">
+      <div class="ah">
+        <button class="bk" onclick="go('s-welcome')">←</button>
+        <div class="al">cler<span class="g">q</span></div>
       </div>
-      <div class="a-form">
-        <div>
-          <div class="a-title">כניסה</div>
-          <div class="a-sub">הכנס את מספר הטלפון שלך</div>
+      <div class="af">
+        <div><div class="at">יצירת חשבון</div><div class="as">הרשמה מהירה — שם ומספר טלפון בלבד</div></div>
+        <div class="fg">
+          <div class="fl">השם שלך</div>
+          <input class="inp" type="text" id="rn" placeholder="לדוגמה: שון" maxlength="30" autocomplete="given-name"/>
+          <div class="fe" id="rne"></div>
         </div>
         <div class="fg">
-          <div class="flbl">מספר טלפון</div>
-          <div class="phone-wrap">
-            <div class="phone-pre">🇮🇱 +972</div>
-            <input class="input" type="tel" id="login-phone" placeholder="05X-XXX-XXXX" maxlength="11" inputmode="numeric"/>
-          </div>
-          <div class="ferr" id="login-err"></div>
+          <div class="fl">מספר טלפון</div>
+          <div class="pw"><div class="pp">🇮🇱 +972</div><input class="inp" type="tel" id="rp" placeholder="05X-XXX-XXXX" maxlength="11" inputmode="numeric"/></div>
+          <div class="fe" id="rpe"></div>
         </div>
-        <div class="demo-note">🔧 <strong>מצב דמו:</strong> קוד האימות הוא תמיד <strong>1 2 3 4</strong></div>
-        <div class="spacer"></div>
-        <button class="btn btn-p" onclick="doLogin()">המשך ←</button>
+        <div class="dn">🔧 <strong>מצב דמו:</strong> קוד האימות הוא תמיד <strong>1 2 3 4</strong></div>
+        <div class="sp"></div>
+        <button class="btn btnp" onclick="doReg()">המשך ←</button>
       </div>
     </div>
   </div>
 
-  <!-- OTP -->
+  <div class="screen" id="s-log">
+    <div class="ap">
+      <div class="ah">
+        <button class="bk" onclick="go('s-welcome')">←</button>
+        <div class="al">cler<span class="g">q</span></div>
+      </div>
+      <div class="af">
+        <div><div class="at">כניסה</div><div class="as">הכנס את מספר הטלפון שלך</div></div>
+        <div class="fg">
+          <div class="fl">מספר טלפון</div>
+          <div class="pw"><div class="pp">🇮🇱 +972</div><input class="inp" type="tel" id="lp" placeholder="05X-XXX-XXXX" maxlength="11" inputmode="numeric"/></div>
+          <div class="fe" id="le"></div>
+        </div>
+        <div class="dn">🔧 <strong>מצב דמו:</strong> קוד האימות הוא תמיד <strong>1 2 3 4</strong></div>
+        <div class="sp"></div>
+        <button class="btn btnp" onclick="doLog()">המשך ←</button>
+      </div>
+    </div>
+  </div>
+
   <div class="screen" id="s-otp">
-    <div class="a-page">
-      <div class="a-header">
-        <button class="back-btn" onclick="backOTP()">←</button>
-        <div class="a-logo">cler<span class="g">q</span></div>
+    <div class="ap">
+      <div class="ah">
+        <button class="bk" onclick="backOTP()">←</button>
+        <div class="al">cler<span class="g">q</span></div>
       </div>
-      <div class="a-form">
-        <div>
-          <div class="a-title">אימות טלפון</div>
-          <div class="a-sub" id="otp-sub">שלחנו קוד SMS למספר שלך</div>
-        </div>
+      <div class="af">
+        <div><div class="at">אימות טלפון</div><div class="as" id="osub">שלחנו קוד SMS</div></div>
         <div class="fg">
-          <div class="flbl" style="text-align:center">הכנס את הקוד</div>
-          <div class="otp-wrap">
-            <input class="otp-d" type="tel" id="o0" maxlength="1" inputmode="numeric"/>
-            <input class="otp-d" type="tel" id="o1" maxlength="1" inputmode="numeric"/>
-            <div class="otp-sep">·</div>
-            <input class="otp-d" type="tel" id="o2" maxlength="1" inputmode="numeric"/>
-            <input class="otp-d" type="tel" id="o3" maxlength="1" inputmode="numeric"/>
+          <div class="fl" style="text-align:center">הכנס את הקוד</div>
+          <div class="ow">
+            <input class="od" type="tel" id="o0" maxlength="1" inputmode="numeric"/>
+            <input class="od" type="tel" id="o1" maxlength="1" inputmode="numeric"/>
+            <div class="os">·</div>
+            <input class="od" type="tel" id="o2" maxlength="1" inputmode="numeric"/>
+            <input class="od" type="tel" id="o3" maxlength="1" inputmode="numeric"/>
           </div>
-          <div class="ferr" id="otp-err" style="text-align:center"></div>
+          <div class="fe" id="oe" style="text-align:center"></div>
         </div>
-        <div class="resend-wrap">
-          לא קיבלת?
-          <button class="resend-btn" id="resend-btn" onclick="resendCode()" disabled>
-            שלח שוב (<span id="resend-cd">30</span>)
-          </button>
-        </div>
-        <div class="spacer"></div>
-        <button class="btn btn-p" id="otp-btn" onclick="doOTP()">אמת וכנס ✓</button>
+        <div class="rw">לא קיבלת? <button class="rb" id="rb" onclick="resend()" disabled>שלח שוב (<span id="rcd">30</span>)</button></div>
+        <div class="sp"></div>
+        <button class="btn btnp" onclick="doOTP()">אמת וכנס ✓</button>
       </div>
     </div>
   </div>
@@ -254,227 +198,155 @@ body{font-family:'Rubik',-apple-system,sans-serif;background:var(--bg);color:var
 
 <div class="toast" id="toast"></div>
 
-<!-- Firebase as regular scripts (not modules) to avoid scope issues -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-
 <script>
-// ── Firebase Init ──
-const firebaseConfig = {
-  apiKey:            "AIzaSyBWYEntIaNdQio86BGVREmBAAqUo0F6sIw",
-  authDomain:        "clerq-1145a.firebaseapp.com",
-  databaseURL:       "https://clerq-1145a-default-rtdb.firebaseio.com",
-  projectId:         "clerq-1145a",
-  storageBucket:     "clerq-1145a.firebasestorage.app",
-  messagingSenderId: "426819964309",
-  appId:             "1:426819964309:web:adf96da249d35d5d823a9c"
-};
-
-firebase.initializeApp(firebaseConfig);
+firebase.initializeApp({
+  apiKey:"AIzaSyBWYEntIaNdQio86BGVREmBAAqUo0F6sIw",
+  authDomain:"clerq-1145a.firebaseapp.com",
+  databaseURL:"https://clerq-1145a-default-rtdb.firebaseio.com",
+  projectId:"clerq-1145a",
+  storageBucket:"clerq-1145a.firebasestorage.app",
+  messagingSenderId:"426819964309",
+  appId:"1:426819964309:web:adf96da249d35d5d823a9c"
+});
 const db = firebase.database();
 
-// ── State ──
-let _pending  = {};
-let _otpCode  = '1234'; // Demo mode
-let _resendTm = null;
+// ── helpers ──
+function getUser(){try{return JSON.parse(localStorage.getItem('clerq_u'));}catch{return null;}}
+function saveUser(u){localStorage.setItem('clerq_u',JSON.stringify(u));}
 
-// ── Screen Nav ──
-function go(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+// ── compute home path dynamically ──
+function homePath(){
+  const p = window.location.pathname; // e.g. /clerq-app/ or /clerq-app/index.html
+  const base = p.substring(0, p.lastIndexOf('/')+1); // e.g. /clerq-app/
+  return base + 'home.html';
+}
+
+let _tm; 
+function toast(m,t){
+  const el=document.getElementById('toast');
+  el.textContent=m; el.className='toast show'+(t?' '+t:'');
+  clearTimeout(_tm); _tm=setTimeout(()=>el.classList.remove('show'),3000);
+}
+
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  window.scrollTo(0, 0);
+  window.scrollTo(0,0);
 }
 
-// ── Toast ──
-let _toastTm;
-function toast(msg, type) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = 'toast show' + (type ? ' ' + type : '');
-  clearTimeout(_toastTm);
-  _toastTm = setTimeout(() => el.classList.remove('show'), 3000);
-}
-
-// ── Storage ──
-function saveUser(u)  { localStorage.setItem('clerq_user', JSON.stringify(u)); }
-function getUser()    { try { return JSON.parse(localStorage.getItem('clerq_user')); } catch { return null; } }
-
-// ── Splash ──
-window.addEventListener('load', () => {
-  const user = getUser();
-  setTimeout(() => {
+// ── init ──
+window.addEventListener('load',()=>{
+  const u=getUser();
+  setTimeout(()=>{
     document.getElementById('splash').classList.add('hide');
-    document.getElementById('app').style.display = 'flex';
-    if (user) {
-      // Already logged in — go to home
-      window.location.href = './home.html';
-    }
-  }, 1600);
+    document.getElementById('app').style.display='flex';
+    if(u){ window.location.href=homePath(); }
+  },1600);
 });
 
-// ── Register ──
-function doRegister() {
-  const name  = document.getElementById('reg-name').value.trim();
-  const phone = document.getElementById('reg-phone').value.replace(/\D/g,'');
+// ── state ──
+let _p={}, _rtm=null;
 
-  document.getElementById('reg-name-err').textContent  = '';
-  document.getElementById('reg-phone-err').textContent = '';
+function doReg(){
+  const name=document.getElementById('rn').value.trim();
+  const phone=document.getElementById('rp').value.replace(/\D/g,'');
+  document.getElementById('rne').textContent='';
+  document.getElementById('rpe').textContent='';
+  if(!name||name.length<2){document.getElementById('rne').textContent='הכנס שם תקין';return;}
+  if(!phone||phone.length<9||!phone.startsWith('05')){document.getElementById('rpe').textContent='מספר לא תקין (05X...)';return;}
+  _p={name,phone,isNew:true};
+  startOTP();
+}
 
-  if (!name || name.length < 2) {
-    document.getElementById('reg-name-err').textContent = 'הכנס שם תקין';
-    document.getElementById('reg-name').focus();
-    return;
-  }
-  if (!phone || phone.length < 9 || !phone.startsWith('05')) {
-    document.getElementById('reg-phone-err').textContent = 'הכנס מספר טלפון תקין (05X...)';
-    document.getElementById('reg-phone').focus();
-    return;
-  }
+function doLog(){
+  const phone=document.getElementById('lp').value.replace(/\D/g,'');
+  document.getElementById('le').textContent='';
+  if(!phone||phone.length<9||!phone.startsWith('05')){document.getElementById('le').textContent='מספר לא תקין (05X...)';return;}
+  _p={phone,isNew:false};
+  startOTP();
+}
 
-  _pending = { name, phone, isNew: true };
-  document.getElementById('otp-sub').textContent = 'שלחנו קוד SMS ל-0' + phone.slice(-9);
-  startResend();
-  toast('קוד דמו: 1 2 3 4', 'success');
+function startOTP(){
+  document.getElementById('osub').textContent='שלחנו קוד SMS ל-0'+_p.phone.slice(-9);
+  [0,1,2,3].forEach(i=>{const e=document.getElementById('o'+i);e.value='';e.classList.remove('f');});
+  document.getElementById('oe').textContent='';
+  startTimer();
+  toast('קוד דמו: 1 2 3 4','ok');
   go('s-otp');
-  setTimeout(() => document.getElementById('o0').focus(), 300);
+  setTimeout(()=>document.getElementById('o0').focus(),300);
 }
 
-// ── Login ──
-function doLogin() {
-  const phone = document.getElementById('login-phone').value.replace(/\D/g,'');
-  document.getElementById('login-err').textContent = '';
-
-  if (!phone || phone.length < 9 || !phone.startsWith('05')) {
-    document.getElementById('login-err').textContent = 'הכנס מספר טלפון תקין (05X...)';
-    document.getElementById('login-phone').focus();
-    return;
-  }
-
-  _pending = { phone, isNew: false };
-  document.getElementById('otp-sub').textContent = 'שלחנו קוד SMS ל-0' + phone.slice(-9);
-  startResend();
-  toast('קוד דמו: 1 2 3 4', 'success');
-  go('s-otp');
-  setTimeout(() => document.getElementById('o0').focus(), 300);
+function startTimer(){
+  let t=30;
+  const btn=document.getElementById('rb'), cd=document.getElementById('rcd');
+  btn.disabled=true; cd.textContent=t;
+  clearInterval(_rtm);
+  _rtm=setInterval(()=>{t--;cd.textContent=t;if(t<=0){clearInterval(_rtm);btn.disabled=false;btn.textContent='שלח שוב';}},1000);
 }
 
-function backOTP() {
-  clearInterval(_resendTm);
-  [0,1,2,3].forEach(i => {
-    const el = document.getElementById('o'+i);
-    el.value = ''; el.classList.remove('filled');
-  });
-  document.getElementById('otp-err').textContent = '';
-  go(_pending.isNew ? 's-register' : 's-login');
+function resend(){startTimer();toast('קוד דמו: 1 2 3 4','ok');}
+
+function backOTP(){
+  clearInterval(_rtm);
+  go(_p.isNew?'s-reg':'s-log');
 }
 
-// ── OTP Timer ──
-function startResend() {
-  let t = 30;
-  const btn = document.getElementById('resend-btn');
-  const cd  = document.getElementById('resend-cd');
-  btn.disabled = true;
-  cd.textContent = t;
-  clearInterval(_resendTm);
-  _resendTm = setInterval(() => {
-    t--;
-    cd.textContent = t;
-    if (t <= 0) {
-      clearInterval(_resendTm);
-      btn.disabled = false;
-      btn.textContent = 'שלח שוב';
-    }
-  }, 1000);
-}
-
-function resendCode() {
-  startResend();
-  toast('קוד דמו: 1 2 3 4', 'success');
-}
-
-// ── OTP Inputs ──
-document.addEventListener('DOMContentLoaded', () => {
-  [0,1,2,3].forEach(i => {
-    const el = document.getElementById('o'+i);
-
-    el.addEventListener('input', () => {
-      const v = el.value.replace(/\D/g,'');
-      el.value = v ? v[0] : '';
-      el.classList.toggle('filled', !!el.value);
-      document.getElementById('otp-err').textContent = '';
-      if (el.value && i < 3) document.getElementById('o'+(i+1)).focus();
-      // Auto-submit
-      const code = [0,1,2,3].map(j => document.getElementById('o'+j).value).join('');
-      if (code.length === 4) setTimeout(doOTP, 150);
+// OTP inputs
+document.addEventListener('DOMContentLoaded',()=>{
+  [0,1,2,3].forEach(i=>{
+    const el=document.getElementById('o'+i);
+    el.addEventListener('input',()=>{
+      const v=el.value.replace(/\D/g,'');
+      el.value=v?v[0]:'';
+      el.classList.toggle('f',!!el.value);
+      document.getElementById('oe').textContent='';
+      if(el.value&&i<3)document.getElementById('o'+(i+1)).focus();
+      const code=[0,1,2,3].map(j=>document.getElementById('o'+j).value).join('');
+      if(code.length===4)setTimeout(doOTP,150);
     });
-
-    el.addEventListener('keydown', e => {
-      if (e.key === 'Backspace' && !el.value && i > 0) {
-        const prev = document.getElementById('o'+(i-1));
-        prev.focus(); prev.value = ''; prev.classList.remove('filled');
+    el.addEventListener('keydown',e=>{
+      if(e.key==='Backspace'&&!el.value&&i>0){
+        const p=document.getElementById('o'+(i-1));
+        p.focus();p.value='';p.classList.remove('f');
       }
     });
-
-    // Handle paste
-    el.addEventListener('paste', e => {
+    el.addEventListener('paste',e=>{
       e.preventDefault();
-      const pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g,'').slice(0,4);
-      pasted.split('').forEach((ch, j) => {
-        const t = document.getElementById('o'+j);
-        if (t) { t.value = ch; t.classList.add('filled'); }
-      });
-      if (pasted.length === 4) setTimeout(doOTP, 150);
+      const txt=(e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'').slice(0,4);
+      txt.split('').forEach((c,j)=>{const t=document.getElementById('o'+j);if(t){t.value=c;t.classList.add('f');}});
+      if(txt.length===4)setTimeout(doOTP,150);
     });
   });
 });
 
-// ── OTP Submit ──
-function doOTP() {
-  const code = [0,1,2,3].map(i => document.getElementById('o'+i).value).join('');
-
-  if (code.length < 4) {
-    document.getElementById('otp-err').textContent = 'הכנס קוד של 4 ספרות';
-    return;
-  }
-
-  if (code !== _otpCode) {
-    document.getElementById('otp-err').textContent = 'קוד שגוי — נסה שוב';
-    [0,1,2,3].forEach(i => {
-      const el = document.getElementById('o'+i);
-      el.value = ''; el.classList.remove('filled');
-    });
+function doOTP(){
+  const code=[0,1,2,3].map(i=>document.getElementById('o'+i).value).join('');
+  if(code.length<4){document.getElementById('oe').textContent='הכנס 4 ספרות';return;}
+  if(code!=='1234'){
+    document.getElementById('oe').textContent='קוד שגוי — נסה שוב';
+    [0,1,2,3].forEach(i=>{const e=document.getElementById('o'+i);e.value='';e.classList.remove('f');});
     document.getElementById('o0').focus();
     return;
   }
 
-  // ✅ Code correct — save user and navigate
-  const userId = 'u_' + _pending.phone;
-  const user   = {
-    id:        userId,
-    name:      _pending.name || 'משתמש',
-    phone:     _pending.phone,
-    created:   Date.now(),
-    lastLogin: Date.now(),
-    stats:     { sessions: 0, total: 0, friends: 0 }
-  };
-
+  // ✅ Code correct
+  const userId='u_'+_p.phone;
+  const user={id:userId,name:_p.name||'משתמש',phone:_p.phone,created:Date.now(),lastLogin:Date.now(),stats:{sessions:0,total:0,friends:0}};
   saveUser(user);
-  clearInterval(_resendTm);
-  toast('ברוך הבא, ' + user.name + '! 🎉', 'success');
+  clearInterval(_rtm);
+  toast('ברוך הבא, '+user.name+'! 🎉','ok');
 
-  // Sync to Firebase in background
-  db.ref('users/' + userId).once('value').then(snap => {
-    if (snap.exists()) {
-      const merged = { ...snap.val(), name: user.name, lastLogin: Date.now() };
-      saveUser(merged);
-      db.ref('users/' + userId).update({ name: user.name, lastLogin: Date.now() });
-    } else {
-      db.ref('users/' + userId).set(user);
-    }
-  }).catch(err => console.warn('[clerq] Firebase sync:', err.message));
+  // Firebase sync (background, non-blocking)
+  db.ref('users/'+userId).once('value').then(snap=>{
+    const merged=snap.exists()?{...snap.val(),name:user.name,lastLogin:Date.now()}:user;
+    saveUser(merged);
+    db.ref('users/'+userId).set(merged);
+  }).catch(()=>{});
 
-  // Navigate immediately — don't wait for Firebase
-  setTimeout(() => { window.location.href = './home.html'; }, 800);
+  // Navigate using dynamic path
+  setTimeout(()=>{ window.location.href=homePath(); },800);
 }
 </script>
 </body>
