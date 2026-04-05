@@ -6,6 +6,8 @@
 <meta name="theme-color" content="#0D0D14"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta http-equiv="X-Content-Type-Options" content="nosniff"/>
+<meta http-equiv="X-Frame-Options" content="DENY"/>
 <title>clerq — פיצול חשבון חכם</title>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
@@ -750,7 +752,7 @@ body {
       </div>
       <div class="code-actions">
         <button class="btn btn-primary btn-sm" onclick="shareSessionCode()">שתף 📤</button>
-        <button class="btn btn-danger btn-sm" onclick="closeCurrentSession()">סגור ⛔</button>
+        <button class="btn btn-danger btn-sm" id="close-session-btn-confirm" onclick="closeCurrentSession()">סגור ⛔</button>
       </div>
     </div>
     <div class="live-bar">
@@ -880,12 +882,12 @@ firebase.initializeApp({
   messagingSenderId: '426819964379',
   appId:             '1:426819964309:web:adf96da249d35d5d823a9c'
 });
-var db = firebase.database();
+const db = firebase.database();
 
 /* ═══════════════════════════════════════
    STATE
 ═══════════════════════════════════════ */
-var STATE = {
+const STATE = {
   user:       null,    // logged-in user object
   pending:    {},      // pending auth: { name, phone, isNew }
   otpCode:    '1234',  // demo OTP
@@ -902,7 +904,7 @@ var STATE = {
   foundSession: null,
 };
 
-var SESSION_USER_ID = 'u_' + Math.random().toString(36).substr(2, 8);
+const SESSION_USER_ID = 'u_' + Math.random().toString(36).substr(2, 8);
 
 /* ═══════════════════════════════════════
    UTILITY
@@ -949,7 +951,7 @@ function clearStoredUser() {
 /* ═══════════════════════════════════════
    TOAST
 ═══════════════════════════════════════ */
-var _toastTimer = null;
+let _toastTimer = null;
 function showToast(msg, type) {
   var el = document.getElementById('global-toast');
   el.textContent = msg;
@@ -1021,6 +1023,7 @@ function handleRegister() {
     return;
   }
 
+  if (!checkOTPRateLimit()) return;
   STATE.pending = { name: name, phone: phone, isNew: true };
   beginOTPFlow();
 }
@@ -1045,6 +1048,7 @@ function handleLogin() {
     return;
   }
 
+  if (!checkOTPRateLimit()) return;
   STATE.pending = { phone: phone, isNew: false };
   beginOTPFlow();
 }
@@ -1052,6 +1056,23 @@ function handleLogin() {
 /* ═══════════════════════════════════════
    OTP FLOW
 ═══════════════════════════════════════ */
+// Simple rate limiting for OTP
+const _otpAttempts = { count: 0, lastReset: Date.now() };
+
+function checkOTPRateLimit() {
+  const now = Date.now();
+  if (now - _otpAttempts.lastReset > 60000) {
+    _otpAttempts.count = 0;
+    _otpAttempts.lastReset = now;
+  }
+  _otpAttempts.count++;
+  if (_otpAttempts.count > 5) {
+    showToast('יותר מדי ניסיונות — המתן דקה', 'error');
+    return false;
+  }
+  return true;
+}
+
 function beginOTPFlow() {
   var sub = '0' + STATE.pending.phone.slice(-9);
   document.getElementById('otp-subtitle').textContent = 'שלחנו קוד SMS ל-' + sub;
@@ -1205,7 +1226,7 @@ function loadHomeScreen(user) {
 }
 
 function handleLogout() {
-  if (!confirm('להתנתק מהחשבון?')) return;
+  // No confirm needed for logout - just do it
   clearStoredUser();
   STATE.user = null;
   showToast('יצאת בהצלחה', 'success');
@@ -1215,8 +1236,8 @@ function handleLogout() {
 /* ═══════════════════════════════════════
    SCAN
 ═══════════════════════════════════════ */
-var _capturedImage = null;
-var _capturedMime  = null;
+let _capturedImage = null;
+let _capturedMime  = null;
 
 function handleImageSelected(input) {
   var file = input.files[0];
@@ -1399,7 +1420,14 @@ function shareSessionCode() {
 }
 
 function closeCurrentSession() {
-  if (!confirm('לסגור את החשבון? החברים לא יוכלו להצטרף יותר.')) return;
+  // Show inline confirmation instead of blocking confirm()
+  const closeBtn = document.getElementById('close-session-btn-confirm');
+  if (closeBtn && closeBtn.dataset.confirmed !== 'yes') {
+    closeBtn.textContent = 'בטוח? לחץ שוב ⛔';
+    closeBtn.dataset.confirmed = 'yes';
+    setTimeout(() => { if(closeBtn) { closeBtn.textContent = 'סגור ⛔'; closeBtn.dataset.confirmed = ''; } }, 3000);
+    return;
+  }
   var updates = {};
   updates['sessions/' + STATE.sessionId + '/closed'] = true;
   updates['codes/' + STATE.sessionCode + '/closed']   = true;
@@ -1706,7 +1734,7 @@ function lookupJoinCode() {
       var users = Object.values(session.users || {});
       var host  = users.find(function(u) { return u.isHost; });
       document.getElementById('preview-host-name').textContent =
-        'חשבון של ' + (host ? host.name : 'יוזם');
+        'חשבון של ' + esc(host ? host.name : 'יוזם');
       document.getElementById('preview-info').textContent =
         (session.items ? session.items.length : 0) + ' פריטים · ' + users.length + ' משתתפים';
       document.getElementById('session-preview').classList.add('visible');
