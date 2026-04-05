@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+  <meta name="theme-color" content="#0D0D14" media="(prefers-color-scheme: dark)"/>
+  <meta name="theme-color" content="#0D0D14"/>
+  <meta name="description" content="clerq — פיצול חשבון חכם. צלם קבלה, שתף קוד, כולם משלמים בביט."/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="clerq"/>
+  <meta property="og:title" content="clerq — פיצול חשבון חכם"/>
+  <meta property="og:description" content="AI קורא את הקבלה, כולם בוחרים בזמן אמת, משלמים בביט"/>
+  <meta property="og:type" content="website"/>
+  <link rel="manifest" href="/manifest.json"/>
+  <link rel="apple-touch-icon" href="/assets/icon-192.png"/>
+  <title>clerq — פיצול חשבון חכם</title>
+
+  <!-- Preconnect for performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap"/>
+  <link rel="stylesheet" href="/design.css"/>
+
+  <style>
+    /* ── Splash Screen ── */
+    #splash {
+      position: fixed;
+      inset: 0;
+      background: var(--color-bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-5);
+      z-index: var(--z-splash);
+      transition: opacity 0.4s ease;
+    }
+
+    #splash.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .splash-icon-wrap {
+      position: relative;
+      width: 96px;
+      height: 96px;
+    }
+
+    .splash-ring {
+      position: absolute;
+      inset: -14px;
+      border-radius: 50%;
+      border: 1.5px solid var(--color-brand-border);
+      animation: splash-ring 2.5s ease-in-out infinite;
+    }
+
+    @keyframes splash-ring {
+      0%, 100% { transform: scale(1); opacity: 0.3; }
+      50%       { transform: scale(1.1); opacity: 0.7; }
+    }
+
+    .splash-icon {
+      width: 96px;
+      height: 96px;
+      border-radius: 28px;
+    }
+
+    .splash-wordmark {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -1.5px;
+      color: var(--color-text-primary);
+    }
+
+    .splash-wordmark .dot { color: var(--color-brand); }
+
+    .splash-tagline {
+      font-size: 12px;
+      color: var(--color-text-tertiary);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    /* ── Welcome ── */
+    .welcome-page {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: var(--space-6) var(--space-6) var(--space-6);
+      padding-bottom: max(var(--space-6), env(safe-area-inset-bottom));
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Background decoration */
+    .bg-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(70px);
+      pointer-events: none;
+    }
+
+    .bg-orb-1 {
+      width: 320px; height: 320px;
+      top: -120px; left: -80px;
+      background: radial-gradient(circle, rgba(198,241,53,0.1), transparent 70%);
+    }
+
+    .bg-orb-2 {
+      width: 240px; height: 240px;
+      bottom: 15%; right: -60px;
+      background: radial-gradient(circle, rgba(61,217,217,0.06), transparent 70%);
+    }
+
+    .welcome-logo {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -1px;
+      margin-bottom: var(--space-10);
+      position: relative;
+      z-index: 1;
+    }
+    .welcome-logo .dot { color: var(--color-brand); }
+
+    .welcome-hero {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: var(--space-5);
+      position: relative;
+      z-index: 1;
+    }
+
+    .welcome-icon-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+
+    .welcome-app-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 18px;
+      flex-shrink: 0;
+    }
+
+    .welcome-headline {
+      font-size: clamp(34px, 9vw, 42px);
+      font-weight: 700;
+      letter-spacing: -2px;
+      line-height: 1.1;
+      color: var(--color-text-primary);
+    }
+
+    .welcome-headline em {
+      font-style: normal;
+      color: var(--color-brand);
+    }
+
+    .welcome-body {
+      font-size: 16px;
+      color: var(--color-text-secondary);
+      line-height: 1.65;
+      max-width: 340px;
+    }
+
+    .features-grid {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .feature-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      font-size: 14px;
+      color: var(--color-text-secondary);
+    }
+
+    .feature-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      background: var(--color-brand-bg);
+      border: 1px solid var(--color-brand-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .welcome-cta {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      margin-top: var(--space-8);
+      position: relative;
+      z-index: 1;
+    }
+
+    .terms-note {
+      font-size: 11px;
+      color: var(--color-text-tertiary);
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    /* ── Auth Screens ── */
+    .auth-page {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 0 var(--space-6);
+      padding-bottom: max(var(--space-10), env(safe-area-inset-bottom));
+    }
+
+    .auth-page-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      padding: var(--space-5) 0 var(--space-8);
+    }
+
+    .auth-form-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-6);
+    }
+
+    .auth-title {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .auth-subtitle {
+      font-size: 14px;
+      color: var(--color-text-secondary);
+      margin-top: var(--space-2);
+      line-height: 1.5;
+    }
+
+    /* ── OTP Input ── */
+    .otp-wrap {
+      display: flex;
+      gap: var(--space-2);
+      justify-content: center;
+      direction: ltr;
+    }
+
+    .otp-input {
+      width: 52px;
+      height: 62px;
+      border-radius: var(--radius-md);
+      border: 1.5px solid var(--color-border);
+      background: var(--color-bg-input);
+      color: var(--color-text-primary);
+      font-size: 26px;
+      font-weight: 700;
+      text-align: center;
+      font-family: var(--font-family);
+      outline: none;
+      caret-color: var(--color-brand);
+      transition:
+        border-color var(--transition-fast),
+        box-shadow var(--transition-fast);
+    }
+
+    .otp-input:focus {
+      border-color: var(--color-border-focus);
+      box-shadow: var(--shadow-focus);
+    }
+
+    .otp-input.filled {
+      border-color: rgba(198,241,53,0.3);
+    }
+
+    .otp-separator {
+      font-size: 22px;
+      color: var(--color-text-tertiary);
+      display: flex;
+      align-items: center;
+      padding-bottom: 4px;
+    }
+
+    .resend-wrap {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-2);
+      font-size: 14px;
+      color: var(--color-text-secondary);
+    }
+
+    .resend-btn {
+      color: var(--color-brand);
+      background: none;
+      border: none;
+      font-family: inherit;
+      font-size: 14px;
+      cursor: pointer;
+      padding: 0;
+      transition: opacity var(--transition-fast);
+    }
+
+    .resend-btn:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+
+    /* ── Demo mode banner ── */
+    .demo-banner {
+      background: rgba(255,165,0,0.08);
+      border: 1px solid rgba(255,165,0,0.2);
+      border-radius: var(--radius-sm);
+      padding: var(--space-3) var(--space-4);
+      font-size: 12px;
+      color: var(--color-warning);
+      text-align: center;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ SPLASH ══ -->
+<div id="splash" role="status" aria-label="טוען clerq">
+  <div class="splash-icon-wrap">
+    <div class="splash-ring"></div>
+    <svg class="splash-icon" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect width="120" height="120" rx="28" fill="#1A1A2E"/>
+      <rect x="28" y="20" width="52" height="66" rx="7" fill="#FFFFFF" opacity="0.05"/>
+      <rect x="28" y="20" width="52" height="66" rx="7" fill="none" stroke="#C6F135" stroke-width="1.5" opacity="0.6"/>
+      <rect x="36" y="34" width="28" height="3.5" rx="1.75" fill="#C6F135"/>
+      <rect x="36" y="44" width="20" height="2.5" rx="1.25" fill="#FFFFFF" opacity="0.22"/>
+      <rect x="36" y="51" width="26" height="2.5" rx="1.25" fill="#FFFFFF" opacity="0.18"/>
+      <rect x="36" y="58" width="16" height="2.5" rx="1.25" fill="#FFFFFF" opacity="0.18"/>
+      <rect x="36" y="65" width="22" height="2.5" rx="1.25" fill="#FFFFFF" opacity="0.12"/>
+      <circle cx="82" cy="88" r="22" fill="#1A1A2E"/>
+      <circle cx="82" cy="88" r="18" fill="#C6F135"/>
+      <path d="M73 88 L79 95 L92 78" stroke="#111" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>
+  </div>
+  <div class="splash-wordmark">cler<span class="dot">q</span></div>
+  <div class="splash-tagline">split smarter</div>
+</div>
+
+<!-- ══ APP ══ -->
+<div class="app-shell" id="app" hidden>
+
+  <!-- SCREEN: Welcome -->
+  <section class="screen active" id="screen-welcome" aria-label="ברוך הבא">
+    <div class="welcome-page">
+      <div class="bg-orb bg-orb-1" aria-hidden="true"></div>
+      <div class="bg-orb bg-orb-2" aria-hidden="true"></div>
+
+      <div class="welcome-logo" aria-hidden="true">cler<span class="dot">q</span></div>
+
+      <div class="welcome-hero">
+
+        <div class="welcome-icon-row anim-fade-up">
+          <svg class="welcome-app-icon" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect width="120" height="120" rx="28" fill="#1A1A2E"/>
+            <rect x="28" y="20" width="52" height="66" rx="7" fill="#FFFFFF" opacity="0.05"/>
+            <rect x="28" y="20" width="52" height="66" rx="7" fill="none" stroke="#C6F135" stroke-width="1.5" opacity="0.6"/>
+            <rect x="36" y="34" width="28" height="3.5" rx="1.75" fill="#C6F135"/>
+            <rect x="36" y="44" width="20" height="2.5" rx="1.25" fill="#FFFFFF" opacity="0.22"/>
+            <rect x="36" y="51" width="26" height="2.5" rx="1.25" fill="#FFFFFF" opacity="0.18"/>
+            <circle cx="82" cy="88" r="22" fill="#1A1A2E"/>
+            <circle cx="82" cy="88" r="18" fill="#C6F135"/>
+            <path d="M73 88 L79 95 L92 78" stroke="#111" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+          <span class="badge badge-brand">חדש בישראל 🇮🇱</span>
+        </div>
+
+        <h1 class="welcome-headline anim-fade-up delay-1">
+          פיצול חשבון<br/><em>תוך 20 שניות</em>
+        </h1>
+
+        <p class="welcome-body anim-fade-up delay-2">
+          צלם את הקבלה, שתף קוד עם החברים — כל אחד בוחר מה שלו ומשלם ישירות בביט.
+        </p>
+
+        <div class="features-grid anim-fade-up delay-3" role="list">
+          <div class="feature-row" role="listitem">
+            <div class="feature-icon" aria-hidden="true">🤖</div>
+            <span>AI קורא את הקבלה תוך שניות</span>
+          </div>
+          <div class="feature-row" role="listitem">
+            <div class="feature-icon" aria-hidden="true">⚡</div>
+            <span>כולם בוחרים בזמן אמת</span>
+          </div>
+          <div class="feature-row" role="listitem">
+            <div class="feature-icon" aria-hidden="true">💸</div>
+            <span>תשלום ישיר בביט ופייבוקס</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="welcome-cta anim-fade-up delay-4">
+        <button
+          class="btn btn-primary btn-lg btn-full"
+          onclick="showScreen('screen-register')"
+          aria-label="הירשם ל-clerq"
+        >
+          התחל עכשיו — בחינם
+        </button>
+        <button
+          class="btn btn-ghost btn-full"
+          onclick="showScreen('screen-login')"
+          aria-label="כניסה לחשבון קיים"
+        >
+          יש לי חשבון — כניסה
+        </button>
+        <p class="terms-note">
+          בהרשמה אתה מסכים ל<a href="/legal/terms.html" style="color:var(--color-brand)">תנאי שימוש</a>
+          ו<a href="/legal/privacy.html" style="color:var(--color-brand)">מדיניות פרטיות</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREEN: Register -->
+  <section class="screen" id="screen-register" aria-label="יצירת חשבון">
+    <div class="auth-page">
+      <div class="auth-page-header">
+        <button class="nav-back" onclick="showScreen('screen-welcome')" aria-label="חזור">←</button>
+        <div class="clerq-logo" aria-hidden="true">cler<span class="dot">q</span></div>
+      </div>
+
+      <div class="auth-form-wrap">
+        <div>
+          <h1 class="auth-title">יצירת חשבון</h1>
+          <p class="auth-subtitle">הרשמה מהירה — שם ומספר טלפון בלבד</p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-name">השם שלך</label>
+          <input
+            class="input"
+            type="text"
+            id="reg-name"
+            name="name"
+            placeholder="לדוגמה: שון"
+            autocomplete="given-name"
+            maxlength="30"
+            inputmode="text"
+            required
+          />
+          <span class="form-error" id="reg-name-error" role="alert" aria-live="polite"></span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-phone">מספר טלפון</label>
+          <div class="input-phone-wrap">
+            <div class="input-phone-prefix" aria-label="קוד מדינה ישראל">🇮🇱 +972</div>
+            <input
+              class="input"
+              type="tel"
+              id="reg-phone"
+              name="phone"
+              placeholder="05X-XXX-XXXX"
+              maxlength="11"
+              inputmode="numeric"
+              autocomplete="tel-national"
+              pattern="[0-9\-]*"
+              required
+            />
+          </div>
+          <span class="form-error" id="reg-phone-error" role="alert" aria-live="polite"></span>
+        </div>
+
+        <div class="demo-banner" role="note">
+          🔧 <strong>מצב דמו:</strong> קוד האימות הוא תמיד <strong>1 2 3 4</strong>
+        </div>
+
+        <div class="mt-auto flex flex-col gap-3" style="padding-top:var(--space-6)">
+          <button
+            class="btn btn-primary btn-full"
+            id="reg-submit"
+            onclick="handleRegister()"
+            aria-label="המשך לאימות"
+          >
+            המשך ←
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREEN: Login -->
+  <section class="screen" id="screen-login" aria-label="כניסה לחשבון">
+    <div class="auth-page">
+      <div class="auth-page-header">
+        <button class="nav-back" onclick="showScreen('screen-welcome')" aria-label="חזור">←</button>
+        <div class="clerq-logo" aria-hidden="true">cler<span class="dot">q</span></div>
+      </div>
+
+      <div class="auth-form-wrap">
+        <div>
+          <h1 class="auth-title">כניסה</h1>
+          <p class="auth-subtitle">הכנס את מספר הטלפון שלך</p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="login-phone">מספר טלפון</label>
+          <div class="input-phone-wrap">
+            <div class="input-phone-prefix" aria-label="קוד מדינה ישראל">🇮🇱 +972</div>
+            <input
+              class="input"
+              type="tel"
+              id="login-phone"
+              name="phone"
+              placeholder="05X-XXX-XXXX"
+              maxlength="11"
+              inputmode="numeric"
+              autocomplete="tel-national"
+              required
+            />
+          </div>
+          <span class="form-error" id="login-phone-error" role="alert" aria-live="polite"></span>
+        </div>
+
+        <div class="demo-banner" role="note">
+          🔧 <strong>מצב דמו:</strong> קוד האימות הוא תמיד <strong>1 2 3 4</strong>
+        </div>
+
+        <div class="mt-auto" style="padding-top:var(--space-6)">
+          <button
+            class="btn btn-primary btn-full"
+            id="login-submit"
+            onclick="handleLogin()"
+          >
+            המשך ←
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREEN: OTP -->
+  <section class="screen" id="screen-otp" aria-label="אימות טלפון">
+    <div class="auth-page">
+      <div class="auth-page-header">
+        <button class="nav-back" id="otp-back" onclick="handleOTPBack()" aria-label="חזור">←</button>
+        <div class="clerq-logo" aria-hidden="true">cler<span class="dot">q</span></div>
+      </div>
+
+      <div class="auth-form-wrap">
+        <div>
+          <h1 class="auth-title">אימות טלפון</h1>
+          <p class="auth-subtitle" id="otp-subtitle">שלחנו קוד SMS למספר שלך</p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label text-center">הכנס את הקוד</label>
+          <div class="otp-wrap" role="group" aria-label="קוד OTP">
+            <input class="otp-input" type="tel" id="o0" maxlength="1" inputmode="numeric" autocomplete="one-time-code" aria-label="ספרה 1"/>
+            <input class="otp-input" type="tel" id="o1" maxlength="1" inputmode="numeric" aria-label="ספרה 2"/>
+            <input class="otp-input" type="tel" id="o2" maxlength="1" inputmode="numeric" aria-label="ספרה 3"/>
+            <div class="otp-separator" aria-hidden="true">·</div>
+            <input class="otp-input" type="tel" id="o3" maxlength="1" inputmode="numeric" aria-label="ספרה 4"/>
+          </div>
+          <span class="form-error text-center" id="otp-error" role="alert" aria-live="polite"></span>
+        </div>
+
+        <div class="resend-wrap">
+          <span>לא קיבלת?</span>
+          <button
+            class="resend-btn"
+            id="resend-btn"
+            onclick="handleResend()"
+            disabled
+            aria-label="שלח קוד מחדש"
+          >
+            שלח שוב (<span id="resend-countdown">30</span>)
+          </button>
+        </div>
+
+        <div class="mt-auto" style="padding-top:var(--space-6)">
+          <button
+            class="btn btn-primary btn-full"
+            id="otp-submit"
+            onclick="handleOTPSubmit()"
+          >
+            אמת וכנס ✓
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- Toast -->
+<div id="clerq-toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+<script type="module">
+import {
+  db, ref, set, get,
+  saveUser, getUser, requireAuth,
+  navigate, ROUTES,
+  showToast, showScreen, setLoading,
+  validateName, validatePhone,
+  sanitizeName, sanitizePhone,
+  registerSW, track,
+  handleFirebaseError
+} from '/core.js';
+
+// ── Register SW ──
+registerSW();
+
+// ── Expose screen nav globally ──
+window.showScreen = showScreen;
+
+// ── Splash & Init ──
+window.addEventListener('load', () => {
+  const user = getUser();
+
+  setTimeout(() => {
+    document.getElementById('splash').classList.add('hidden');
+    document.getElementById('app').hidden = false;
+
+    if (user) {
+      track('auto_login', { userId: user.id });
+      navigate(ROUTES.HOME);
+    }
+  }, 1600);
+});
+
+// ── State ──
+let _pendingUser = {};
+let _otpCode = '';
+let _resendInterval = null;
+const OTP_DEMO = '1234'; // Demo mode: replace with Twilio/019 in production
+
+// ── Register ──
+window.handleRegister = async function() {
+  const nameEl  = document.getElementById('reg-name');
+  const phoneEl = document.getElementById('reg-phone');
+  const btn     = document.getElementById('reg-submit');
+
+  const name  = sanitizeName(nameEl.value);
+  const phone = sanitizePhone(phoneEl.value);
+
+  // Clear errors
+  document.getElementById('reg-name-error').textContent  = '';
+  document.getElementById('reg-phone-error').textContent = '';
+  nameEl.classList.remove('error');
+  phoneEl.classList.remove('error');
+
+  // Validate
+  const nameErr  = validateName(name);
+  const phoneErr = validatePhone(phone);
+
+  if (nameErr) {
+    document.getElementById('reg-name-error').textContent = nameErr;
+    nameEl.classList.add('error');
+    nameEl.focus();
+    return;
+  }
+
+  if (phoneErr) {
+    document.getElementById('reg-phone-error').textContent = phoneErr;
+    phoneEl.classList.add('error');
+    phoneEl.focus();
+    return;
+  }
+
+  _pendingUser = { name, phone, isNew: true };
+  sendOTP(phone);
+
+  document.getElementById('otp-subtitle').textContent =
+    `שלחנו קוד SMS ל-0${phone.slice(-9)}`;
+
+  showScreen('screen-otp');
+  document.getElementById('o0').focus();
+}
+
+// ── Login ──
+window.handleLogin = async function() {
+  const phoneEl = document.getElementById('login-phone');
+  const phone   = sanitizePhone(phoneEl.value);
+
+  document.getElementById('login-phone-error').textContent = '';
+  phoneEl.classList.remove('error');
+
+  const phoneErr = validatePhone(phone);
+  if (phoneErr) {
+    document.getElementById('login-phone-error').textContent = phoneErr;
+    phoneEl.classList.add('error');
+    phoneEl.focus();
+    return;
+  }
+
+  _pendingUser = { phone, isNew: false };
+  sendOTP(phone);
+
+  document.getElementById('otp-subtitle').textContent =
+    `שלחנו קוד SMS ל-0${phone.slice(-9)}`;
+
+  showScreen('screen-otp');
+  document.getElementById('o0').focus();
+}
+
+// ── OTP ──
+function sendOTP(phone) {
+  // DEMO MODE: code is always 1234
+  // PRODUCTION: replace with SMS provider (Twilio, 019mobile, etc.)
+  _otpCode = OTP_DEMO;
+  showToast('קוד דמו: 1234', 'success', 4000);
+  startResendTimer();
+}
+
+function startResendTimer() {
+  let seconds = 30;
+  const btn       = document.getElementById('resend-btn');
+  const countdown = document.getElementById('resend-countdown');
+
+  btn.disabled = true;
+  countdown.textContent = seconds;
+
+  clearInterval(_resendInterval);
+  _resendInterval = setInterval(() => {
+    seconds--;
+    countdown.textContent = seconds;
+    if (seconds <= 0) {
+      clearInterval(_resendInterval);
+      btn.disabled = false;
+      btn.textContent = 'שלח שוב';
+    }
+  }, 1000);
+}
+
+window.handleResend = function() {
+  const btn = document.getElementById('resend-btn');
+  btn.textContent = `שלח שוב (30)`;
+  sendOTP(_pendingUser.phone);
+  track('otp_resend');
+}
+
+window.handleOTPBack = function() {
+  clearInterval(_resendInterval);
+  // Clear OTP inputs
+  [0,1,2,3].forEach(i => {
+    const el = document.getElementById('o'+i);
+    el.value = '';
+    el.classList.remove('filled');
+  });
+  showScreen(_pendingUser.isNew ? 'screen-register' : 'screen-login');
+}
+
+// OTP input handler
+[0,1,2,3].forEach(i => {
+  const el = document.getElementById('o'+i);
+
+  el.addEventListener('input', () => {
+    const v = el.value.replace(/\D/g, '');
+    el.value = v ? v[0] : '';
+    el.classList.toggle('filled', !!el.value);
+    document.getElementById('otp-error').textContent = '';
+
+    if (el.value && i < 3) document.getElementById('o'+(i+1)).focus();
+
+    // Auto-submit when all 4 filled
+    const code = [0,1,2,3].map(j => document.getElementById('o'+j).value).join('');
+    if (code.length === 4) setTimeout(handleOTPSubmit, 120);
+  });
+
+  el.addEventListener('keydown', (e) => {
+    if (e.key === 'Backspace' && !el.value && i > 0) {
+      const prev = document.getElementById('o'+(i-1));
+      prev.focus();
+      prev.value = '';
+      prev.classList.remove('filled');
+    }
+  });
+
+  // Handle paste
+  el.addEventListener('paste', (e) => {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 4);
+    pasted.split('').forEach((char, j) => {
+      const target = document.getElementById('o'+j);
+      if (target) {
+        target.value = char;
+        target.classList.add('filled');
+      }
+    });
+    const last = document.getElementById('o'+(pasted.length-1));
+    if (last) last.focus();
+    const code = [0,1,2,3].map(j => document.getElementById('o'+j).value).join('');
+    if (code.length === 4) setTimeout(handleOTPSubmit, 120);
+  });
+});
+
+window.handleOTPSubmit = async function() {
+  const code = [0,1,2,3].map(i => document.getElementById('o'+i).value).join('');
+  const btn  = document.getElementById('otp-submit');
+
+  if (code.length < 4) {
+    document.getElementById('otp-error').textContent = 'הכנס קוד של 4 ספרות';
+    document.getElementById('o0').focus();
+    return;
+  }
+
+  if (code !== _otpCode) {
+    document.getElementById('otp-error').textContent = 'קוד שגוי — נסה שוב';
+    [0,1,2,3].forEach(i => {
+      document.getElementById('o'+i).value = '';
+      document.getElementById('o'+i).classList.remove('filled');
+    });
+    document.getElementById('o0').focus();
+    track('otp_wrong');
+    return;
+  }
+
+  setLoading(btn, true);
+
+  try {
+    const userId  = 'u_' + sanitizePhone(_pendingUser.phone);
+    const userRef = ref(db, 'users/' + userId);
+    const snap    = await get(userRef);
+
+    let userData;
+
+    if (snap.exists()) {
+      userData = snap.val();
+      // Update name if provided in register flow
+      if (_pendingUser.name && _pendingUser.isNew) {
+        userData = { ...userData, name: _pendingUser.name, lastLogin: Date.now() };
+      } else {
+        userData = { ...userData, lastLogin: Date.now() };
+      }
+    } else {
+      userData = {
+        id:        userId,
+        name:      _pendingUser.name || 'משתמש',
+        phone:     sanitizePhone(_pendingUser.phone),
+        created:   Date.now(),
+        lastLogin: Date.now(),
+        stats: { sessions: 0, total: 0, friends: 0 }
+      };
+    }
+
+    await set(userRef, userData);
+    saveUser(userData);
+
+    clearInterval(_resendInterval);
+    track('auth_success', { isNew: _pendingUser.isNew, userId });
+    showToast(`ברוך הבא, ${userData.name}! 🎉`, 'success', 2000);
+
+    setTimeout(() => navigate(ROUTES.HOME), 900);
+
+  } catch (e) {
+    handleFirebaseError(e, 'שגיאה בכניסה — נסה שוב');
+    setLoading(btn, false);
+  }
+}
+</script>
+</body>
+</html>

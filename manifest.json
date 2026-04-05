@@ -1,0 +1,106 @@
+{
+  "name": "clerq — פיצול חשבון חכם",
+  "short_name": "clerq",
+  "description": "AI קורא את הקבלה, כולם בוחרים בזמן אמת, משלמים בביט ופייבוקס",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "background_color": "#0D0D14",
+  "theme_color": "#0D0D14",
+  "orientation": "portrait-primary",
+  "lang": "he",
+  "dir": "rtl",
+  "categories": ["finance", "utilities", "food"],
+  "iarc_rating_id": "",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/assets/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icon-192-maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/assets/screenshot-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "מסך ראשי של clerq"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "פתח חשבון חדש",
+      "short_name": "פתח",
+      "description": "סרוק קבלה ופתח חשבון חדש",
+      "url": "/scan.html?source=shortcut",
+      "icons": [{ "src": "/assets/icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "הצטרף לחשבון",
+      "short_name": "הצטרף",
+      "description": "הכנס קוד והצטרף לחשבון",
+      "url": "/join.html?source=shortcut",
+      "icons": [{ "src": "/assets/icon-96.png", "sizes": "96x96" }]
+    }
+  ],
+  "share_target": {
+    "action": "/scan.html",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "files": [
+        {
+          "name": "image",
+          "accept": ["image/*"]
+        }
+      ]
+    }
+  }
+}
