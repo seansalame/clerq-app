@@ -2,1087 +2,1815 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
 <meta name="theme-color" content="#0D0D14"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <title>clerq — פיצול חשבון חכם</title>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
-:root{
-  --bg:#0D0D14;--card:#16161F;--up:#1E1E2A;--inp:#12121A;
-  --brd:rgba(255,255,255,.07);--brd-f:rgba(198,241,53,.4);
-  --txt:#F0F0F8;--mut:#8A8AA8;--fnt:#3A3A5A;
-  --grn:#C6F135;--grnb:rgba(198,241,53,.08);--grnr:rgba(198,241,53,.2);
-  --glow:rgba(198,241,53,.15);--red:#FF4757;--red-b:rgba(255,71,87,.1);
-  --cyan:#3DD9D9;
+/* ═══════════════════════════════════════
+   DESIGN TOKENS
+═══════════════════════════════════════ */
+:root {
+  --bg:      #0D0D14;
+  --card:    #16161F;
+  --elev:    #1E1E2A;
+  --input:   #12121A;
+  --border:  rgba(255,255,255,0.07);
+  --bfocus:  rgba(198,241,53,0.4);
+  --text:    #F0F0F8;
+  --muted:   #8A8AA8;
+  --faint:   #3A3A5A;
+  --green:   #C6F135;
+  --green-b: rgba(198,241,53,0.08);
+  --green-r: rgba(198,241,53,0.2);
+  --glow:    rgba(198,241,53,0.15);
+  --red:     #FF4757;
+  --red-b:   rgba(255,71,87,0.1);
+  --cyan:    #3DD9D9;
+  --r-sm:    10px;
+  --r-md:    14px;
+  --r-lg:    20px;
+  --r-xl:    28px;
 }
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;}
-body{font-family:'Rubik',-apple-system,sans-serif;background:var(--bg);color:var(--txt);
-  -webkit-font-smoothing:antialiased;direction:rtl;overflow:hidden;}
-.shell{max-width:430px;margin:0 auto;height:100vh;height:100dvh;
-  display:flex;flex-direction:column;position:relative;overflow:hidden;}
 
-/* SCREENS */
-.scr{position:absolute;inset:0;display:flex;flex-direction:column;
-  background:var(--bg);opacity:0;pointer-events:none;
-  transition:opacity .25s ease,transform .25s ease;
-  transform:translateY(12px);overflow-y:auto;}
-.scr.on{opacity:1;pointer-events:all;transform:translateY(0);}
+/* ═══════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════ */
+*, *::before, *::after {
+  box-sizing: border-box; margin: 0; padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: 'Rubik', -apple-system, sans-serif;
+  background: var(--bg); color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  direction: rtl;
+}
 
-/* SPLASH */
-#s-splash{align-items:center;justify-content:center;gap:16px;z-index:99;}
-.sp-wrap{position:relative;width:90px;height:90px;}
-.sp-ring{position:absolute;inset:-14px;border-radius:50%;
-  border:1.5px solid var(--grnr);animation:ring 2.5s ease-in-out infinite;}
-@keyframes ring{0%,100%{transform:scale(1);opacity:.3}50%{transform:scale(1.1);opacity:.7}}
-.sp-icon{width:90px;height:90px;}
-.sp-name{font-size:32px;font-weight:700;letter-spacing:-1.5px;}
-.g{color:var(--grn);}
-.sp-tag{font-size:12px;color:var(--fnt);letter-spacing:3px;text-transform:uppercase;}
+/* ═══════════════════════════════════════
+   APP SHELL & SCREEN SYSTEM
+═══════════════════════════════════════ */
+.shell {
+  max-width: 430px; margin: 0 auto;
+  height: 100vh; height: 100dvh;
+  position: relative; overflow: hidden;
+}
 
-/* WELCOME */
-.wp{flex:1;display:flex;flex-direction:column;
-  padding:40px 24px max(40px,env(safe-area-inset-bottom));
-  position:relative;min-height:100%;}
-.orb{position:absolute;border-radius:50%;filter:blur(70px);pointer-events:none;}
-.o1{width:300px;height:300px;top:-100px;left:-80px;
-  background:radial-gradient(circle,rgba(198,241,53,.1),transparent 70%);}
-.o2{width:240px;height:240px;bottom:20%;right:-60px;
-  background:radial-gradient(circle,rgba(61,217,217,.06),transparent 70%);}
-.wl{font-size:26px;font-weight:700;letter-spacing:-1px;margin-bottom:48px;position:relative;z-index:1;}
-.wh{flex:1;display:flex;flex-direction:column;justify-content:center;gap:20px;position:relative;z-index:1;}
-.wbdg{display:inline-flex;background:var(--grnb);border:1px solid var(--grnr);
-  border-radius:9999px;padding:5px 14px;font-size:12px;font-weight:600;color:var(--grn);width:fit-content;}
-.wt{font-size:clamp(32px,9vw,42px);font-weight:700;letter-spacing:-2px;line-height:1.1;}
-.wt em{font-style:normal;color:var(--grn);}
-.ws{font-size:16px;color:var(--mut);line-height:1.65;}
-.fts{display:flex;flex-direction:column;gap:12px;}
-.ft{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--mut);}
-.fd{width:6px;height:6px;border-radius:50%;background:var(--grn);flex-shrink:0;}
-.wcta{display:flex;flex-direction:column;gap:12px;margin-top:40px;position:relative;z-index:1;}
+.screen {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  background: var(--bg);
+  opacity: 0; pointer-events: none;
+  transform: translateY(16px);
+  transition: opacity 0.28s ease, transform 0.28s ease;
+  overflow-y: auto; overflow-x: hidden;
+}
+.screen.active {
+  opacity: 1; pointer-events: all;
+  transform: translateY(0);
+  z-index: 1;
+}
 
-/* AUTH */
-.ap{flex:1;display:flex;flex-direction:column;padding:0 24px max(40px,env(safe-area-inset-bottom));}
-.ah{display:flex;align-items:center;gap:16px;padding:20px 0 32px;}
-.bk{width:44px;height:44px;border-radius:50%;background:var(--card);border:1px solid var(--brd);
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;font-size:18px;color:var(--txt);font-family:inherit;}
-.al{font-size:22px;font-weight:700;letter-spacing:-1px;}
-.af{flex:1;display:flex;flex-direction:column;gap:20px;}
-.at{font-size:26px;font-weight:700;letter-spacing:-.5px;}
-.as{font-size:14px;color:var(--mut);margin-top:6px;line-height:1.5;}
-.fg{display:flex;flex-direction:column;gap:8px;}
-.fl{font-size:13px;font-weight:500;color:var(--mut);}
-.fe{font-size:12px;color:var(--red);min-height:16px;}
-.inp{width:100%;min-height:50px;padding:0 16px;background:var(--inp);
-  border:1.5px solid var(--brd);border-radius:14px;color:var(--txt);
-  font-size:16px;font-family:inherit;outline:none;
-  transition:border-color .15s,box-shadow .15s;}
-.inp::placeholder{color:var(--fnt);}
-.inp:focus{border-color:var(--brd-f);box-shadow:0 0 0 4px var(--glow);}
-.pw{display:flex;gap:10px;}
-.pp{min-height:50px;padding:0 16px;background:var(--up);border:1.5px solid var(--brd);
-  border-radius:14px;color:var(--mut);font-size:16px;
-  display:flex;align-items:center;white-space:nowrap;flex-shrink:0;}
+/* ═══════════════════════════════════════
+   COMPONENTS
+═══════════════════════════════════════ */
 
-/* BUTTONS */
-.btn{display:flex;align-items:center;justify-content:center;gap:8px;
-  min-height:52px;padding:0 24px;border:none;border-radius:14px;
-  font-family:inherit;font-size:16px;font-weight:700;
-  cursor:pointer;transition:all .18s ease;width:100%;}
-.btn:active{transform:scale(.97);}
-.btnp{background:var(--grn);color:#0D0D14;box-shadow:0 0 32px rgba(198,241,53,.2);}
-.btnp:hover{background:#D4FF47;}
-.btnp:disabled{opacity:.4;cursor:not-allowed;transform:none;}
-.btng{background:transparent;color:var(--mut);border:1px solid var(--brd);}
-.btng:hover{color:var(--txt);}
-.btnr{background:var(--red-b);color:var(--red);border:1px solid rgba(255,71,87,.2);}
+/* Logo */
+.logo { font-size: 24px; font-weight: 700; letter-spacing: -1px; }
+.logo .q { color: var(--green); }
 
-.dn{background:rgba(255,165,0,.08);border:1px solid rgba(255,165,0,.2);
-  border-radius:10px;padding:12px 16px;font-size:12px;color:#FFA502;text-align:center;line-height:1.5;}
+/* Buttons */
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 52px; width: 100%; padding: 0 24px;
+  border: none; border-radius: var(--r-md);
+  font-family: inherit; font-size: 16px; font-weight: 700;
+  cursor: pointer; transition: transform 0.15s, opacity 0.15s;
+}
+.btn:active { transform: scale(0.97); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
-/* OTP */
-.ow{display:flex;gap:10px;justify-content:center;direction:ltr;margin:8px 0;}
-.od{width:52px;height:64px;border-radius:14px;border:1.5px solid var(--brd);
-  background:var(--inp);color:var(--txt);font-size:26px;font-weight:700;
-  text-align:center;font-family:inherit;outline:none;caret-color:var(--grn);
-  transition:border-color .15s,box-shadow .15s;}
-.od:focus{border-color:var(--brd-f);box-shadow:0 0 0 3px var(--glow);}
-.od.f{border-color:rgba(198,241,53,.3);}
-.os{font-size:22px;color:var(--fnt);display:flex;align-items:center;padding-bottom:4px;}
-.rw{text-align:center;font-size:14px;color:var(--mut);}
-.rb{color:var(--grn);background:none;border:none;font-family:inherit;font-size:14px;cursor:pointer;}
-.rb:disabled{color:var(--fnt);cursor:default;}
+.btn-primary { background: var(--green); color: #0D0D14; box-shadow: 0 0 28px rgba(198,241,53,0.2); }
+.btn-primary:hover:not(:disabled) { background: #D4FF47; }
+.btn-ghost   { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+.btn-ghost:hover:not(:disabled) { color: var(--text); border-color: rgba(255,255,255,0.15); }
+.btn-danger  { background: var(--red-b); color: var(--red); border: 1px solid rgba(255,71,87,0.2); }
+.btn-sm      { min-height: 38px; font-size: 13px; border-radius: var(--r-sm); width: auto; padding: 0 14px; }
 
-/* HOME */
-.hero{padding:28px 24px 24px;background:linear-gradient(160deg,#1A1A2E 0%,#0D0D14 100%);
-  position:relative;overflow:hidden;flex-shrink:0;}
-.horb{position:absolute;width:300px;height:300px;border-radius:50%;top:-120px;left:-80px;
-  background:radial-gradient(circle,rgba(198,241,53,.08),transparent 70%);pointer-events:none;}
-.htop{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;position:relative;z-index:1;}
-.hg{font-size:14px;color:var(--mut);}
-.hn{font-size:26px;font-weight:700;letter-spacing:-.5px;margin-top:3px;}
-.hav{width:44px;height:44px;border-radius:50%;background:var(--grn);color:#111;
-  font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;
-  cursor:pointer;flex-shrink:0;border:none;font-family:inherit;}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;position:relative;z-index:1;}
-.stat{background:rgba(255,255,255,.05);border:1px solid var(--brd);border-radius:14px;padding:14px 10px;text-align:center;}
-.sv{font-size:22px;font-weight:700;color:var(--grn);line-height:1;}
-.sl{font-size:11px;color:var(--mut);margin-top:4px;}
-.hsec{padding:20px 20px 0;}
-.hlbl{font-size:11px;font-weight:600;color:var(--fnt);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;}
-.agrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.ac{background:var(--card);border:1px solid var(--brd);border-radius:20px;
-  padding:18px 16px;cursor:pointer;transition:all .18s ease;display:flex;flex-direction:column;gap:10px;}
-.ac:active{transform:scale(.97);}
-.ac.main{border-color:rgba(198,241,53,.25);
-  background:linear-gradient(135deg,rgba(198,241,53,.08),var(--card));
-  grid-column:1/-1;flex-direction:row;align-items:center;gap:16px;}
-.aico{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
-.ac.main .aico{background:var(--grn);}
-.ac:not(.main) .aico{background:var(--up);}
-.atx{flex:1;}
-.atl{font-size:15px;font-weight:600;}
-.adc{font-size:12px;color:var(--mut);margin-top:3px;line-height:1.4;}
-.arr{font-size:18px;color:var(--fnt);}
-.hrec{padding:20px 20px;flex:1;}
-.hi{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--brd);cursor:pointer;}
-.hi:active{opacity:.7;}
-.hi:last-child{border-bottom:none;}
-.hic{width:44px;height:44px;border-radius:12px;background:var(--up);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
-.hin{flex:1;min-width:0;}
-.hit{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.his{font-size:12px;color:var(--mut);margin-top:2px;}
-.hia{font-size:14px;font-weight:600;color:var(--grn);flex-shrink:0;}
-.empty{display:flex;flex-direction:column;align-items:center;padding:40px 20px;text-align:center;gap:10px;}
-.ei{font-size:44px;opacity:.2;margin-bottom:6px;}
-.et{font-size:16px;font-weight:500;color:var(--mut);}
-.es{font-size:13px;color:var(--fnt);line-height:1.5;}
+/* Inputs */
+.field { display: flex; flex-direction: column; gap: 8px; }
+.field-label { font-size: 13px; font-weight: 500; color: var(--muted); }
+.field-error { font-size: 12px; color: var(--red); min-height: 16px; }
 
-/* NAV */
-.nav{display:flex;background:var(--card);border-top:1px solid var(--brd);
-  padding:10px 0 max(24px,env(safe-area-inset-bottom));flex-shrink:0;}
-.nb{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
-  min-height:44px;padding:6px 0;border:none;background:none;
-  font-family:inherit;font-size:10px;font-weight:500;color:var(--fnt);cursor:pointer;}
-.nb.on{color:var(--grn);}
-.ni{font-size:22px;line-height:1;}
+.input {
+  width: 100%; min-height: 50px; padding: 0 16px;
+  background: var(--input); border: 1.5px solid var(--border);
+  border-radius: var(--r-md); color: var(--text);
+  font-size: 16px; font-family: inherit; outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.input::placeholder { color: var(--faint); }
+.input:focus { border-color: var(--bfocus); box-shadow: 0 0 0 4px var(--glow); }
+.input.error { border-color: rgba(255,71,87,0.5); }
 
-/* SCAN */
-.scan-wrap{flex:1;display:flex;flex-direction:column;padding:0 20px max(24px,env(safe-area-inset-bottom));gap:14px;}
-.cam-frame{flex:1;min-height:240px;border-radius:20px;border:1.5px dashed #3A3A3A;
-  background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:10px;cursor:pointer;transition:border-color .2s;overflow:hidden;position:relative;}
-.cam-frame:active{border-color:var(--grn);}
-.cam-frame img{width:100%;height:100%;object-fit:cover;}
-.cam-ov{position:absolute;inset:0;background:rgba(0,0,0,.55);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;}
-.cam-ico{font-size:52px;margin-bottom:8px;}
-.cam-txt{font-size:16px;font-weight:500;}
-.cam-sub{font-size:13px;color:var(--mut);text-align:center;}
+.phone-row { display: flex; gap: 10px; }
+.phone-prefix {
+  min-height: 50px; padding: 0 16px;
+  background: var(--elev); border: 1.5px solid var(--border);
+  border-radius: var(--r-md); color: var(--muted);
+  font-size: 16px; display: flex; align-items: center;
+  white-space: nowrap; flex-shrink: 0;
+}
 
-/* LOADING */
-.load-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:40px;text-align:center;}
-.loader{width:80px;height:80px;position:relative;}
-.lr-out{position:absolute;inset:0;border:3px solid var(--brd);border-top-color:var(--grn);border-radius:50%;animation:spin .9s linear infinite;}
-.lr-in{position:absolute;inset:14px;border:2px solid var(--brd);border-bottom-color:var(--cyan);border-radius:50%;animation:spin .7s linear infinite reverse;}
-.lr-ico{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:26px;}
-@keyframes spin{to{transform:rotate(360deg)}}
-.lt{font-size:20px;font-weight:700;}
-.ls{font-size:14px;color:var(--mut);line-height:1.6;}
-.steps{display:flex;flex-direction:column;gap:8px;width:100%;}
-.step{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;background:var(--card);font-size:13px;color:var(--mut);transition:all .3s;}
-.step.act{background:#1A2A14;color:var(--grn);}
-.step.done{background:#142014;color:#5A9A5A;}
+/* Back button */
+.back-btn {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--card); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 18px; color: var(--text);
+  flex-shrink: 0; transition: background 0.15s;
+}
+.back-btn:hover { background: var(--elev); }
 
-/* SESSION */
-.sess-bar{margin:0 16px 10px;background:#1A2A14;border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px;}
-.sess-code{font-size:20px;font-weight:700;color:var(--grn);letter-spacing:6px;direction:ltr;}
-.sess-lbl{font-size:11px;color:var(--grn);font-weight:600;margin-bottom:2px;}
-.live-bar{margin:0 16px 10px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--mut);}
-.live-dot{width:7px;height:7px;border-radius:50%;background:var(--grn);animation:pulse 1.5s ease-in-out infinite;flex-shrink:0;}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.items-wrap{flex:1;overflow-y:auto;padding:0 16px 10px;}
-.ilbl{font-size:11px;font-weight:600;color:var(--fnt);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
-.icard{background:var(--card);border-radius:16px;margin-bottom:6px;overflow:hidden;border:1px solid var(--brd);transition:border-color .2s;animation:slideIn .2s ease both;}
-@keyframes slideIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.icard.sel{border-color:var(--grn);}
-.irow{display:flex;align-items:center;gap:12px;padding:13px 14px;cursor:pointer;user-select:none;}
-.ichk{width:22px;height:22px;border-radius:50%;border:2px solid var(--fnt);flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;font-size:12px;color:#111;transition:all .2s;}
-.icard.sel .ichk{background:var(--grn);border-color:var(--grn);}
-.iname{flex:1;font-size:14px;font-weight:500;}
-.isub{font-size:11px;color:var(--mut);margin-top:2px;}
-.iprc{font-size:14px;font-weight:600;color:var(--mut);white-space:nowrap;}
-.icard.sel .iprc{color:var(--grn);}
-.spanel{display:none;padding:10px 14px 13px;border-top:1px solid var(--brd);background:#1A2A14;}
-.spanel.open{display:block;}
-.splbl{font-size:12px;color:var(--grn);font-weight:500;margin-bottom:8px;}
-.srow{display:flex;align-items:center;gap:10px;}
-.srow span{font-size:13px;color:var(--mut);}
-.ctr{display:flex;align-items:center;gap:10px;background:var(--inp);border-radius:10px;padding:4px 10px;}
-.cb{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--grn);background:transparent;
-  color:var(--grn);font-size:17px;display:flex;align-items:center;justify-content:center;
-  cursor:pointer;font-family:inherit;transition:all .12s;}
-.cb:active{background:var(--grn);color:#111;}
-.cv{font-size:16px;font-weight:600;min-width:20px;text-align:center;}
-.bot-bar{background:var(--card);border-top:1px solid var(--brd);padding:14px 16px max(24px,env(safe-area-inset-bottom));}
-.bot-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
-.bot-lbl{font-size:13px;color:var(--mut);}
-.bot-amt{font-size:22px;font-weight:700;color:var(--grn);}
+/* Screen header */
+.screen-header {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 20px 12px; flex-shrink: 0;
+  position: sticky; top: 0; z-index: 10;
+  background: var(--bg);
+}
+.screen-title { font-size: 18px; font-weight: 600; }
 
-/* JOIN */
-.join-wrap{flex:1;display:flex;flex-direction:column;padding:0 24px max(40px,env(safe-area-inset-bottom));gap:20px;}
-.jico{width:80px;height:80px;border-radius:24px;background:var(--grnb);border:1px solid var(--grnr);
-  display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto;}
-.jcode{display:flex;justify-content:center;gap:10px;direction:ltr;margin:8px 0;}
-.jd{width:48px;height:60px;border-radius:12px;border:1.5px solid var(--brd);background:var(--inp);
-  color:var(--txt);font-size:24px;font-weight:700;text-align:center;font-family:inherit;
-  outline:none;caret-color:var(--grn);transition:border-color .15s,box-shadow .15s;}
-.jd:focus{border-color:var(--brd-f);box-shadow:0 0 0 3px var(--glow);}
-.jd.f{border-color:rgba(198,241,53,.3);}
-.jsep{font-size:22px;color:var(--fnt);display:flex;align-items:center;padding-bottom:4px;}
-.prev-box{background:var(--card);border:1px solid var(--grnr);border-radius:16px;padding:16px 20px;display:none;}
-.prev-box.show{display:block;animation:slideIn .25s ease;}
-.prev-title{font-size:15px;font-weight:600;margin-bottom:4px;}
-.prev-sub{font-size:13px;color:var(--mut);}
+/* Cards */
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 20px; }
+.card-green { background: var(--card); border: 1px solid var(--green-r); border-radius: var(--r-lg); padding: 20px; background-image: radial-gradient(ellipse at top right, var(--green-b), transparent 60%); }
 
-/* SUMMARY */
-.sum-hero{padding:48px 20px 28px;text-align:center;position:relative;flex-shrink:0;}
-.sum-lbl{font-size:14px;color:var(--mut);margin-bottom:8px;}
-.sum-amt{font-size:54px;font-weight:300;letter-spacing:-2px;}
-.sum-sub{font-size:13px;color:var(--mut);margin-top:6px;}
-.sum-card{background:var(--card);border-radius:24px 24px 0 0;flex:1;padding:24px 20px;overflow-y:auto;}
-.sumi{display:flex;justify-content:space-between;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--brd);font-size:14px;}
-.sumi:last-child{border-bottom:none;}
-.sumi-name{flex:1;font-weight:500;}
-.sumi-note{font-size:11px;color:var(--mut);margin-top:2px;}
-.sumi-price{color:var(--mut);font-weight:600;flex-shrink:0;}
+/* Demo note */
+.demo-note {
+  background: rgba(255,165,0,0.08); border: 1px solid rgba(255,165,0,0.2);
+  border-radius: var(--r-sm); padding: 12px 16px;
+  font-size: 12px; color: #FFA502; text-align: center; line-height: 1.5;
+}
 
-/* TIP */
-.tip-box{background:var(--inp);border-radius:16px;padding:16px;margin-bottom:14px;}
-.tip-ttl{font-size:13px;font-weight:600;margin-bottom:12px;}
-.tip-modes{display:flex;gap:8px;direction:ltr;margin-bottom:12px;}
-.tm{flex:1;padding:10px 6px;border-radius:10px;border:1px solid var(--brd);background:var(--card);
-  font-size:13px;font-weight:500;color:var(--mut);cursor:pointer;font-family:inherit;text-align:center;transition:all .15s;}
-.tm.on{background:var(--grn);color:#111;border-color:var(--grn);font-weight:700;}
-.tip-inp-row{display:flex;align-items:center;gap:10px;}
-.tip-inp{flex:1;padding:12px 14px;background:var(--card);border:1px solid var(--brd);border-radius:10px;
-  color:var(--txt);font-size:18px;font-weight:500;font-family:inherit;text-align:center;
-  outline:none;transition:border-color .15s;direction:ltr;}
-.tip-inp:focus{border-color:var(--brd-f);}
-.tip-unit{font-size:16px;font-weight:600;color:var(--mut);min-width:28px;}
-.tip-prev{font-size:12px;color:var(--mut);margin-top:8px;text-align:center;}
+/* Toast */
+.toast {
+  position: fixed; bottom: 32px; left: 50%;
+  transform: translateX(-50%) translateY(120px);
+  background: var(--elev); color: var(--text);
+  padding: 12px 24px; border-radius: 99px;
+  font-size: 14px; font-weight: 500;
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  z-index: 9999; pointer-events: none;
+  transition: transform 0.3s ease;
+  white-space: nowrap; max-width: calc(100vw - 48px);
+  overflow: hidden; text-overflow: ellipsis;
+}
+.toast.show    { transform: translateX(-50%) translateY(0); }
+.toast.success { border-color: var(--green-r); color: var(--green); }
+.toast.error   { border-color: rgba(255,71,87,0.3); color: var(--red); }
 
-/* TOTALS */
-.totals{background:var(--inp);border-radius:16px;padding:14px 16px;margin-bottom:20px;}
-.trow{display:flex;justify-content:space-between;font-size:14px;color:var(--mut);padding:5px 0;}
-.trow.fin{font-size:17px;font-weight:700;color:var(--txt);border-top:1px solid var(--brd);margin-top:6px;padding-top:12px;}
-.trow.fin span:last-child{color:var(--grn);}
+/* Spacer */
+.flex-1 { flex: 1; }
 
-/* PAY BUTTONS */
-.pay-btns{display:flex;flex-direction:column;gap:10px;margin-bottom:12px;}
-.pay-btn{display:flex;align-items:center;justify-content:center;gap:10px;
-  min-height:54px;border:none;border-radius:14px;font-family:inherit;
-  font-size:16px;font-weight:700;cursor:pointer;transition:all .18s ease;width:100%;}
-.pay-btn:active{transform:scale(.97);}
-.pay-bit{background:var(--grn);color:#0D0D14;}
-.pay-paybox{background:var(--up);color:var(--txt);border:1px solid var(--brd);}
-.demo-note{text-align:center;font-size:11px;color:var(--fnt);margin-bottom:14px;}
+/* ═══════════════════════════════════════
+   SCREEN: SPLASH
+═══════════════════════════════════════ */
+#scr-splash {
+  align-items: center; justify-content: center;
+  gap: 18px; z-index: 99;
+}
+.splash-icon-wrap { position: relative; width: 96px; height: 96px; }
+.splash-ring {
+  position: absolute; inset: -16px; border-radius: 50%;
+  border: 1.5px solid var(--green-r);
+  animation: ring-pulse 2.5s ease-in-out infinite;
+}
+@keyframes ring-pulse {
+  0%,100% { transform: scale(1); opacity: 0.3; }
+  50%      { transform: scale(1.1); opacity: 0.7; }
+}
+.splash-icon { width: 96px; height: 96px; }
+.splash-name { font-size: 34px; font-weight: 700; letter-spacing: -1.5px; }
+.splash-name .q { color: var(--green); }
+.splash-tag  { font-size: 12px; color: var(--faint); letter-spacing: 3px; text-transform: uppercase; }
 
-/* TOAST */
-.toast{position:fixed;bottom:32px;left:50%;
-  transform:translateX(-50%) translateY(100px);
-  background:var(--up);color:var(--txt);padding:12px 24px;border-radius:9999px;
-  font-size:14px;font-weight:500;border:1px solid var(--brd);
-  box-shadow:0 8px 32px rgba(0,0,0,.5);z-index:9999;pointer-events:none;
-  transition:transform .3s ease;white-space:nowrap;}
-.toast.show{transform:translateX(-50%) translateY(0);}
-.toast.ok{border-color:rgba(198,241,53,.3);color:var(--grn);}
-.toast.err{border-color:rgba(255,71,87,.3);color:var(--red);}
+/* ═══════════════════════════════════════
+   SCREEN: WELCOME
+═══════════════════════════════════════ */
+.welcome-page {
+  flex: 1; display: flex; flex-direction: column;
+  padding: 40px 24px max(40px, env(safe-area-inset-bottom));
+  position: relative; min-height: 100%;
+}
+.orb { position: absolute; border-radius: 50%; filter: blur(70px); pointer-events: none; }
+.orb-1 { width:300px;height:300px;top:-100px;left:-80px; background:radial-gradient(circle,rgba(198,241,53,0.1),transparent 70%); }
+.orb-2 { width:240px;height:240px;bottom:20%;right:-60px; background:radial-gradient(circle,rgba(61,217,217,0.06),transparent 70%); }
 
-.sp{flex:1;}
-.hide{display:none;}
+.welcome-logo { font-size: 28px; font-weight: 700; letter-spacing: -1px; margin-bottom: 52px; position: relative; z-index:1; }
+.welcome-logo .q { color: var(--green); }
+
+.welcome-hero { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 22px; position: relative; z-index:1; }
+
+.welcome-badge {
+  display: inline-flex; align-items: center;
+  background: var(--green-b); border: 1px solid var(--green-r);
+  border-radius: 99px; padding: 5px 14px;
+  font-size: 12px; font-weight: 600; color: var(--green);
+  width: fit-content;
+}
+
+.welcome-title { font-size: clamp(34px, 10vw, 44px); font-weight: 700; letter-spacing: -2px; line-height: 1.1; }
+.welcome-title em { font-style: normal; color: var(--green); }
+
+.welcome-body { font-size: 16px; color: var(--muted); line-height: 1.65; }
+
+.features { display: flex; flex-direction: column; gap: 13px; }
+.feature { display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--muted); }
+.feature-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+
+.welcome-cta { display: flex; flex-direction: column; gap: 12px; margin-top: 44px; position: relative; z-index:1; }
+.terms-note { font-size: 11px; color: var(--faint); text-align: center; line-height: 1.5; }
+.terms-note a { color: var(--green); }
+
+/* ═══════════════════════════════════════
+   SCREEN: AUTH (register + login)
+═══════════════════════════════════════ */
+.auth-page { flex: 1; display: flex; flex-direction: column; padding: 0 24px max(40px, env(safe-area-inset-bottom)); }
+.auth-header { display: flex; align-items: center; gap: 16px; padding: 20px 0 36px; }
+.auth-form { flex: 1; display: flex; flex-direction: column; gap: 22px; }
+.auth-title { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+.auth-subtitle { font-size: 14px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+
+/* ═══════════════════════════════════════
+   SCREEN: OTP
+═══════════════════════════════════════ */
+.otp-inputs { display: flex; gap: 10px; justify-content: center; direction: ltr; margin: 10px 0; }
+.otp-box {
+  width: 54px; height: 66px; border-radius: 14px;
+  border: 1.5px solid var(--border); background: var(--input);
+  color: var(--text); font-size: 28px; font-weight: 700;
+  text-align: center; font-family: inherit; outline: none;
+  caret-color: var(--green);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.otp-box:focus  { border-color: var(--bfocus); box-shadow: 0 0 0 3px var(--glow); }
+.otp-box.filled { border-color: var(--green-r); }
+.otp-sep { font-size: 22px; color: var(--faint); display: flex; align-items: center; padding-bottom: 4px; }
+
+.resend-row { text-align: center; font-size: 14px; color: var(--muted); }
+.resend-btn { color: var(--green); background: none; border: none; font-family: inherit; font-size: 14px; cursor: pointer; }
+.resend-btn:disabled { color: var(--faint); cursor: default; }
+
+/* ═══════════════════════════════════════
+   SCREEN: HOME
+═══════════════════════════════════════ */
+.home-hero {
+  padding: 28px 24px 24px;
+  background: linear-gradient(160deg, #1A1A2E 0%, #0D0D14 100%);
+  position: relative; overflow: hidden; flex-shrink: 0;
+}
+.hero-orb { position:absolute;width:300px;height:300px;border-radius:50%;top:-120px;left:-80px; background:radial-gradient(circle,rgba(198,241,53,0.08),transparent 70%);pointer-events:none; }
+.hero-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; position: relative; z-index: 1; }
+.hero-greeting { font-size: 14px; color: var(--muted); margin-bottom: 3px; }
+.hero-name { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
+.hero-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--green); color: #111; font-size: 18px; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; font-family: inherit; flex-shrink: 0; }
+
+.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; position: relative; z-index: 1; }
+.stat { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: var(--r-md); padding: 14px 10px; text-align: center; }
+.stat-value { font-size: 22px; font-weight: 700; color: var(--green); line-height: 1; }
+.stat-label { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+.section { padding: 20px 20px 0; }
+.section-label { font-size: 11px; font-weight: 600; color: var(--faint); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
+
+.action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.action-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 18px 16px; cursor: pointer; transition: transform 0.15s, border-color 0.15s; display: flex; flex-direction: column; gap: 10px; }
+.action-card:active { transform: scale(0.97); }
+.action-card:hover { border-color: rgba(255,255,255,0.14); }
+.action-card.primary { border-color: var(--green-r); background: linear-gradient(135deg, var(--green-b), var(--card)); grid-column: 1 / -1; flex-direction: row; align-items: center; gap: 16px; }
+.action-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+.action-card.primary .action-icon { background: var(--green); }
+.action-card:not(.primary) .action-icon { background: var(--elev); }
+.action-label { font-size: 15px; font-weight: 600; }
+.action-desc  { font-size: 12px; color: var(--muted); margin-top: 3px; line-height: 1.4; }
+.action-arrow { font-size: 18px; color: var(--faint); flex-shrink: 0; }
+
+.recent-section { padding: 20px 20px; flex: 1; }
+.history-item { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); cursor: pointer; transition: opacity 0.15s; }
+.history-item:active { opacity: 0.7; }
+.history-item:last-child { border-bottom: none; }
+.history-icon { width: 44px; height: 44px; border-radius: 12px; background: var(--elev); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.history-info { flex: 1; min-width: 0; }
+.history-name { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.history-sub  { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.history-amount { font-size: 14px; font-weight: 600; color: var(--green); flex-shrink: 0; }
+
+.empty-state { display: flex; flex-direction: column; align-items: center; padding: 40px 20px; text-align: center; gap: 10px; }
+.empty-icon  { font-size: 48px; opacity: 0.2; margin-bottom: 6px; }
+.empty-title { font-size: 16px; font-weight: 500; color: var(--muted); }
+.empty-body  { font-size: 13px; color: var(--faint); line-height: 1.5; }
+
+/* Bottom Nav */
+.bottom-nav { display: flex; background: var(--card); border-top: 1px solid var(--border); padding: 10px 0 max(24px, env(safe-area-inset-bottom)); flex-shrink: 0; }
+.nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 44px; padding: 6px 0; border: none; background: none; font-family: inherit; font-size: 10px; font-weight: 500; color: var(--faint); cursor: pointer; transition: color 0.15s; }
+.nav-item.active { color: var(--green); }
+.nav-icon { font-size: 22px; line-height: 1; }
+
+/* ═══════════════════════════════════════
+   SCREEN: SCAN
+═══════════════════════════════════════ */
+.scan-area { flex: 1; display: flex; flex-direction: column; padding: 0 20px max(24px, env(safe-area-inset-bottom)); gap: 14px; }
+.camera-frame {
+  flex: 1; min-height: 240px; border-radius: 20px;
+  border: 1.5px dashed #3A3A3A; background: var(--card);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  cursor: pointer; transition: border-color 0.2s; overflow: hidden; position: relative;
+}
+.camera-frame:active { border-color: var(--green); }
+.camera-frame img { width: 100%; height: 100%; object-fit: cover; }
+.camera-overlay {
+  position: absolute; inset: 0; background: rgba(0,0,0,0.55);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+}
+.camera-placeholder { text-align: center; }
+.camera-icon { font-size: 52px; margin-bottom: 10px; }
+.camera-text { font-size: 16px; font-weight: 500; }
+.camera-sub  { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+/* ═══════════════════════════════════════
+   SCREEN: LOADING
+═══════════════════════════════════════ */
+.loading-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding: 40px; text-align: center; }
+.spinner-wrap { width: 86px; height: 86px; position: relative; }
+.spin-outer { position: absolute; inset: 0; border: 3px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin 0.9s linear infinite; }
+.spin-inner { position: absolute; inset: 14px; border: 2px solid var(--border); border-bottom-color: var(--cyan); border-radius: 50%; animation: spin 0.7s linear infinite reverse; }
+.spin-icon  { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 28px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-title { font-size: 20px; font-weight: 700; }
+.loading-sub   { font-size: 14px; color: var(--muted); line-height: 1.6; }
+.steps-list { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+.step { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: var(--r-sm); background: var(--card); font-size: 13px; color: var(--muted); transition: all 0.3s; }
+.step.active { background: rgba(198,241,53,0.08); color: var(--green); border: 1px solid var(--green-r); }
+.step.done   { background: rgba(46,213,115,0.06); color: #5ABF5A; }
+
+/* ═══════════════════════════════════════
+   SCREEN: SESSION
+═══════════════════════════════════════ */
+.session-header { padding: 0 16px 10px; flex-shrink: 0; }
+.code-bar {
+  background: rgba(198,241,53,0.07); border: 1px solid var(--green-r);
+  border-radius: var(--r-sm); padding: 10px 14px;
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 10px;
+}
+.code-label { font-size: 11px; color: var(--green); font-weight: 600; margin-bottom: 2px; }
+.code-display { font-size: 22px; font-weight: 700; color: var(--green); letter-spacing: 6px; direction: ltr; font-variant-numeric: tabular-nums; }
+.code-actions { display: flex; gap: 8px; margin-right: auto; }
+
+.live-bar { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+.live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: live 1.8s ease-in-out infinite; flex-shrink: 0; }
+@keyframes live { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+.items-scroll { flex: 1; overflow-y: auto; padding: 0 16px 10px; }
+.items-group-label { font-size: 11px; font-weight: 600; color: var(--faint); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+
+.item-card { background: var(--card); border-radius: var(--r-lg); margin-bottom: 6px; overflow: hidden; border: 1px solid var(--border); transition: border-color 0.2s; animation: item-in 0.2s ease both; }
+@keyframes item-in { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+.item-card.selected { border-color: var(--green); }
+
+.item-row { display: flex; align-items: center; gap: 12px; padding: 13px 14px; cursor: pointer; user-select: none; }
+.item-check { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--faint); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #111; transition: all 0.2s; }
+.item-card.selected .item-check { background: var(--green); border-color: var(--green); }
+.item-name  { flex: 1; font-size: 14px; font-weight: 500; }
+.item-hint  { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.item-price { font-size: 14px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+.item-card.selected .item-price { color: var(--green); }
+
+.split-panel { display: none; padding: 10px 14px 14px; border-top: 1px solid var(--border); background: rgba(198,241,53,0.04); }
+.split-panel.open { display: block; }
+.split-label { font-size: 12px; color: var(--green); font-weight: 500; margin-bottom: 10px; }
+.split-row { display: flex; align-items: center; gap: 10px; }
+.split-row > span { font-size: 13px; color: var(--muted); }
+.counter { display: flex; align-items: center; gap: 10px; background: var(--input); border-radius: 10px; padding: 4px 10px; }
+.counter-btn { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--green); background: transparent; color: var(--green); font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-family: inherit; transition: all 0.12s; }
+.counter-btn:active { background: var(--green); color: #111; }
+.counter-val { font-size: 16px; font-weight: 600; min-width: 20px; text-align: center; }
+
+.bottom-action { background: var(--card); border-top: 1px solid var(--border); padding: 14px 16px max(24px, env(safe-area-inset-bottom)); flex-shrink: 0; }
+.bottom-total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.bottom-label  { font-size: 13px; color: var(--muted); }
+.bottom-amount { font-size: 24px; font-weight: 700; color: var(--green); }
+
+/* ═══════════════════════════════════════
+   SCREEN: JOIN
+═══════════════════════════════════════ */
+.join-page { flex: 1; display: flex; flex-direction: column; padding: 0 24px max(40px, env(safe-area-inset-bottom)); gap: 20px; }
+.join-icon-big { width: 80px; height: 80px; border-radius: 24px; background: var(--green-b); border: 1px solid var(--green-r); display: flex; align-items: center; justify-content: center; font-size: 36px; margin: 0 auto 4px; }
+
+.code-6-inputs { display: flex; gap: 8px; justify-content: center; direction: ltr; margin: 8px 0; }
+.code-6-box { width: 46px; height: 60px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--input); color: var(--text); font-size: 24px; font-weight: 700; text-align: center; font-family: inherit; outline: none; caret-color: var(--green); transition: border-color 0.15s, box-shadow 0.15s; }
+.code-6-box:focus  { border-color: var(--bfocus); box-shadow: 0 0 0 3px var(--glow); }
+.code-6-box.filled { border-color: var(--green-r); }
+.code-6-sep { font-size: 22px; color: var(--faint); display: flex; align-items: center; }
+
+.session-preview { background: var(--card); border: 1px solid var(--green-r); border-radius: var(--r-lg); padding: 16px 20px; display: none; animation: item-in 0.25s ease; }
+.session-preview.visible { display: block; }
+.preview-host { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.preview-info { font-size: 13px; color: var(--muted); }
+
+/* ═══════════════════════════════════════
+   SCREEN: SUMMARY
+═══════════════════════════════════════ */
+.summary-hero { padding: 48px 20px 28px; text-align: center; position: relative; flex-shrink: 0; }
+.summary-hero .back-btn { position: absolute; top: 16px; right: 20px; }
+.summary-total-label { font-size: 14px; color: var(--muted); margin-bottom: 8px; }
+.summary-total-amount { font-size: 56px; font-weight: 300; letter-spacing: -2px; line-height: 1; }
+.summary-total-sub { font-size: 13px; color: var(--muted); margin-top: 8px; }
+
+.summary-card { background: var(--card); border-radius: 24px 24px 0 0; flex: 1; padding: 24px 20px; overflow-y: auto; }
+.summary-section-title { font-size: 16px; font-weight: 600; margin-bottom: 14px; }
+.summary-item { display: flex; justify-content: space-between; align-items: baseline; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+.summary-item:last-child { border-bottom: none; }
+.summary-item-name  { font-weight: 500; flex: 1; }
+.summary-item-note  { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.summary-item-price { color: var(--muted); font-weight: 600; flex-shrink: 0; }
+
+/* Tip */
+.tip-section { background: var(--input); border-radius: var(--r-lg); padding: 16px; margin-bottom: 14px; }
+.tip-title { font-size: 13px; font-weight: 600; margin-bottom: 12px; }
+.tip-mode-row { display: flex; gap: 8px; direction: ltr; margin-bottom: 12px; }
+.tip-mode-btn { flex: 1; padding: 10px 6px; border-radius: 10px; border: 1px solid var(--border); background: var(--card); font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; font-family: inherit; text-align: center; transition: all 0.15s; }
+.tip-mode-btn.active { background: var(--green); color: #111; border-color: var(--green); font-weight: 700; }
+.tip-input-row { display: flex; align-items: center; gap: 10px; }
+.tip-number { flex: 1; padding: 12px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-size: 20px; font-weight: 500; font-family: inherit; text-align: center; outline: none; direction: ltr; transition: border-color 0.15s; }
+.tip-number:focus { border-color: var(--bfocus); }
+.tip-unit { font-size: 16px; font-weight: 600; color: var(--muted); min-width: 26px; }
+.tip-preview { font-size: 12px; color: var(--muted); margin-top: 8px; text-align: center; }
+
+/* Totals */
+.totals-box { background: var(--input); border-radius: var(--r-lg); padding: 14px 16px; margin-bottom: 20px; }
+.total-row { display: flex; justify-content: space-between; font-size: 14px; color: var(--muted); padding: 5px 0; }
+.total-row.final { font-size: 17px; font-weight: 700; color: var(--text); border-top: 1px solid var(--border); margin-top: 6px; padding-top: 12px; }
+.total-row.final span:last-child { color: var(--green); }
+
+/* Pay buttons */
+.pay-buttons { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+.pay-btn { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 54px; border: none; border-radius: var(--r-md); font-family: inherit; font-size: 16px; font-weight: 700; cursor: pointer; width: 100%; transition: transform 0.15s, opacity 0.15s; }
+.pay-btn:active { transform: scale(0.97); }
+.pay-bit    { background: var(--green); color: #0D0D14; }
+.pay-paybox { background: var(--elev); color: var(--text); border: 1px solid var(--border); }
+.pay-note { text-align: center; font-size: 11px; color: var(--faint); margin-bottom: 14px; }
 </style>
 </head>
 <body>
 <div class="shell">
 
-<!-- ══ SPLASH ══ -->
-<div class="scr on" id="s-splash">
-  <div class="sp-wrap">
-    <div class="sp-ring"></div>
-    <svg class="sp-icon" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+<!-- ════════════════════════════════
+     SPLASH
+════════════════════════════════ -->
+<div class="screen active" id="scr-splash">
+  <div class="splash-icon-wrap">
+    <div class="splash-ring"></div>
+    <svg class="splash-icon" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
       <rect width="120" height="120" rx="28" fill="#1A1A2E"/>
       <rect x="28" y="20" width="52" height="66" rx="7" fill="none" stroke="#C6F135" stroke-width="1.5" opacity="0.6"/>
       <rect x="36" y="34" width="28" height="3.5" rx="1.75" fill="#C6F135"/>
       <rect x="36" y="44" width="20" height="2.5" rx="1.25" fill="#fff" opacity=".22"/>
       <rect x="36" y="51" width="26" height="2.5" rx="1.25" fill="#fff" opacity=".18"/>
       <rect x="36" y="58" width="16" height="2.5" rx="1.25" fill="#fff" opacity=".18"/>
+      <rect x="36" y="65" width="22" height="2.5" rx="1.25" fill="#fff" opacity=".12"/>
       <circle cx="82" cy="88" r="22" fill="#1A1A2E"/>
       <circle cx="82" cy="88" r="18" fill="#C6F135"/>
       <path d="M73 88L79 95L92 78" stroke="#111" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
     </svg>
   </div>
-  <div class="sp-name">cler<span class="g">q</span></div>
-  <div class="sp-tag">split smarter</div>
+  <div class="splash-name">cler<span class="q">q</span></div>
+  <div class="splash-tag">split smarter</div>
 </div>
 
-<!-- ══ WELCOME ══ -->
-<div class="scr" id="s-welcome">
-  <div class="wp">
-    <div class="orb o1"></div><div class="orb o2"></div>
-    <div class="wl">cler<span class="g">q</span></div>
-    <div class="wh">
-      <div class="wbdg">חדש בישראל 🇮🇱</div>
-      <div class="wt">פיצול חשבון<br/><em>תוך 20 שניות</em></div>
-      <div class="ws">צלם את הקבלה, שתף קוד עם החברים — כל אחד בוחר מה שלו ומשלם בביט.</div>
-      <div class="fts">
-        <div class="ft"><div class="fd"></div>AI קורא את הקבלה תוך שניות</div>
-        <div class="ft"><div class="fd"></div>כולם בוחרים בזמן אמת</div>
-        <div class="ft"><div class="fd"></div>תשלום ישיר בביט ופייבוקס</div>
+<!-- ════════════════════════════════
+     WELCOME
+════════════════════════════════ -->
+<div class="screen" id="scr-welcome">
+  <div class="welcome-page">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="welcome-logo">cler<span class="q">q</span></div>
+    <div class="welcome-hero">
+      <div class="welcome-badge">חדש בישראל 🇮🇱</div>
+      <h1 class="welcome-title">פיצול חשבון<br/><em>תוך 20 שניות</em></h1>
+      <p class="welcome-body">צלם את הקבלה, שתף קוד עם החברים — כל אחד בוחר מה שלו ומשלם ישירות בביט.</p>
+      <div class="features">
+        <div class="feature"><div class="feature-dot"></div><span>AI קורא את הקבלה תוך שניות</span></div>
+        <div class="feature"><div class="feature-dot"></div><span>כולם בוחרים בזמן אמת</span></div>
+        <div class="feature"><div class="feature-dot"></div><span>תשלום ישיר בביט ופייבוקס</span></div>
       </div>
     </div>
-    <div class="wcta">
-      <button class="btn btnp" onclick="go('s-reg')">התחל עכשיו — בחינם</button>
-      <button class="btn btng" onclick="go('s-log')">יש לי חשבון — כניסה</button>
+    <div class="welcome-cta">
+      <button class="btn btn-primary" onclick="showScreen('scr-register')">התחל עכשיו — בחינם</button>
+      <button class="btn btn-ghost"   onclick="showScreen('scr-login')">יש לי חשבון — כניסה</button>
+      <p class="terms-note">בלחיצה אתה מסכים ל<a href="#">תנאי שימוש</a> ו<a href="#">פרטיות</a></p>
     </div>
   </div>
 </div>
 
-<!-- ══ REGISTER ══ -->
-<div class="scr" id="s-reg">
-  <div class="ap">
-    <div class="ah">
-      <button class="bk" onclick="go('s-welcome')">←</button>
-      <div class="al">cler<span class="g">q</span></div>
+<!-- ════════════════════════════════
+     REGISTER
+════════════════════════════════ -->
+<div class="screen" id="scr-register">
+  <div class="auth-page">
+    <div class="auth-header">
+      <button class="back-btn" onclick="showScreen('scr-welcome')" aria-label="חזור">←</button>
+      <div class="logo">cler<span class="q">q</span></div>
     </div>
-    <div class="af">
-      <div><div class="at">יצירת חשבון</div><div class="as">הרשמה מהירה — שם ומספר טלפון</div></div>
-      <div class="fg">
-        <div class="fl">השם שלך</div>
-        <input class="inp" type="text" id="rn" placeholder="לדוגמה: שון" maxlength="30" autocomplete="given-name"/>
-        <div class="fe" id="rne"></div>
+    <div class="auth-form">
+      <div>
+        <h2 class="auth-title">יצירת חשבון</h2>
+        <p class="auth-subtitle">הרשמה מהירה — שם ומספר טלפון בלבד</p>
       </div>
-      <div class="fg">
-        <div class="fl">מספר טלפון</div>
-        <div class="pw"><div class="pp">🇮🇱 +972</div><input class="inp" type="tel" id="rp" placeholder="05X-XXX-XXXX" maxlength="11" inputmode="numeric"/></div>
-        <div class="fe" id="rpe"></div>
+      <div class="field">
+        <label class="field-label" for="reg-name">השם שלך</label>
+        <input class="input" type="text" id="reg-name"
+          placeholder="לדוגמה: שון"
+          maxlength="30" autocomplete="given-name"/>
+        <span class="field-error" id="reg-name-err" role="alert"></span>
       </div>
-      <div class="dn">🔧 <strong>מצב דמו:</strong> קוד הוא תמיד <strong>1 2 3 4</strong></div>
-      <div class="sp"></div>
-      <button class="btn btnp" onclick="doReg()">המשך ←</button>
-    </div>
-  </div>
-</div>
-
-<!-- ══ LOGIN ══ -->
-<div class="scr" id="s-log">
-  <div class="ap">
-    <div class="ah">
-      <button class="bk" onclick="go('s-welcome')">←</button>
-      <div class="al">cler<span class="g">q</span></div>
-    </div>
-    <div class="af">
-      <div><div class="at">כניסה</div><div class="as">הכנס את מספר הטלפון שלך</div></div>
-      <div class="fg">
-        <div class="fl">מספר טלפון</div>
-        <div class="pw"><div class="pp">🇮🇱 +972</div><input class="inp" type="tel" id="lp" placeholder="05X-XXX-XXXX" maxlength="11" inputmode="numeric"/></div>
-        <div class="fe" id="le"></div>
-      </div>
-      <div class="dn">🔧 <strong>מצב דמו:</strong> קוד הוא תמיד <strong>1 2 3 4</strong></div>
-      <div class="sp"></div>
-      <button class="btn btnp" onclick="doLog()">המשך ←</button>
-    </div>
-  </div>
-</div>
-
-<!-- ══ OTP ══ -->
-<div class="scr" id="s-otp">
-  <div class="ap">
-    <div class="ah">
-      <button class="bk" onclick="backOTP()">←</button>
-      <div class="al">cler<span class="g">q</span></div>
-    </div>
-    <div class="af">
-      <div><div class="at">אימות טלפון</div><div class="as" id="osub">שלחנו קוד SMS</div></div>
-      <div class="fg">
-        <div class="fl" style="text-align:center">הכנס את הקוד</div>
-        <div class="ow">
-          <input class="od" type="tel" id="o0" maxlength="1" inputmode="numeric"/>
-          <input class="od" type="tel" id="o1" maxlength="1" inputmode="numeric"/>
-          <div class="os">·</div>
-          <input class="od" type="tel" id="o2" maxlength="1" inputmode="numeric"/>
-          <input class="od" type="tel" id="o3" maxlength="1" inputmode="numeric"/>
+      <div class="field">
+        <label class="field-label" for="reg-phone">מספר טלפון</label>
+        <div class="phone-row">
+          <div class="phone-prefix">🇮🇱 +972</div>
+          <input class="input" type="tel" id="reg-phone"
+            placeholder="05X-XXX-XXXX"
+            maxlength="11" inputmode="numeric" autocomplete="tel-national"/>
         </div>
-        <div class="fe" id="oe" style="text-align:center"></div>
+        <span class="field-error" id="reg-phone-err" role="alert"></span>
       </div>
-      <div class="rw">לא קיבלת? <button class="rb" id="rb" onclick="resend()" disabled>שלח שוב (<span id="rcd">30</span>)</button></div>
-      <div class="sp"></div>
-      <button class="btn btnp" onclick="doOTP()">אמת וכנס ✓</button>
+      <div class="demo-note">🔧 <strong>מצב דמו:</strong> קוד האימות הוא תמיד <strong>1 2 3 4</strong></div>
+      <div class="flex-1"></div>
+      <button class="btn btn-primary" id="reg-submit" onclick="handleRegister()">המשך ←</button>
     </div>
   </div>
 </div>
 
-<!-- ══ HOME ══ -->
-<div class="scr" id="s-home">
+<!-- ════════════════════════════════
+     LOGIN
+════════════════════════════════ -->
+<div class="screen" id="scr-login">
+  <div class="auth-page">
+    <div class="auth-header">
+      <button class="back-btn" onclick="showScreen('scr-welcome')" aria-label="חזור">←</button>
+      <div class="logo">cler<span class="q">q</span></div>
+    </div>
+    <div class="auth-form">
+      <div>
+        <h2 class="auth-title">כניסה</h2>
+        <p class="auth-subtitle">הכנס את מספר הטלפון שלך</p>
+      </div>
+      <div class="field">
+        <label class="field-label" for="login-phone">מספר טלפון</label>
+        <div class="phone-row">
+          <div class="phone-prefix">🇮🇱 +972</div>
+          <input class="input" type="tel" id="login-phone"
+            placeholder="05X-XXX-XXXX"
+            maxlength="11" inputmode="numeric" autocomplete="tel-national"/>
+        </div>
+        <span class="field-error" id="login-phone-err" role="alert"></span>
+      </div>
+      <div class="demo-note">🔧 <strong>מצב דמו:</strong> קוד האימות הוא תמיד <strong>1 2 3 4</strong></div>
+      <div class="flex-1"></div>
+      <button class="btn btn-primary" id="login-submit" onclick="handleLogin()">המשך ←</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     OTP
+════════════════════════════════ -->
+<div class="screen" id="scr-otp">
+  <div class="auth-page">
+    <div class="auth-header">
+      <button class="back-btn" id="otp-back" onclick="handleOTPBack()" aria-label="חזור">←</button>
+      <div class="logo">cler<span class="q">q</span></div>
+    </div>
+    <div class="auth-form">
+      <div>
+        <h2 class="auth-title">אימות טלפון</h2>
+        <p class="auth-subtitle" id="otp-subtitle">שלחנו קוד SMS למספר שלך</p>
+      </div>
+      <div class="field">
+        <label class="field-label" style="text-align:center">הכנס את הקוד בן 4 הספרות</label>
+        <div class="otp-inputs" role="group" aria-label="קוד OTP">
+          <input class="otp-box" type="tel" id="otp-0" maxlength="1" inputmode="numeric" autocomplete="one-time-code" aria-label="ספרה 1"/>
+          <input class="otp-box" type="tel" id="otp-1" maxlength="1" inputmode="numeric" aria-label="ספרה 2"/>
+          <div class="otp-sep">·</div>
+          <input class="otp-box" type="tel" id="otp-2" maxlength="1" inputmode="numeric" aria-label="ספרה 3"/>
+          <input class="otp-box" type="tel" id="otp-3" maxlength="1" inputmode="numeric" aria-label="ספרה 4"/>
+        </div>
+        <span class="field-error" id="otp-err" style="text-align:center" role="alert"></span>
+      </div>
+      <div class="resend-row">
+        לא קיבלת?
+        <button class="resend-btn" id="resend-btn" onclick="handleResend()" disabled aria-label="שלח קוד מחדש">
+          שלח שוב (<span id="resend-countdown">30</span>)
+        </button>
+      </div>
+      <div class="flex-1"></div>
+      <button class="btn btn-primary" id="otp-submit" onclick="handleOTPSubmit()">אמת וכנס ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     HOME
+════════════════════════════════ -->
+<div class="screen" id="scr-home">
   <div style="display:flex;flex-direction:column;min-height:100%;">
-    <div class="hero">
-      <div class="horb"></div>
-      <div class="htop">
-        <div><div class="hg">שלום,</div><div class="hn" id="hn">...</div></div>
-        <button class="hav" id="hav">?</button>
+    <div class="home-hero">
+      <div class="hero-orb"></div>
+      <div class="hero-top">
+        <div>
+          <div class="hero-greeting">שלום,</div>
+          <div class="hero-name" id="home-name">...</div>
+        </div>
+        <button class="hero-avatar" id="home-avatar" onclick="handleLogout()" title="לחץ לצאת">?</button>
       </div>
-      <div class="stats">
-        <div class="stat"><div class="sv" id="ss">0</div><div class="sl">חשבונות</div></div>
-        <div class="stat"><div class="sv" id="st">₪0</div><div class="sl">חולקו</div></div>
-        <div class="stat"><div class="sv" id="sf">0</div><div class="sl">חברים</div></div>
-      </div>
-    </div>
-    <div class="hsec">
-      <div class="hlbl">מה תרצה לעשות?</div>
-      <div class="agrid">
-        <div class="ac main" onclick="go('s-scan')">
-          <div class="aico">🧾</div>
-          <div class="atx"><div class="atl">פתח חשבון חדש</div><div class="adc">צלם קבלה — AI יקרא ויפצל תוך שניות</div></div>
-          <div class="arr">←</div>
-        </div>
-        <div class="ac" onclick="go('s-join')">
-          <div class="aico">🔢</div>
-          <div class="atx"><div class="atl">הצטרף</div><div class="adc">הכנס קוד מחבר</div></div>
-        </div>
-        <div class="ac" onclick="doLogout()">
-          <div class="aico">🚪</div>
-          <div class="atx"><div class="atl">יציאה</div><div class="adc">התנתק מהחשבון</div></div>
-        </div>
+      <div class="stats-grid">
+        <div class="stat"><div class="stat-value" id="stat-sessions">0</div><div class="stat-label">חשבונות</div></div>
+        <div class="stat"><div class="stat-value" id="stat-total">₪0</div><div class="stat-label">חולקו</div></div>
+        <div class="stat"><div class="stat-value" id="stat-friends">0</div><div class="stat-label">חברים</div></div>
       </div>
     </div>
-    <div class="hrec">
-      <div class="hlbl">פעילות אחרונה</div>
-      <div id="rlist">
-        <div class="empty">
-          <div class="ei">🧾</div>
-          <div class="et">אין חשבונות עדיין</div>
-          <div class="es">לחץ על "פתח חשבון חדש"<br/>וצלם את הקבלה הראשונה שלך</div>
+
+    <div class="section" style="padding-top:22px;">
+      <div class="section-label">מה תרצה לעשות?</div>
+      <div class="action-grid">
+        <div class="action-card primary" onclick="showScreen('scr-scan')" role="button" tabindex="0">
+          <div class="action-icon">🧾</div>
+          <div style="flex:1">
+            <div class="action-label">פתח חשבון חדש</div>
+            <div class="action-desc">צלם קבלה — AI יקרא ויפצל תוך שניות</div>
+          </div>
+          <div class="action-arrow">←</div>
+        </div>
+        <div class="action-card" onclick="showScreen('scr-join')" role="button" tabindex="0">
+          <div class="action-icon" style="background:var(--elev);">🔢</div>
+          <div class="action-label">הצטרף</div>
+          <div class="action-desc">הכנס קוד מחבר</div>
+        </div>
+        <div class="action-card" onclick="handleLogout()" role="button" tabindex="0">
+          <div class="action-icon" style="background:var(--elev);">🚪</div>
+          <div class="action-label">יציאה</div>
+          <div class="action-desc">התנתק מהחשבון</div>
         </div>
       </div>
     </div>
-    <div class="sp"></div>
-    <div class="nav">
-      <button class="nb on"><span class="ni">🏠</span><span>בית</span></button>
-      <button class="nb" onclick="go('s-scan')"><span class="ni">📷</span><span>סרוק</span></button>
-      <button class="nb" onclick="go('s-join')"><span class="ni">🔢</span><span>הצטרף</span></button>
-      <button class="nb" onclick="doLogout()"><span class="ni">🚪</span><span>יציאה</span></button>
+
+    <div class="recent-section">
+      <div class="section-label">פעילות אחרונה</div>
+      <div id="recent-list">
+        <div class="empty-state">
+          <div class="empty-icon">🧾</div>
+          <div class="empty-title">אין חשבונות עדיין</div>
+          <div class="empty-body">לחץ על "פתח חשבון חדש"<br/>וצלם את הקבלה הראשונה שלך</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex-1"></div>
+    <div class="bottom-nav">
+      <button class="nav-item active" aria-current="page"><span class="nav-icon">🏠</span><span>בית</span></button>
+      <button class="nav-item" onclick="showScreen('scr-scan')"><span class="nav-icon">📷</span><span>סרוק</span></button>
+      <button class="nav-item" onclick="showScreen('scr-join')"><span class="nav-icon">🔢</span><span>הצטרף</span></button>
+      <button class="nav-item" onclick="handleLogout()"><span class="nav-icon">🚪</span><span>יציאה</span></button>
     </div>
   </div>
 </div>
 
-<!-- ══ SCAN ══ -->
-<div class="scr" id="s-scan">
-  <div class="ah" style="padding:16px 20px 12px;flex-shrink:0;">
-    <button class="bk" onclick="go('s-home')">←</button>
-    <div class="al">סרוק קבלה</div>
+<!-- ════════════════════════════════
+     SCAN
+════════════════════════════════ -->
+<div class="screen" id="scr-scan">
+  <div class="screen-header">
+    <button class="back-btn" onclick="showScreen('scr-home')" aria-label="חזור">←</button>
+    <span class="screen-title">סרוק קבלה</span>
   </div>
-  <div class="scan-wrap">
-    <label class="cam-frame" id="cam-frame" for="cam-input">
-      <div style="text-align:center" id="cam-ph">
-        <div class="cam-ico">📷</div>
-        <div class="cam-txt">לחץ לצילום או העלאה</div>
-        <div class="cam-sub">פתח מצלמה או גלריה</div>
+  <div class="scan-area">
+    <label class="camera-frame" id="camera-frame" for="camera-file-input">
+      <div class="camera-placeholder" id="camera-placeholder">
+        <div class="camera-icon">📷</div>
+        <div class="camera-text">לחץ לצילום או העלאה</div>
+        <div class="camera-sub">פתח מצלמה או גלריה</div>
       </div>
     </label>
-    <input type="file" id="cam-input" accept="image/*" style="display:none" onchange="handleImg(this)"/>
-    <button class="btn btnp" id="scan-btn" onclick="startScan()" disabled>סרוק עם AI</button>
-    <button class="btn btng" onclick="loadDemo()">טען דמו (ללא תמונה)</button>
+    <input type="file" id="camera-file-input" accept="image/*" style="display:none" onchange="handleImageSelected(this)"/>
+    <button class="btn btn-primary" id="scan-ai-btn" onclick="startAIScan()" disabled>סרוק עם AI</button>
+    <button class="btn btn-ghost" onclick="loadDemoItems()">טען דמו (ללא תמונה)</button>
   </div>
 </div>
 
-<!-- ══ LOADING ══ -->
-<div class="scr" id="s-load">
-  <div class="load-body">
-    <div class="loader">
-      <div class="lr-out"></div>
-      <div class="lr-in"></div>
-      <div class="lr-ico">🧾</div>
+<!-- ════════════════════════════════
+     LOADING
+════════════════════════════════ -->
+<div class="screen" id="scr-loading">
+  <div class="loading-body">
+    <div class="spinner-wrap">
+      <div class="spin-outer"></div>
+      <div class="spin-inner"></div>
+      <div class="spin-icon">🧾</div>
     </div>
-    <div class="lt">קורא את הקבלה...</div>
-    <div class="ls">הבינה המלאכותית מזהה<br/>את הפריטים והמחירים</div>
-    <div class="steps">
-      <div class="step" id="st1"><span>📸</span> מנתח את התמונה</div>
-      <div class="step" id="st2"><span>📋</span> מחלץ פריטים ומחירים</div>
-      <div class="step" id="st3"><span>🔗</span> יוצר סשן וקוד כניסה</div>
-      <div class="step" id="st4"><span>✅</span> מוכן לחלוקה</div>
+    <div class="loading-title">קורא את הקבלה...</div>
+    <div class="loading-sub">הבינה המלאכותית מזהה<br/>את הפריטים והמחירים</div>
+    <div class="steps-list">
+      <div class="step" id="step-1"><span>📸</span><span>מנתח את התמונה</span></div>
+      <div class="step" id="step-2"><span>📋</span><span>מחלץ פריטים ומחירים</span></div>
+      <div class="step" id="step-3"><span>🔗</span><span>יוצר סשן וקוד כניסה</span></div>
+      <div class="step" id="step-4"><span>✅</span><span>מוכן לחלוקה</span></div>
     </div>
   </div>
 </div>
 
-<!-- ══ SESSION (יוזם) ══ -->
-<div class="scr" id="s-sess">
-  <div class="ah" style="padding:16px 20px 8px;flex-shrink:0;">
-    <button class="bk" onclick="go('s-scan')">←</button>
-    <div class="al" style="flex:1">בחר מנות</div>
-    <span style="font-size:13px;color:var(--mut)" id="item-cnt"></span>
+<!-- ════════════════════════════════
+     SESSION
+════════════════════════════════ -->
+<div class="screen" id="scr-session">
+  <div class="screen-header">
+    <button class="back-btn" onclick="showScreen('scr-scan')" aria-label="חזור">←</button>
+    <span class="screen-title">בחר מנות</span>
+    <span style="font-size:13px;color:var(--muted);margin-right:auto" id="session-item-count"></span>
   </div>
-  <div class="sess-bar">
-    <div style="flex:1">
-      <div class="sess-lbl">קוד הצטרפות לחברים</div>
-      <div class="sess-code" id="sess-code">--- ---</div>
+  <div class="session-header">
+    <div class="code-bar">
+      <div style="flex:1">
+        <div class="code-label">קוד הצטרפות לחברים</div>
+        <div class="code-display" id="session-code-display">--- ---</div>
+      </div>
+      <div class="code-actions">
+        <button class="btn btn-primary btn-sm" onclick="shareSessionCode()">שתף 📤</button>
+        <button class="btn btn-danger btn-sm" onclick="closeCurrentSession()">סגור ⛔</button>
+      </div>
     </div>
-    <button class="btn btnp" style="width:auto;min-height:36px;padding:0 14px;font-size:13px;border-radius:10px;" onclick="shareCode()">שתף 📤</button>
-    <button class="btn btnr" style="width:auto;min-height:36px;padding:0 12px;font-size:12px;border-radius:10px;margin-right:6px;" onclick="closeSession()">סגור ⛔</button>
-  </div>
-  <div class="live-bar">
-    <div class="live-dot"></div>
-    <span id="live-txt">1 מחובר</span>
-  </div>
-  <div class="items-wrap">
-    <div class="ilbl">הקבלה שלך</div>
-    <div id="items-list"></div>
-  </div>
-  <div class="bot-bar">
-    <div class="bot-row">
-      <span class="bot-lbl">החלק שלי</span>
-      <span class="bot-amt" id="my-sub">₪0.00</span>
+    <div class="live-bar">
+      <div class="live-dot" role="status" aria-label="פעיל"></div>
+      <span id="live-members-text">1 מחובר</span>
     </div>
-    <button class="btn btnp" onclick="goSummary()">המשך לתשלום ←</button>
+  </div>
+  <div class="items-scroll">
+    <div class="items-group-label">פריטים בקבלה</div>
+    <div id="items-container"></div>
+  </div>
+  <div class="bottom-action">
+    <div class="bottom-total-row">
+      <span class="bottom-label">החלק שלי</span>
+      <span class="bottom-amount" id="my-subtotal">₪0.00</span>
+    </div>
+    <button class="btn btn-primary" onclick="goToSummary()">המשך לתשלום ←</button>
   </div>
 </div>
 
-<!-- ══ JOIN ══ -->
-<div class="scr" id="s-join">
-  <div class="ah" style="padding:16px 20px 12px;flex-shrink:0;">
-    <button class="bk" onclick="go('s-home')">←</button>
-    <div class="al">הצטרף לחשבון</div>
+<!-- ════════════════════════════════
+     JOIN
+════════════════════════════════ -->
+<div class="screen" id="scr-join">
+  <div class="screen-header">
+    <button class="back-btn" onclick="showScreen('scr-home')" aria-label="חזור">←</button>
+    <span class="screen-title">הצטרף לחשבון</span>
   </div>
-  <div class="join-wrap">
-    <div class="jico">🔢</div>
+  <div class="join-page">
+    <div class="join-icon-big" aria-hidden="true">🔢</div>
     <div style="text-align:center">
       <div style="font-size:20px;font-weight:700;margin-bottom:8px">הכנס את הקוד</div>
-      <div style="font-size:14px;color:var(--mut)">6 ספרות שקיבלת מהחבר שפתח</div>
+      <div style="font-size:14px;color:var(--muted)">6 ספרות שקיבלת מהחבר שפתח את החשבון</div>
     </div>
-    <div class="jcode">
-      <input class="jd" type="tel" id="j0" maxlength="1" inputmode="numeric"/>
-      <input class="jd" type="tel" id="j1" maxlength="1" inputmode="numeric"/>
-      <input class="jd" type="tel" id="j2" maxlength="1" inputmode="numeric"/>
-      <div class="jsep">·</div>
-      <input class="jd" type="tel" id="j3" maxlength="1" inputmode="numeric"/>
-      <input class="jd" type="tel" id="j4" maxlength="1" inputmode="numeric"/>
-      <input class="jd" type="tel" id="j5" maxlength="1" inputmode="numeric"/>
+    <div class="code-6-inputs" role="group" aria-label="קוד 6 ספרות">
+      <input class="code-6-box" type="tel" id="join-0" maxlength="1" inputmode="numeric" aria-label="ספרה 1"/>
+      <input class="code-6-box" type="tel" id="join-1" maxlength="1" inputmode="numeric" aria-label="ספרה 2"/>
+      <input class="code-6-box" type="tel" id="join-2" maxlength="1" inputmode="numeric" aria-label="ספרה 3"/>
+      <div class="code-6-sep">·</div>
+      <input class="code-6-box" type="tel" id="join-3" maxlength="1" inputmode="numeric" aria-label="ספרה 4"/>
+      <input class="code-6-box" type="tel" id="join-4" maxlength="1" inputmode="numeric" aria-label="ספרה 5"/>
+      <input class="code-6-box" type="tel" id="join-5" maxlength="1" inputmode="numeric" aria-label="ספרה 6"/>
     </div>
-    <div class="fe" id="jerr" style="text-align:center"></div>
-    <div class="prev-box" id="prev-box">
-      <div class="prev-title" id="prev-title">מוצא...</div>
-      <div class="prev-sub" id="prev-sub"></div>
+    <span class="field-error" id="join-err" style="text-align:center" role="alert"></span>
+
+    <div class="session-preview" id="session-preview">
+      <div class="preview-host" id="preview-host-name">מוצא...</div>
+      <div class="preview-info" id="preview-info"></div>
     </div>
-    <div class="sp"></div>
-    <button class="btn btnp" id="join-btn" onclick="doJoin()" disabled>הצטרף ←</button>
-    <button class="btn btng" onclick="go('s-home')">ביטול</button>
+
+    <div class="flex-1"></div>
+    <button class="btn btn-primary" id="join-submit-btn" onclick="submitJoin()" disabled>הצטרף ←</button>
+    <button class="btn btn-ghost" onclick="showScreen('scr-home')">ביטול</button>
   </div>
 </div>
 
-<!-- ══ SUMMARY ══ -->
-<div class="scr" id="s-sum">
-  <div class="sum-hero">
-    <button class="bk" style="position:absolute;top:16px;right:20px;" onclick="go('s-sess')">←</button>
-    <div class="sum-lbl">סה״כ לתשלום</div>
-    <div class="sum-amt" id="hero-amt">₪0</div>
-    <div class="sum-sub" id="hero-sub">ללא טיפ</div>
+<!-- ════════════════════════════════
+     SUMMARY
+════════════════════════════════ -->
+<div class="screen" id="scr-summary">
+  <div class="summary-hero">
+    <button class="back-btn" onclick="showScreen('scr-session')" aria-label="חזור">←</button>
+    <div class="summary-total-label">סה״כ לתשלום</div>
+    <div class="summary-total-amount" id="summary-total-display">₪0</div>
+    <div class="summary-total-sub" id="summary-total-sub">ללא טיפ</div>
   </div>
-  <div class="sum-card">
-    <div style="font-size:16px;font-weight:600;margin-bottom:14px;">המנות שלי</div>
-    <div id="sum-list" style="margin-bottom:20px;"></div>
-    <div class="tip-box">
-      <div class="tip-ttl">כמה טיפ?</div>
-      <div class="tip-modes">
-        <button class="tm" id="tm-pct" onclick="setTipMode('pct')">אחוזים %</button>
-        <button class="tm" id="tm-shk" onclick="setTipMode('shk')">שקלים ₪</button>
-        <button class="tm on" id="tm-no" onclick="setTipMode('no')">ללא טיפ</button>
+  <div class="summary-card">
+    <div class="summary-section-title">המנות שלי</div>
+    <div id="summary-items-list" style="margin-bottom:20px;"></div>
+
+    <div class="tip-section">
+      <div class="tip-title">כמה טיפ?</div>
+      <div class="tip-mode-row">
+        <button class="tip-mode-btn"        id="tip-btn-pct"  onclick="setTipMode('pct')">אחוזים %</button>
+        <button class="tip-mode-btn"        id="tip-btn-ils"  onclick="setTipMode('ils')">שקלים ₪</button>
+        <button class="tip-mode-btn active" id="tip-btn-none" onclick="setTipMode('none')">ללא טיפ</button>
       </div>
-      <div id="tip-inp-wrap" style="display:none">
-        <div class="tip-inp-row">
-          <input type="number" class="tip-inp" id="tip-num" min="0" step="1" placeholder="0" oninput="calcTotals()"/>
-          <span class="tip-unit" id="tip-unit">%</span>
+      <div id="tip-input-area" style="display:none">
+        <div class="tip-input-row">
+          <input type="number" class="tip-number" id="tip-amount-input" min="0" step="1" placeholder="0" oninput="recalcTotals()" aria-label="סכום טיפ"/>
+          <span class="tip-unit" id="tip-unit-label">%</span>
         </div>
-        <div class="tip-prev" id="tip-prev"></div>
+        <div class="tip-preview" id="tip-preview-text"></div>
       </div>
     </div>
-    <div class="totals">
-      <div class="trow"><span>סכום ביניים</span><span id="t-sub">₪0.00</span></div>
-      <div class="trow"><span id="t-tip-lbl">טיפ</span><span id="t-tip">₪0.00</span></div>
-      <div class="trow fin"><span>סה״כ</span><span id="t-tot">₪0.00</span></div>
+
+    <div class="totals-box">
+      <div class="total-row"><span>סכום ביניים</span><span id="total-subtotal">₪0.00</span></div>
+      <div class="total-row"><span id="total-tip-label">טיפ</span><span id="total-tip-amount">₪0.00</span></div>
+      <div class="total-row final"><span>סה״כ</span><span id="total-final">₪0.00</span></div>
     </div>
-    <div class="pay-btns">
-      <button class="pay-btn pay-bit" onclick="payBit()">
-        <span style="font-size:20px;font-weight:700;">bit</span> שלם עכשיו
+
+    <div class="pay-buttons">
+      <button class="pay-btn pay-bit" onclick="payWithBit()">
+        <span style="font-size:20px;font-weight:800;">bit</span>
+        <span>שלם עכשיו דרך bit</span>
       </button>
-      <button class="pay-btn pay-paybox" onclick="payPaybox()">
+      <button class="pay-btn pay-paybox" onclick="payWithPaybox()">
         שלם דרך פייבוקס
       </button>
     </div>
-    <div class="demo-note">* תשלום יפתח את האפליקציה עם הסכום</div>
-    <button class="btn btng" onclick="go('s-home');resetAll()">חלק חשבון חדש</button>
+    <div class="pay-note">* הלחיצה תפתח את האפליקציה עם הסכום המדויק</div>
+    <button class="btn btn-ghost" style="margin-bottom:8px" onclick="startNew()">חלק חשבון חדש +</button>
   </div>
 </div>
 
-</div>
-<div class="toast" id="toast"></div>
+</div><!-- /shell -->
 
+<div class="toast" id="global-toast" role="status" aria-live="polite"></div>
+
+<!-- Firebase Compat SDK (global scope, no import needed) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
 <script>
-// ── Firebase ──
+'use strict';
+
+/* ═══════════════════════════════════════
+   FIREBASE INIT
+═══════════════════════════════════════ */
 firebase.initializeApp({
-  apiKey:"AIzaSyBWYEntIaNdQio86BGVREmBAAqUo0F6sIw",
-  authDomain:"clerq-1145a.firebaseapp.com",
-  databaseURL:"https://clerq-1145a-default-rtdb.firebaseio.com",
-  projectId:"clerq-1145a",
-  storageBucket:"clerq-1145a.firebasestorage.app",
-  messagingSenderId:"426819964309",
-  appId:"1:426819964309:web:adf96da249d35d5d823a9c"
+  apiKey:            'AIzaSyBWYEntIaNdQio86BGVREmBAAqUo0F6sIw',
+  authDomain:        'clerq-1145a.firebaseapp.com',
+  databaseURL:       'https://clerq-1145a-default-rtdb.firebaseio.com',
+  projectId:         'clerq-1145a',
+  storageBucket:     'clerq-1145a.firebasestorage.app',
+  messagingSenderId: '426819964379',
+  appId:             '1:426819964309:web:adf96da249d35d5d823a9c'
 });
-const db = firebase.database();
+var db = firebase.database();
 
-// ── Helpers ──
-function getUser(){try{return JSON.parse(localStorage.getItem('clerq_u'));}catch{return null;}}
-function saveUser(u){localStorage.setItem('clerq_u',JSON.stringify(u));}
-function clearUser(){localStorage.removeItem('clerq_u');}
-function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function fmt(n){return '₪'+(parseFloat(n)||0).toFixed(2);}
+/* ═══════════════════════════════════════
+   STATE
+═══════════════════════════════════════ */
+var STATE = {
+  user:       null,    // logged-in user object
+  pending:    {},      // pending auth: { name, phone, isNew }
+  otpCode:    '1234',  // demo OTP
+  resendTmr:  null,
 
-let _tm;
-function toast(m,t){
-  const el=document.getElementById('toast');
-  el.textContent=m;el.className='toast show'+(t?' '+t:'');
-  clearTimeout(_tm);_tm=setTimeout(()=>el.classList.remove('show'),3000);
+  // scan / session
+  items:      [],
+  picks:      {},      // { idx: splitCount }
+  sessionId:  null,
+  sessionCode:null,
+  tipMode:    'none',  // 'none' | 'pct' | 'ils'
+
+  // join
+  foundSession: null,
+};
+
+var SESSION_USER_ID = 'u_' + Math.random().toString(36).substr(2, 8);
+
+/* ═══════════════════════════════════════
+   UTILITY
+═══════════════════════════════════════ */
+function esc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function go(id){
-  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
-  const el=document.getElementById(id);
-  if(el){el.classList.add('on');el.scrollTop=0;}
+function fmt(n) {
+  return '₪' + (parseFloat(n) || 0).toFixed(2);
 }
 
-// ── Splash ──
-window.addEventListener('load',()=>{
-  const u=getUser();
-  setTimeout(()=>{
-    if(u){loadHome(u);go('s-home');}
-    else{go('s-welcome');}
-  },1600);
-});
-
-// ── Register ──
-function doReg(){
-  const name=document.getElementById('rn').value.trim();
-  const phone=document.getElementById('rp').value.replace(/\D/g,'');
-  document.getElementById('rne').textContent='';
-  document.getElementById('rpe').textContent='';
-  if(!name||name.length<2){document.getElementById('rne').textContent='הכנס שם תקין';return;}
-  if(!phone||phone.length<9||!phone.startsWith('05')){document.getElementById('rpe').textContent='מספר לא תקין (05X...)';return;}
-  _p={name,phone,isNew:true};startOTP();
+function sanitizeName(s) {
+  return s.trim().slice(0, 30).replace(/[<>]/g, '');
 }
 
-// ── Login ──
-function doLog(){
-  const phone=document.getElementById('lp').value.replace(/\D/g,'');
-  document.getElementById('le').textContent='';
-  if(!phone||phone.length<9||!phone.startsWith('05')){document.getElementById('le').textContent='מספר לא תקין (05X...)';return;}
-  _p={phone,isNew:false};startOTP();
+function sanitizePhone(s) {
+  return s.replace(/\D/g, '').slice(0, 11);
 }
 
-// ── OTP ──
-let _p={},_rtm=null;
-function startOTP(){
-  document.getElementById('osub').textContent='שלחנו קוד SMS ל-0'+_p.phone.slice(-9);
-  [0,1,2,3].forEach(i=>{const e=document.getElementById('o'+i);e.value='';e.classList.remove('f');});
-  document.getElementById('oe').textContent='';
-  startTimer();toast('קוד דמו: 1 2 3 4','ok');go('s-otp');
-  setTimeout(()=>document.getElementById('o0').focus(),300);
+function validatePhone(p) {
+  if (!p || p.length < 9)          return 'מספר טלפון קצר מדי';
+  if (!p.startsWith('05'))          return 'המספר צריך להתחיל ב-05';
+  return null;
 }
-function startTimer(){
-  let t=30;
-  const btn=document.getElementById('rb'),cd=document.getElementById('rcd');
-  btn.disabled=true;cd.textContent=t;clearInterval(_rtm);
-  _rtm=setInterval(()=>{t--;cd.textContent=t;if(t<=0){clearInterval(_rtm);btn.disabled=false;btn.textContent='שלח שוב';}},1000);
+
+/* ═══════════════════════════════════════
+   LOCAL STORAGE
+═══════════════════════════════════════ */
+function saveUser(u) {
+  try { localStorage.setItem('clerq:user', JSON.stringify(u)); } catch(e) {}
 }
-function resend(){startTimer();toast('קוד דמו: 1 2 3 4','ok');}
-function backOTP(){clearInterval(_rtm);go(_p.isNew?'s-reg':'s-log');}
 
-window.addEventListener('DOMContentLoaded',()=>{
-  // OTP inputs
-  [0,1,2,3].forEach(i=>{
-    const el=document.getElementById('o'+i);
-    el.addEventListener('input',()=>{
-      const v=el.value.replace(/\D/g,'');el.value=v?v[0]:'';
-      el.classList.toggle('f',!!el.value);
-      document.getElementById('oe').textContent='';
-      if(el.value&&i<3)document.getElementById('o'+(i+1)).focus();
-      const code=[0,1,2,3].map(j=>document.getElementById('o'+j).value).join('');
-      if(code.length===4)setTimeout(doOTP,150);
-    });
-    el.addEventListener('keydown',e=>{
-      if(e.key==='Backspace'&&!el.value&&i>0){
-        const p=document.getElementById('o'+(i-1));p.focus();p.value='';p.classList.remove('f');
-      }
-    });
-  });
+function loadUser() {
+  try { return JSON.parse(localStorage.getItem('clerq:user')); } catch(e) { return null; }
+}
 
-  // Join inputs
-  [0,1,2,3,4,5].forEach(i=>{
-    const el=document.getElementById('j'+i);
-    if(!el)return;
-    el.addEventListener('input',()=>{
-      const v=el.value.replace(/\D/g,'');el.value=v?v[0]:'';
-      el.classList.toggle('f',!!el.value);
-      document.getElementById('jerr').textContent='';
-      if(el.value&&i<5)document.getElementById('j'+(i+1)).focus();
-      const code=[0,1,2,3,4,5].map(j=>document.getElementById('j'+j).value).join('');
-      if(code.length===6)lookupCode(code);
-      else{document.getElementById('prev-box').classList.remove('show');document.getElementById('join-btn').disabled=true;}
-    });
-    el.addEventListener('keydown',e=>{
-      if(e.key==='Backspace'&&!el.value&&i>0){
-        const p=document.getElementById('j'+(i-1));p.focus();p.value='';p.classList.remove('f');
-      }
-    });
-  });
-});
+function clearStoredUser() {
+  try { localStorage.removeItem('clerq:user'); } catch(e) {}
+}
 
-function doOTP(){
-  const code=[0,1,2,3].map(i=>document.getElementById('o'+i).value).join('');
-  if(code.length<4){document.getElementById('oe').textContent='הכנס 4 ספרות';return;}
-  if(code!=='1234'){
-    document.getElementById('oe').textContent='קוד שגוי — נסה שוב';
-    [0,1,2,3].forEach(i=>{const e=document.getElementById('o'+i);e.value='';e.classList.remove('f');});
-    document.getElementById('o0').focus();return;
+/* ═══════════════════════════════════════
+   TOAST
+═══════════════════════════════════════ */
+var _toastTimer = null;
+function showToast(msg, type) {
+  var el = document.getElementById('global-toast');
+  el.textContent = msg;
+  el.className = 'toast show' + (type ? ' ' + type : '');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(function() { el.classList.remove('show'); }, 3200);
+}
+
+/* ═══════════════════════════════════════
+   SCREEN NAVIGATION
+═══════════════════════════════════════ */
+function showScreen(id) {
+  var screens = document.querySelectorAll('.screen');
+  for (var i = 0; i < screens.length; i++) {
+    screens[i].classList.remove('active');
+    screens[i].setAttribute('aria-hidden', 'true');
   }
-  const userId='u_'+_p.phone;
-  const user={id:userId,name:_p.name||'משתמש',phone:_p.phone,created:Date.now(),lastLogin:Date.now()};
-  saveUser(user);clearInterval(_rtm);
-  toast('ברוך הבא, '+user.name+'! 🎉','ok');
-  db.ref('users/'+userId).once('value').then(snap=>{
-    const m=snap.exists()?{...snap.val(),name:user.name,lastLogin:Date.now()}:user;
-    saveUser(m);db.ref('users/'+userId).set(m);
-  }).catch(()=>{});
-  setTimeout(()=>{loadHome(user);go('s-home');},600);
+  var target = document.getElementById(id);
+  if (!target) { console.error('Screen not found:', id); return; }
+  target.classList.add('active');
+  target.removeAttribute('aria-hidden');
+  target.scrollTop = 0;
 }
 
-// ── Home ──
-function loadHome(user){
-  document.getElementById('hn').textContent=user.name+' 👋';
-  document.getElementById('hav').textContent=(user.name||'מ')[0].toUpperCase();
-  db.ref('users/'+user.id+'/stats').on('value',snap=>{
-    const s=snap.val()||{};
-    document.getElementById('ss').textContent=s.sessions||0;
-    document.getElementById('st').textContent=s.total?'₪'+Math.round(s.total):'₪0';
-    document.getElementById('sf').textContent=s.friends||0;
-  });
+/* ═══════════════════════════════════════
+   APP INIT
+═══════════════════════════════════════ */
+window.addEventListener('load', function() {
+  STATE.user = loadUser();
+  setTimeout(function() {
+    if (STATE.user) {
+      loadHomeScreen(STATE.user);
+      showScreen('scr-home');
+    } else {
+      showScreen('scr-welcome');
+    }
+  }, 1700);
+});
+
+/* ═══════════════════════════════════════
+   AUTH — REGISTER
+═══════════════════════════════════════ */
+function handleRegister() {
+  var nameEl  = document.getElementById('reg-name');
+  var phoneEl = document.getElementById('reg-phone');
+  var nameErr = document.getElementById('reg-name-err');
+  var phoneErr= document.getElementById('reg-phone-err');
+
+  nameErr.textContent = '';
+  phoneErr.textContent = '';
+  nameEl.classList.remove('error');
+  phoneEl.classList.remove('error');
+
+  var name  = sanitizeName(nameEl.value);
+  var phone = sanitizePhone(phoneEl.value);
+
+  if (!name || name.length < 2) {
+    nameErr.textContent = 'הכנס שם תקין (לפחות 2 תווים)';
+    nameEl.classList.add('error');
+    nameEl.focus();
+    return;
+  }
+
+  var phoneErrMsg = validatePhone(phone);
+  if (phoneErrMsg) {
+    phoneErr.textContent = phoneErrMsg;
+    phoneEl.classList.add('error');
+    phoneEl.focus();
+    return;
+  }
+
+  STATE.pending = { name: name, phone: phone, isNew: true };
+  beginOTPFlow();
 }
 
-function doLogout(){clearUser();toast('יצאת בהצלחה','ok');setTimeout(()=>go('s-welcome'),800);}
+/* ═══════════════════════════════════════
+   AUTH — LOGIN
+═══════════════════════════════════════ */
+function handleLogin() {
+  var phoneEl  = document.getElementById('login-phone');
+  var phoneErr = document.getElementById('login-phone-err');
 
-// ── SCAN ──
-let _img=null,_mime=null;
+  phoneErr.textContent = '';
+  phoneEl.classList.remove('error');
 
-function handleImg(input){
-  const file=input.files[0];if(!file)return;
-  _mime=file.type;
-  const r=new FileReader();
-  r.onload=e=>{
-    _img=e.target.result;
-    const frame=document.getElementById('cam-frame');
-    frame.innerHTML=`<img src="${_img}" alt="קבלה"/><div class="cam-ov"><div style="font-size:40px">✅</div><div style="font-size:15px;font-weight:600;margin-top:8px">תמונה נטענה!</div></div>`;
-    document.getElementById('scan-btn').disabled=false;
+  var phone = sanitizePhone(phoneEl.value);
+  var phoneErrMsg = validatePhone(phone);
+
+  if (phoneErrMsg) {
+    phoneErr.textContent = phoneErrMsg;
+    phoneEl.classList.add('error');
+    phoneEl.focus();
+    return;
+  }
+
+  STATE.pending = { phone: phone, isNew: false };
+  beginOTPFlow();
+}
+
+/* ═══════════════════════════════════════
+   OTP FLOW
+═══════════════════════════════════════ */
+function beginOTPFlow() {
+  var sub = '0' + STATE.pending.phone.slice(-9);
+  document.getElementById('otp-subtitle').textContent = 'שלחנו קוד SMS ל-' + sub;
+
+  // Reset OTP inputs
+  for (var i = 0; i < 4; i++) {
+    var el = document.getElementById('otp-' + i);
+    el.value = '';
+    el.classList.remove('filled');
+  }
+  document.getElementById('otp-err').textContent = '';
+
+  startResendTimer();
+  showToast('קוד דמו: 1 2 3 4', 'success');
+  showScreen('scr-otp');
+  setTimeout(function() { document.getElementById('otp-0').focus(); }, 300);
+}
+
+function startResendTimer() {
+  var seconds = 30;
+  var btn = document.getElementById('resend-btn');
+  var cd  = document.getElementById('resend-countdown');
+  btn.disabled = true;
+  cd.textContent = seconds;
+  clearInterval(STATE.resendTmr);
+  STATE.resendTmr = setInterval(function() {
+    seconds--;
+    cd.textContent = seconds;
+    if (seconds <= 0) {
+      clearInterval(STATE.resendTmr);
+      btn.disabled = false;
+      btn.textContent = 'שלח שוב';
+    }
+  }, 1000);
+}
+
+function handleResend() {
+  startResendTimer();
+  showToast('קוד דמו: 1 2 3 4', 'success');
+}
+
+function handleOTPBack() {
+  clearInterval(STATE.resendTmr);
+  showScreen(STATE.pending.isNew ? 'scr-register' : 'scr-login');
+}
+
+function handleOTPSubmit() {
+  var code = '';
+  for (var i = 0; i < 4; i++) {
+    code += document.getElementById('otp-' + i).value;
+  }
+
+  var errEl = document.getElementById('otp-err');
+
+  if (code.length < 4) {
+    errEl.textContent = 'הכנס 4 ספרות';
+    document.getElementById('otp-0').focus();
+    return;
+  }
+
+  if (code !== STATE.otpCode) {
+    errEl.textContent = 'קוד שגוי — נסה שוב';
+    for (var j = 0; j < 4; j++) {
+      var el = document.getElementById('otp-' + j);
+      el.value = '';
+      el.classList.remove('filled');
+    }
+    document.getElementById('otp-0').focus();
+    return;
+  }
+
+  // ✅ Code correct — create user
+  var userId = 'u_' + sanitizePhone(STATE.pending.phone);
+  var user = {
+    id:        userId,
+    name:      STATE.pending.name || 'משתמש',
+    phone:     sanitizePhone(STATE.pending.phone),
+    created:   Date.now(),
+    lastLogin: Date.now(),
+    stats:     { sessions: 0, total: 0, friends: 0 }
   };
-  r.readAsDataURL(file);
+
+  // Save locally immediately
+  STATE.user = user;
+  saveUser(user);
+  clearInterval(STATE.resendTmr);
+  showToast('ברוך הבא, ' + user.name + '! 🎉', 'success');
+
+  // Sync to Firebase (non-blocking)
+  db.ref('users/' + userId).once('value').then(function(snap) {
+    var merged = snap.exists()
+      ? Object.assign({}, snap.val(), { name: user.name, lastLogin: Date.now() })
+      : user;
+    saveUser(merged);
+    STATE.user = merged;
+    db.ref('users/' + userId).set(merged);
+  }).catch(function(e) {
+    console.warn('[clerq] Firebase sync failed:', e.message);
+  });
+
+  // Navigate to home
+  setTimeout(function() {
+    loadHomeScreen(user);
+    showScreen('scr-home');
+  }, 700);
 }
 
-async function startScan(){
-  if(!_img)return;
-  go('s-load');
-  await runSteps(async()=>{
-    try{
-      const b64=_img.split(',')[1];
-      const res=await fetch('/api/scan-bill',{
-        method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({image:b64,mimeType:_mime})
+/* ═══════════════════════════════════════
+   HOME
+═══════════════════════════════════════ */
+function loadHomeScreen(user) {
+  var initial = (user.name || 'מ')[0].toUpperCase();
+  document.getElementById('home-name').textContent   = user.name + ' 👋';
+  document.getElementById('home-avatar').textContent = initial;
+
+  // Load stats from Firebase
+  db.ref('users/' + user.id + '/stats').on('value', function(snap) {
+    var s = snap.val() || {};
+    document.getElementById('stat-sessions').textContent = s.sessions || 0;
+    document.getElementById('stat-total').textContent    = s.total ? '₪' + Math.round(s.total) : '₪0';
+    document.getElementById('stat-friends').textContent  = s.friends || 0;
+  });
+
+  // Load recent sessions
+  db.ref('userSessions/' + user.id).once('value').then(function(snap) {
+    var data = snap.val();
+    if (!data) return;
+    var sessions = Object.values(data)
+      .sort(function(a, b) { return (b.created || 0) - (a.created || 0); })
+      .slice(0, 5);
+    if (!sessions.length) return;
+
+    var list = document.getElementById('recent-list');
+    list.innerHTML = '';
+    sessions.forEach(function(s) {
+      var item = document.createElement('div');
+      item.className = 'history-item';
+      item.setAttribute('role', 'button');
+      item.setAttribute('tabindex', '0');
+      var d = new Date(s.created).toLocaleDateString('he-IL');
+      item.innerHTML =
+        '<div class="history-icon">🧾</div>' +
+        '<div class="history-info">' +
+          '<div class="history-name">' + esc(s.restaurantName || 'חשבון') + '</div>' +
+          '<div class="history-sub">' + d + ' · ' + (s.members || 1) + ' משתתפים</div>' +
+        '</div>' +
+        '<div class="history-amount">₪' + Math.round(s.myTotal || 0) + '</div>';
+      list.appendChild(item);
+    });
+  }).catch(function() {});
+}
+
+function handleLogout() {
+  if (!confirm('להתנתק מהחשבון?')) return;
+  clearStoredUser();
+  STATE.user = null;
+  showToast('יצאת בהצלחה', 'success');
+  setTimeout(function() { showScreen('scr-welcome'); }, 800);
+}
+
+/* ═══════════════════════════════════════
+   SCAN
+═══════════════════════════════════════ */
+var _capturedImage = null;
+var _capturedMime  = null;
+
+function handleImageSelected(input) {
+  var file = input.files[0];
+  if (!file) return;
+  _capturedMime = file.type;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    _capturedImage = e.target.result;
+    var frame = document.getElementById('camera-frame');
+    frame.innerHTML =
+      '<img src="' + _capturedImage + '" alt="קבלה"/>' +
+      '<div class="camera-overlay">' +
+        '<div style="font-size:44px">✅</div>' +
+        '<div style="font-size:15px;font-weight:600;margin-top:8px">תמונה נטענה!</div>' +
+        '<div style="font-size:12px;color:var(--muted);margin-top:4px">לחץ להחלפה</div>' +
+      '</div>';
+    document.getElementById('scan-ai-btn').disabled = false;
+  };
+  reader.readAsDataURL(file);
+}
+
+function startAIScan() {
+  if (!_capturedImage) return;
+  showScreen('scr-loading');
+  runLoadingSteps(function() {
+    var base64 = _capturedImage.split(',')[1];
+    fetch('/api/scan-bill', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: base64, mimeType: _capturedMime })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      STATE.items = (data.items && data.items.length) ? data.items : getDemoItems();
+      if (!data.items || !data.items.length) showToast('לא נמצאו פריטים — טוען דמו', 'success');
+      createSession().then(function() {
+        renderSessionItems();
+        showScreen('scr-session');
       });
-      const data=await res.json();
-      _items=data.items&&data.items.length?data.items:demoItems();
-      if(!data.items||!data.items.length)toast('לא נמצאו פריטים — טוען דמו','ok');
-    }catch(e){toast('שגיאה — טוען דמו','err');_items=demoItems();}
-    await createSession();renderItems();go('s-sess');
+    })
+    .catch(function(e) {
+      console.warn('[clerq] Scan error:', e);
+      showToast('שגיאה — טוען דמו');
+      STATE.items = getDemoItems();
+      createSession().then(function() {
+        renderSessionItems();
+        showScreen('scr-session');
+      });
+    });
   });
 }
 
-function loadDemo(){
-  _items=demoItems();go('s-load');
-  runSteps(async()=>{await createSession();renderItems();go('s-sess');});
+function loadDemoItems() {
+  STATE.items = getDemoItems();
+  showScreen('scr-loading');
+  runLoadingSteps(function() {
+    createSession().then(function() {
+      renderSessionItems();
+      showScreen('scr-session');
+    });
+  });
 }
 
-function demoItems(){
-  return[
-    {name:'המבורגר 440 גרם',price:89},
-    {name:'המבורגר 220 גרם',price:62},
-    {name:'המבורגר 220 גרם',price:62},
-    {name:"צ'יפס קטן",price:28},
-    {name:"צ'יפס גדול",price:38},
-    {name:'קולה זירו',price:18},
-    {name:'לימונדה',price:22},
+function getDemoItems() {
+  return [
+    { name: 'המבורגר 440 גרם',  price: 89 },
+    { name: 'המבורגר 220 גרם',  price: 62 },
+    { name: 'המבורגר 220 גרם',  price: 62 },
+    { name: "צ'יפס קטן",        price: 28 },
+    { name: "צ'יפס גדול",       price: 38 },
+    { name: 'קולה זירו',        price: 18 },
+    { name: 'לימונדה',          price: 22 },
   ];
 }
 
-function runSteps(cb){
-  const ids=['st1','st2','st3','st4'];
-  ids.forEach(id=>document.getElementById(id).className='step');
-  let i=0;
-  return new Promise(res=>{
-    const go=()=>{
-      if(i>0)document.getElementById(ids[i-1]).className='step done';
-      if(i<ids.length){
-        document.getElementById(ids[i]).className='step act';i++;
-        setTimeout(i<ids.length?go:()=>{go();setTimeout(async()=>{await cb();res();},300);},650);
+/* ═══════════════════════════════════════
+   LOADING STEPS
+═══════════════════════════════════════ */
+function runLoadingSteps(afterStepsDone) {
+  var stepIds = ['step-1', 'step-2', 'step-3', 'step-4'];
+  stepIds.forEach(function(id) {
+    document.getElementById(id).className = 'step';
+  });
+
+  var i = 0;
+  function next() {
+    if (i > 0) document.getElementById(stepIds[i - 1]).className = 'step done';
+    if (i < stepIds.length) {
+      document.getElementById(stepIds[i]).className = 'step active';
+      i++;
+      if (i < stepIds.length) {
+        setTimeout(next, 650);
+      } else {
+        setTimeout(function() {
+          next();
+          setTimeout(afterStepsDone, 300);
+        }, 650);
       }
-    };
-    go();
-  });
-}
-
-// ── SESSION ──
-let _items=[],_picks={},_sessionId=null,_code=null,_tipMode='no';
-const MY_ID='u_'+Math.random().toString(36).substr(2,6);
-const COLORS=['#C6F135','#3DD9D9','#FF8C00','#FF4757'];
-
-function genCode(){return Math.floor(100000+Math.random()*900000).toString();}
-function fmtCode(c){return c?c.slice(0,3)+' '+c.slice(3):'--- ---';}
-
-async function createSession(){
-  _sessionId='sess_'+Date.now();
-  _code=genCode();
-  const oneWeek=7*24*60*60*1000;
-  const user=getUser();
-  const data={
-    id:_sessionId,code:_code,created:Date.now(),expiresAt:Date.now()+oneWeek,
-    closed:false,items:_items,selections:{},
-    users:{[MY_ID]:{name:user?user.name:'יוזם',isHost:true,joined:Date.now()}}
-  };
-  try{
-    await db.ref('sessions/'+_sessionId).set(data);
-    await db.ref('codes/'+_code).set({sessionId:_sessionId,expiresAt:Date.now()+oneWeek,closed:false});
-    listenSession();
-  }catch(e){console.warn('Firebase:',e.message);}
-  document.getElementById('sess-code').textContent=fmtCode(_code);
-}
-
-function listenSession(){
-  db.ref('sessions/'+_sessionId).on('value',snap=>{
-    const d=snap.val();if(!d)return;
-    const users=Object.values(d.users||{});
-    document.getElementById('live-txt').textContent=users.length+' מחובר'+(users.length>1?'ים':'');
-  });
-}
-
-async function closeSession(){
-  if(!confirm('לסגור את החשבון? החברים לא יוכלו להצטרף יותר.'))return;
-  try{
-    await db.ref('sessions/'+_sessionId+'/closed').set(true);
-    await db.ref('codes/'+_code+'/closed').set(true);
-    toast('החשבון נסגר','ok');
-  }catch(e){toast('שגיאה בסגירה','err');}
-}
-
-function shareCode(){
-  const txt=`הצטרף לחשבון ב-clerq!\nקוד: ${fmtCode(_code)}\nפתח את האפליקציה ← הצטרף לחשבון`;
-  if(navigator.share)navigator.share({title:'clerq — קוד חשבון',text:txt});
-  else{navigator.clipboard?.writeText(txt);toast('קוד הועתק! 📋','ok');}
-}
-
-function renderItems(){
-  _picks={};
-  const list=document.getElementById('items-list');list.innerHTML='';
-  _items.forEach((item,idx)=>{
-    const card=document.createElement('div');
-    card.className='icard';card.dataset.idx=idx;card.style.animationDelay=(idx*35)+'ms';
-    card.innerHTML=`
-      <div class="irow" onclick="toggleItem(${idx})">
-        <div class="ichk" id="chk${idx}"></div>
-        <div style="flex:1"><div class="iname">${esc(item.name)}</div><div class="isub" id="sub${idx}"></div></div>
-        <div class="iprc" id="prc${idx}">${fmt(item.price)}</div>
-      </div>
-      <div class="spanel" id="sp${idx}">
-        <div class="splbl">כמה אנשים מתחלקים?</div>
-        <div class="srow">
-          <span>מתחלקים:</span>
-          <div class="ctr">
-            <button class="cb" onclick="chgSplit(${idx},-1,event)">−</button>
-            <span class="cv" id="sv${idx}">1</span>
-            <button class="cb" onclick="chgSplit(${idx},1,event)">+</button>
-          </div>
-          <span id="sd${idx}">רק אני</span>
-        </div>
-      </div>`;
-    list.appendChild(card);
-  });
-  document.getElementById('item-cnt').textContent=_items.length+' פריטים';
-  updateSub();
-}
-
-function toggleItem(idx){
-  const card=document.querySelector('[data-idx="'+idx+'"]');
-  if(idx in _picks){
-    delete _picks[idx];card.classList.remove('sel');
-    document.getElementById('chk'+idx).textContent='';
-    document.getElementById('sp'+idx).classList.remove('open');
-    document.getElementById('prc'+idx).textContent=fmt(_items[idx].price);
-    document.getElementById('sub'+idx).textContent='';
-  }else{
-    _picks[idx]=1;card.classList.add('sel');
-    document.getElementById('chk'+idx).textContent='✓';
-    document.getElementById('sp'+idx).classList.add('open');
+    }
   }
-  updateSub();syncPicks();
+  next();
 }
 
-function chgSplit(idx,d,e){
-  e.stopPropagation();if(!(idx in _picks))return;
-  _picks[idx]=Math.max(1,Math.min(10,_picks[idx]+d));
-  const n=_picks[idx];
-  document.getElementById('sv'+idx).textContent=n;
-  document.getElementById('sd'+idx).textContent=n===1?'רק אני':n+' אנשים';
-  document.getElementById('prc'+idx).textContent=fmt(_items[idx].price/n)+' לאחד';
-  document.getElementById('sub'+idx).textContent=n>1?'÷'+n+' אנשים':'';
-  updateSub();syncPicks();
+/* ═══════════════════════════════════════
+   SESSION
+═══════════════════════════════════════ */
+function generateCode() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-function getSub(){return Object.entries(_picks).reduce((s,[i,n])=>s+_items[+i].price/n,0);}
-function updateSub(){document.getElementById('my-sub').textContent=fmt(getSub());}
-
-function syncPicks(){
-  if(!_sessionId)return;
-  const upd={};upd['sessions/'+_sessionId+'/selections/'+MY_ID]=_picks;
-  db.ref().update(upd).catch(()=>{});
+function formatCode(code) {
+  if (!code || code.length !== 6) return '--- ---';
+  return code.slice(0, 3) + ' ' + code.slice(3);
 }
 
-// ── SUMMARY ──
-function goSummary(){
-  if(!Object.keys(_picks).length){toast('בחר לפחות מנה אחת','err');return;}
-  buildSummary();go('s-sum');
+function createSession() {
+  STATE.sessionId   = 'sess_' + Date.now();
+  STATE.sessionCode = generateCode();
+  STATE.picks       = {};
+
+  var ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
+  var user = STATE.user || { id: SESSION_USER_ID, name: 'יוזם' };
+
+  var sessionData = {
+    id:         STATE.sessionId,
+    code:       STATE.sessionCode,
+    created:    Date.now(),
+    expiresAt:  Date.now() + ONE_WEEK,
+    closed:     false,
+    items:      STATE.items,
+    selections: {},
+    users:      {}
+  };
+  sessionData.users[SESSION_USER_ID] = {
+    name:    user.name,
+    isHost:  true,
+    joined:  Date.now()
+  };
+
+  return Promise.all([
+    db.ref('sessions/' + STATE.sessionId).set(sessionData),
+    db.ref('codes/' + STATE.sessionCode).set({
+      sessionId: STATE.sessionId,
+      expiresAt: Date.now() + ONE_WEEK,
+      closed:    false
+    })
+  ]).then(function() {
+    listenToSession();
+    document.getElementById('session-code-display').textContent = formatCode(STATE.sessionCode);
+  }).catch(function(e) {
+    console.warn('[clerq] Create session failed:', e.message);
+    // Still show session with local data
+    document.getElementById('session-code-display').textContent = formatCode(STATE.sessionCode);
+  });
 }
 
-function buildSummary(){
-  const list=document.getElementById('sum-list');list.innerHTML='';
-  Object.entries(_picks).forEach(([i,n],idx)=>{
-    const item=_items[+i],share=item.price/n;
-    const row=document.createElement('div');row.className='sumi';
-    row.innerHTML=`<div style="flex:1"><div class="sumi-name">${esc(item.name)}</div>${n>1?'<div class="sumi-note">÷'+n+' אנשים</div>':''}</div><div class="sumi-price">${fmt(share)}</div>`;
+function listenToSession() {
+  db.ref('sessions/' + STATE.sessionId).on('value', function(snap) {
+    var data = snap.val();
+    if (!data) return;
+    var users = Object.values(data.users || {});
+    var count = users.length;
+    document.getElementById('live-members-text').textContent =
+      count + ' מחובר' + (count > 1 ? 'ים' : '');
+  });
+}
+
+function shareSessionCode() {
+  var text = 'הצטרף לחשבון ב-clerq!\nקוד: ' + formatCode(STATE.sessionCode) +
+             '\nפתח את האפליקציה ← הצטרף לחשבון';
+  if (navigator.share) {
+    navigator.share({ title: 'clerq — קוד חשבון', text: text }).catch(function() {});
+  } else {
+    navigator.clipboard.writeText(text).then(function() {
+      showToast('קוד הועתק! 📋', 'success');
+    }).catch(function() {
+      showToast('קוד: ' + formatCode(STATE.sessionCode), 'success');
+    });
+  }
+}
+
+function closeCurrentSession() {
+  if (!confirm('לסגור את החשבון? החברים לא יוכלו להצטרף יותר.')) return;
+  var updates = {};
+  updates['sessions/' + STATE.sessionId + '/closed'] = true;
+  updates['codes/' + STATE.sessionCode + '/closed']   = true;
+  db.ref().update(updates).then(function() {
+    showToast('החשבון נסגר', 'success');
+  }).catch(function() {
+    showToast('שגיאה בסגירה', 'error');
+  });
+}
+
+/* ═══════════════════════════════════════
+   ITEM SELECTION
+═══════════════════════════════════════ */
+function renderSessionItems() {
+  STATE.picks = {};
+  var container = document.getElementById('items-container');
+  container.innerHTML = '';
+
+  STATE.items.forEach(function(item, idx) {
+    var card = document.createElement('div');
+    card.className = 'item-card';
+    card.dataset.idx = idx;
+    card.style.animationDelay = (idx * 40) + 'ms';
+    card.innerHTML =
+      '<div class="item-row" onclick="toggleItemSelection(' + idx + ')">' +
+        '<div class="item-check" id="item-check-' + idx + '"></div>' +
+        '<div style="flex:1">' +
+          '<div class="item-name">' + esc(item.name) + '</div>' +
+          '<div class="item-hint" id="item-hint-' + idx + '"></div>' +
+        '</div>' +
+        '<div class="item-price" id="item-price-' + idx + '">' + fmt(item.price) + '</div>' +
+      '</div>' +
+      '<div class="split-panel" id="split-panel-' + idx + '">' +
+        '<div class="split-label">כמה אנשים מתחלקים במנה?</div>' +
+        '<div class="split-row">' +
+          '<span>מתחלקים:</span>' +
+          '<div class="counter">' +
+            '<button class="counter-btn" onclick="changeSplit(' + idx + ', -1, event)">−</button>' +
+            '<span class="counter-val" id="split-count-' + idx + '">1</span>' +
+            '<button class="counter-btn" onclick="changeSplit(' + idx + ', 1, event)">+</button>' +
+          '</div>' +
+          '<span id="split-desc-' + idx + '">רק אני</span>' +
+        '</div>' +
+      '</div>';
+    container.appendChild(card);
+  });
+
+  document.getElementById('session-item-count').textContent = STATE.items.length + ' פריטים';
+  updateSubtotal();
+}
+
+function toggleItemSelection(idx) {
+  var card  = document.querySelector('[data-idx="' + idx + '"]');
+  var check = document.getElementById('item-check-' + idx);
+  var panel = document.getElementById('split-panel-' + idx);
+  var price = document.getElementById('item-price-' + idx);
+
+  if (idx in STATE.picks) {
+    delete STATE.picks[idx];
+    card.classList.remove('selected');
+    check.textContent = '';
+    panel.classList.remove('open');
+    price.textContent = fmt(STATE.items[idx].price);
+    document.getElementById('item-hint-' + idx).textContent = '';
+  } else {
+    STATE.picks[idx] = 1;
+    card.classList.add('selected');
+    check.textContent = '✓';
+    panel.classList.add('open');
+  }
+  updateSubtotal();
+  syncSelections();
+}
+
+function changeSplit(idx, delta, event) {
+  event.stopPropagation();
+  if (!(idx in STATE.picks)) return;
+
+  STATE.picks[idx] = Math.max(1, Math.min(10, STATE.picks[idx] + delta));
+  var n = STATE.picks[idx];
+  var unitPrice = STATE.items[idx].price / n;
+
+  document.getElementById('split-count-' + idx).textContent = n;
+  document.getElementById('split-desc-' + idx).textContent  = n === 1 ? 'רק אני' : n + ' אנשים';
+  document.getElementById('item-price-' + idx).textContent  = n === 1 ? fmt(STATE.items[idx].price) : fmt(unitPrice) + ' לאחד';
+  document.getElementById('item-hint-' + idx).textContent   = n > 1 ? '÷' + n + ' אנשים' : '';
+
+  updateSubtotal();
+  syncSelections();
+}
+
+function getMySubtotal() {
+  return Object.entries(STATE.picks).reduce(function(sum, pair) {
+    return sum + STATE.items[parseInt(pair[0])].price / pair[1];
+  }, 0);
+}
+
+function updateSubtotal() {
+  document.getElementById('my-subtotal').textContent = fmt(getMySubtotal());
+}
+
+function syncSelections() {
+  if (!STATE.sessionId) return;
+  var updates = {};
+  updates['sessions/' + STATE.sessionId + '/selections/' + SESSION_USER_ID] = STATE.picks;
+  db.ref().update(updates).catch(function() {});
+}
+
+/* ═══════════════════════════════════════
+   SUMMARY & TIP
+═══════════════════════════════════════ */
+function goToSummary() {
+  if (Object.keys(STATE.picks).length === 0) {
+    showToast('בחר לפחות מנה אחת', 'error');
+    return;
+  }
+  buildSummaryList();
+  recalcTotals();
+  showScreen('scr-summary');
+}
+
+function buildSummaryList() {
+  var list = document.getElementById('summary-items-list');
+  list.innerHTML = '';
+
+  Object.entries(STATE.picks).forEach(function(pair, i) {
+    var idx    = parseInt(pair[0]);
+    var splits = pair[1];
+    var item   = STATE.items[idx];
+    var share  = item.price / splits;
+
+    var row = document.createElement('div');
+    row.className = 'summary-item';
+    row.style.animationDelay = (i * 40) + 'ms';
+    row.innerHTML =
+      '<div style="flex:1">' +
+        '<div class="summary-item-name">' + esc(item.name) + '</div>' +
+        (splits > 1 ? '<div class="summary-item-note">÷' + splits + ' אנשים</div>' : '') +
+      '</div>' +
+      '<div class="summary-item-price">' + fmt(share) + '</div>';
     list.appendChild(row);
   });
-  calcTotals();
 }
 
-function setTipMode(mode){
-  _tipMode=mode;
-  document.querySelectorAll('.tm').forEach(b=>b.classList.remove('on'));
-  document.getElementById('tm-'+mode).classList.add('on');
-  const wrap=document.getElementById('tip-inp-wrap');
-  const num=document.getElementById('tip-num');
-  if(mode==='no'){wrap.style.display='none';num.value='';}
-  else{
-    wrap.style.display='block';
-    document.getElementById('tip-unit').textContent=mode==='pct'?'%':'₪';
-    num.placeholder=mode==='pct'?'12':'10';num.focus();
+function setTipMode(mode) {
+  STATE.tipMode = mode;
+  var btns = { pct: 'tip-btn-pct', ils: 'tip-btn-ils', none: 'tip-btn-none' };
+  Object.values(btns).forEach(function(id) {
+    document.getElementById(id).classList.remove('active');
+  });
+  document.getElementById(btns[mode]).classList.add('active');
+
+  var inputArea = document.getElementById('tip-input-area');
+  var numInput  = document.getElementById('tip-amount-input');
+  var unitLabel = document.getElementById('tip-unit-label');
+
+  if (mode === 'none') {
+    inputArea.style.display = 'none';
+    numInput.value = '';
+  } else {
+    inputArea.style.display = 'block';
+    unitLabel.textContent   = mode === 'pct' ? '%' : '₪';
+    numInput.placeholder    = mode === 'pct' ? '12' : '10';
+    numInput.focus();
   }
-  calcTotals();
+  recalcTotals();
 }
 
-function getTip(sub){
-  if(_tipMode==='no')return 0;
-  const v=parseFloat(document.getElementById('tip-num').value)||0;
-  return _tipMode==='pct'?sub*(v/100):v;
+function getTipAmount(subtotal) {
+  if (STATE.tipMode === 'none') return 0;
+  var val = parseFloat(document.getElementById('tip-amount-input').value) || 0;
+  return STATE.tipMode === 'pct' ? subtotal * (val / 100) : val;
 }
 
-function calcTotals(){
-  const sub=getSub(),tip=getTip(sub),tot=sub+tip;
-  const lbl=_tipMode==='no'?'ללא טיפ':_tipMode==='pct'?'טיפ '+( document.getElementById('tip-num').value||0)+'%':'טיפ ₪'+(document.getElementById('tip-num').value||0);
-  if(_tipMode!=='no'){
-    const v=parseFloat(document.getElementById('tip-num').value)||0;
-    document.getElementById('tip-prev').textContent=v>0?'טיפ: '+fmt(tip):'הכנס סכום';
+function getTipLabel() {
+  if (STATE.tipMode === 'none') return 'ללא טיפ';
+  var val = parseFloat(document.getElementById('tip-amount-input').value) || 0;
+  return STATE.tipMode === 'pct' ? 'טיפ ' + val + '%' : 'טיפ ₪' + val;
+}
+
+function recalcTotals() {
+  var sub   = getMySubtotal();
+  var tip   = getTipAmount(sub);
+  var total = sub + tip;
+  var label = getTipLabel();
+
+  // Update preview text
+  if (STATE.tipMode !== 'none') {
+    var val = parseFloat(document.getElementById('tip-amount-input').value) || 0;
+    document.getElementById('tip-preview-text').textContent =
+      val > 0 ? 'טיפ: ' + fmt(tip) : 'הכנס סכום';
   }
-  document.getElementById('t-sub').textContent=fmt(sub);
-  document.getElementById('t-tip-lbl').textContent=lbl;
-  document.getElementById('t-tip').textContent=fmt(tip);
-  document.getElementById('t-tot').textContent=fmt(tot);
-  document.getElementById('hero-amt').textContent='₪'+Math.round(tot);
-  document.getElementById('hero-sub').textContent=lbl;
+
+  document.getElementById('total-subtotal').textContent  = fmt(sub);
+  document.getElementById('total-tip-label').textContent = label;
+  document.getElementById('total-tip-amount').textContent= fmt(tip);
+  document.getElementById('total-final').textContent     = fmt(total);
+  document.getElementById('summary-total-display').textContent = '₪' + Math.round(total);
+  document.getElementById('summary-total-sub').textContent     = label;
+
+  // Update pay buttons amount
+  document.getElementById('pay-bit-amount').textContent    = fmt(total);
+  document.getElementById('pay-paybox-amount').textContent = fmt(total);
 }
 
-function payBit(){
-  const tot=getSub()+getTip(getSub());
-  toast('פותח ביט עם סכום ₪'+tot.toFixed(2),'ok');
-  setTimeout(()=>{window.open('https://bit.digital/pay','_blank');},500);
+/* ═══════════════════════════════════════
+   PAYMENT
+═══════════════════════════════════════ */
+function getPayTotal() {
+  var sub = getMySubtotal();
+  return (sub + getTipAmount(sub)).toFixed(2);
 }
 
-function payPaybox(){
-  const tot=getSub()+getTip(getSub());
-  const url='https://www.payboxapp.com/pay?amount='+tot.toFixed(2);
-  toast('פותח פייבוקס...','ok');
-  setTimeout(()=>{window.open(url,'_blank');},500);
+function payWithBit() {
+  var total = getPayTotal();
+  showToast('פותח bit עם ₪' + total + '...', 'success');
+  // Bit deep link — opens app if installed
+  setTimeout(function() {
+    window.location.href = 'bit://pay?amount=' + total;
+    // Fallback after 1.5s
+    setTimeout(function() {
+      window.open('https://www.bitpay.co.il/', '_blank');
+    }, 1500);
+  }, 400);
 }
 
-// ── JOIN ──
-let _foundSession=null;
-
-async function lookupCode(code){
-  try{
-    const snap=await db.ref('codes/'+code).once('value');
-    if(!snap.exists()){document.getElementById('jerr').textContent='קוד לא קיים';return;}
-    const cd=snap.val();
-    if(Date.now()>cd.expiresAt){document.getElementById('jerr').textContent='הקוד פג תוקף';return;}
-    if(cd.closed){document.getElementById('jerr').textContent='החשבון נסגר';return;}
-    const ssnap=await db.ref('sessions/'+cd.sessionId).once('value');
-    if(!ssnap.exists()){document.getElementById('jerr').textContent='החשבון לא נמצא';return;}
-    _foundSession={...ssnap.val(),sessionId:cd.sessionId};
-    const users=Object.values(_foundSession.users||{});
-    const host=users.find(u=>u.isHost);
-    document.getElementById('prev-title').textContent='חשבון של '+(host?.name||'יוזם');
-    document.getElementById('prev-sub').textContent=(_foundSession.items?.length||0)+' פריטים · '+users.length+' משתתפים';
-    document.getElementById('prev-box').classList.add('show');
-    document.getElementById('join-btn').disabled=false;
-  }catch(e){document.getElementById('jerr').textContent='שגיאה — נסה שוב';}
+function payWithPaybox() {
+  var total = getPayTotal();
+  showToast('פותח פייבוקס עם ₪' + total + '...', 'success');
+  setTimeout(function() {
+    window.open('https://www.payboxapp.com/pay?amount=' + total, '_blank');
+  }, 400);
 }
 
-async function doJoin(){
-  if(!_foundSession)return;
-  const user=getUser();
-  const code=[0,1,2,3,4,5].map(i=>document.getElementById('j'+i).value).join('');
-  try{
-    const upd={};
-    upd['sessions/'+_foundSession.sessionId+'/users/'+MY_ID]={name:user?user.name:'חבר',isHost:false,joined:Date.now()};
-    await db.ref().update(upd);
-    _items=_foundSession.items||[];
-    _sessionId=_foundSession.sessionId;_code=code;
-    renderItems();
-    document.getElementById('sess-code').textContent=fmtCode(code);
-    toast('ברוך הבא לחשבון!','ok');
-    go('s-sess');
-  }catch(e){toast('שגיאה — נסה שוב','err');}
+function startNew() {
+  STATE.items       = [];
+  STATE.picks       = {};
+  STATE.sessionId   = null;
+  STATE.sessionCode = null;
+  STATE.tipMode     = 'none';
+  _capturedImage    = null;
+  _capturedMime     = null;
+
+  // Reset scan screen
+  var frame = document.getElementById('camera-frame');
+  if (frame) frame.innerHTML =
+    '<div class="camera-placeholder">' +
+      '<div class="camera-icon">📷</div>' +
+      '<div class="camera-text">לחץ לצילום או העלאה</div>' +
+      '<div class="camera-sub">פתח מצלמה או גלריה</div>' +
+    '</div>';
+  var fileInput = document.getElementById('camera-file-input');
+  if (fileInput) fileInput.value = '';
+  var scanBtn = document.getElementById('scan-ai-btn');
+  if (scanBtn) scanBtn.disabled = true;
+
+  // Reset tip
+  setTipMode('none');
+
+  showScreen('scr-home');
 }
 
-function resetAll(){
-  _items=[];_picks={};_sessionId=null;_code=null;_img=null;_tipMode='no';
-  const frame=document.getElementById('cam-frame');
-  if(frame)frame.innerHTML=`<div style="text-align:center"><div class="cam-ico">📷</div><div class="cam-txt">לחץ לצילום או העלאה</div><div class="cam-sub">פתח מצלמה או גלריה</div></div>`;
-  const scanBtn=document.getElementById('scan-btn');
-  if(scanBtn)scanBtn.disabled=true;
-  const camIn=document.getElementById('cam-input');
-  if(camIn)camIn.value='';
-  [0,1,2,3,4,5].forEach(i=>{const e=document.getElementById('j'+i);if(e){e.value='';e.classList.remove('f');}});
-  document.getElementById('prev-box').classList.remove('show');
-  document.getElementById('join-btn').disabled=true;
-  _foundSession=null;
+/* ═══════════════════════════════════════
+   JOIN
+═══════════════════════════════════════ */
+function lookupJoinCode() {
+  var code = '';
+  for (var i = 0; i < 6; i++) {
+    code += document.getElementById('join-' + i).value;
+  }
+  if (code.length < 6) {
+    STATE.foundSession = null;
+    document.getElementById('session-preview').classList.remove('visible');
+    document.getElementById('join-submit-btn').disabled = true;
+    return;
+  }
+
+  document.getElementById('join-err').textContent = '';
+
+  db.ref('codes/' + code).once('value').then(function(snap) {
+    if (!snap.exists()) {
+      document.getElementById('join-err').textContent = 'קוד לא קיים';
+      return;
+    }
+    var codeData = snap.val();
+    if (Date.now() > codeData.expiresAt) {
+      document.getElementById('join-err').textContent = 'הקוד פג תוקף';
+      return;
+    }
+    if (codeData.closed) {
+      document.getElementById('join-err').textContent = 'החשבון נסגר על ידי היוזם';
+      return;
+    }
+    return db.ref('sessions/' + codeData.sessionId).once('value').then(function(sSnap) {
+      if (!sSnap.exists()) {
+        document.getElementById('join-err').textContent = 'החשבון לא נמצא';
+        return;
+      }
+      var session = sSnap.val();
+      session.sessionId = codeData.sessionId;
+      session.code      = code;
+      STATE.foundSession = session;
+
+      var users = Object.values(session.users || {});
+      var host  = users.find(function(u) { return u.isHost; });
+      document.getElementById('preview-host-name').textContent =
+        'חשבון של ' + (host ? host.name : 'יוזם');
+      document.getElementById('preview-info').textContent =
+        (session.items ? session.items.length : 0) + ' פריטים · ' + users.length + ' משתתפים';
+      document.getElementById('session-preview').classList.add('visible');
+      document.getElementById('join-submit-btn').disabled = false;
+    });
+  }).catch(function() {
+    document.getElementById('join-err').textContent = 'שגיאה — נסה שוב';
+  });
 }
+
+function submitJoin() {
+  if (!STATE.foundSession) return;
+  var user = STATE.user || { id: SESSION_USER_ID, name: 'חבר' };
+  var updates = {};
+  updates['sessions/' + STATE.foundSession.sessionId + '/users/' + SESSION_USER_ID] = {
+    name:    user.name,
+    isHost:  false,
+    joined:  Date.now()
+  };
+
+  db.ref().update(updates).then(function() {
+    STATE.items       = STATE.foundSession.items || [];
+    STATE.sessionId   = STATE.foundSession.sessionId;
+    STATE.sessionCode = STATE.foundSession.code;
+    STATE.picks       = {};
+
+    document.getElementById('session-code-display').textContent = formatCode(STATE.sessionCode);
+    listenToSession();
+    renderSessionItems();
+    showToast('ברוך הבא לחשבון! 🎉', 'success');
+    showScreen('scr-session');
+  }).catch(function() {
+    showToast('שגיאה — נסה שוב', 'error');
+  });
+}
+
+/* ═══════════════════════════════════════
+   OTP INPUT WIRE-UP
+═══════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', function() {
+
+  // OTP 4-digit inputs
+  for (var i = 0; i < 4; i++) {
+    (function(idx) {
+      var el = document.getElementById('otp-' + idx);
+      el.addEventListener('input', function() {
+        var v = el.value.replace(/\D/g, '');
+        el.value = v ? v[0] : '';
+        el.classList.toggle('filled', !!el.value);
+        document.getElementById('otp-err').textContent = '';
+        if (el.value && idx < 3) document.getElementById('otp-' + (idx + 1)).focus();
+        // Auto-submit
+        var code = '';
+        for (var j = 0; j < 4; j++) code += document.getElementById('otp-' + j).value;
+        if (code.length === 4) setTimeout(handleOTPSubmit, 150);
+      });
+      el.addEventListener('keydown', function(e) {
+        if (e.key === 'Backspace' && !el.value && idx > 0) {
+          var prev = document.getElementById('otp-' + (idx - 1));
+          prev.focus(); prev.value = ''; prev.classList.remove('filled');
+        }
+      });
+      el.addEventListener('paste', function(e) {
+        e.preventDefault();
+        var pasted = (e.clipboardData || window.clipboardData)
+          .getData('text').replace(/\D/g, '').slice(0, 4);
+        pasted.split('').forEach(function(ch, j) {
+          var t = document.getElementById('otp-' + j);
+          if (t) { t.value = ch; t.classList.add('filled'); }
+        });
+        if (pasted.length === 4) setTimeout(handleOTPSubmit, 150);
+      });
+    })(i);
+  }
+
+  // Join 6-digit inputs
+  for (var k = 0; k < 6; k++) {
+    (function(idx) {
+      var el = document.getElementById('join-' + idx);
+      if (!el) return;
+      el.addEventListener('input', function() {
+        var v = el.value.replace(/\D/g, '');
+        el.value = v ? v[0] : '';
+        el.classList.toggle('filled', !!el.value);
+        document.getElementById('join-err').textContent = '';
+        if (el.value && idx < 5) document.getElementById('join-' + (idx + 1)).focus();
+        lookupJoinCode();
+      });
+      el.addEventListener('keydown', function(e) {
+        if (e.key === 'Backspace' && !el.value && idx > 0) {
+          var prev = document.getElementById('join-' + (idx - 1));
+          prev.focus(); prev.value = ''; prev.classList.remove('filled');
+        }
+      });
+    })(k);
+  }
+
+  // Pay button amount placeholders
+  // (injected via recalcTotals)
+  var bitBtn = document.querySelector('.pay-bit');
+  if (bitBtn) bitBtn.innerHTML = '<span style="font-size:20px;font-weight:800;">bit</span><span>שלם עכשיו</span><span id="pay-bit-amount" style="opacity:0.7;font-size:14px;"></span>';
+  var payboxBtn = document.querySelector('.pay-paybox');
+  if (payboxBtn) payboxBtn.innerHTML = '<span>שלם דרך פייבוקס</span><span id="pay-paybox-amount" style="opacity:0.7;font-size:14px;"></span>';
+});
 </script>
 </body>
 </html>
