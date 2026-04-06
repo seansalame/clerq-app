@@ -989,15 +989,34 @@ function showScreen(id) {
    APP INIT
 ═══════════════════════════════════════ */
 window.addEventListener('load', function() {
-  STATE.user = loadUser();
+  // Guaranteed splash removal — no matter what happens
   setTimeout(function() {
-    if (STATE.user) {
-      loadHomeScreen(STATE.user);
-      showScreen('scr-home');
-    } else {
-      showScreen('scr-welcome');
+    var splash = document.getElementById('scr-splash');
+    if (splash && splash.classList.contains('active')) {
+      splash.classList.remove('active');
+      document.getElementById('scr-welcome').classList.add('active');
     }
-  }, 1700);
+  }, 3000); // fallback after 3s
+
+  try {
+    STATE.user = loadUser();
+    setTimeout(function() {
+      try {
+        if (STATE.user) {
+          loadHomeScreen(STATE.user);
+          showScreen('scr-home');
+        } else {
+          showScreen('scr-welcome');
+        }
+      } catch(e) {
+        console.error('[clerq] Navigation error:', e);
+        showScreen('scr-welcome');
+      }
+    }, 1700);
+  } catch(e) {
+    console.error('[clerq] Load error:', e);
+    setTimeout(function() { showScreen('scr-welcome'); }, 1700);
+  }
 });
 
 /* ═══════════════════════════════════════
@@ -1855,7 +1874,7 @@ function submitJoin() {
    OTP INPUT WIRE-UP
 ═══════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', function() {
-
+  try {
   // ── Swipe back gesture (simple — clicks back button) ──
   var _swipeStartX = 0;
   var _swipeStartY = 0;
@@ -1936,6 +1955,9 @@ document.addEventListener('DOMContentLoaded', function() {
   if (bitBtn) bitBtn.innerHTML = '<span style="font-size:20px;font-weight:800;">bit</span><span>שלם עכשיו</span><span id="pay-bit-amount" style="opacity:0.7;font-size:14px;"></span>';
   var payboxBtn = document.querySelector('.pay-paybox');
   if (payboxBtn) payboxBtn.innerHTML = '<span>שלם דרך פייבוקס</span><span id="pay-paybox-amount" style="opacity:0.7;font-size:14px;"></span>';
+  } catch(e) {
+    console.error('[clerq] DOMContentLoaded error:', e);
+  }
 });
 </script>
 </body>
