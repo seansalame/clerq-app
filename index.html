@@ -640,7 +640,7 @@ body {
           <div class="hero-greeting">שלום,</div>
           <div class="hero-name" id="home-name">...</div>
         </div>
-        <button class="hero-avatar" id="home-avatar" onclick="handleLogout()" title="לחץ לצאת">?</button>
+        <button class="hero-avatar" id="home-avatar" onclick="openMenu()" title="תפריט" aria-label="תפריט משתמש">?</button>
       </div>
       <div class="stats-grid">
         <div class="stat"><div class="stat-value" id="stat-sessions">0</div><div class="stat-label">חשבונות</div></div>
@@ -660,36 +660,65 @@ body {
           </div>
           <div class="action-arrow">←</div>
         </div>
-        <div class="action-card" onclick="showScreen('scr-join')" role="button" tabindex="0">
-          <div class="action-icon" style="background:var(--elev);">🔢</div>
-          <div class="action-label">הצטרף</div>
-          <div class="action-desc">הכנס קוד מחבר</div>
+        <div class="action-card primary" onclick="showScreen('scr-join')" role="button" tabindex="0" style="border-color:rgba(61,217,217,0.25);background:linear-gradient(135deg,rgba(61,217,217,0.06),var(--card));">
+          <div class="action-icon" style="background:#3DD9D9;">🔢</div>
+          <div style="flex:1">
+            <div class="action-label">הצטרף לחשבון</div>
+            <div class="action-desc">הכנס קוד 6 ספרות מחבר</div>
+          </div>
+          <div class="action-arrow">←</div>
         </div>
-        <div class="action-card" onclick="handleLogout()" role="button" tabindex="0">
-          <div class="action-icon" style="background:var(--elev);">🚪</div>
-          <div class="action-label">יציאה</div>
-          <div class="action-desc">התנתק מהחשבון</div>
+        
+      </div>
+    </div>
+
+    <!-- TAB: בית -->
+    <div id="tab-home" class="tab-panel">
+      <div class="recent-section">
+        <div class="section-label">פעילות אחרונה</div>
+        <div id="recent-list">
+          <div class="empty-state">
+            <div class="empty-icon">🧾</div>
+            <div class="empty-title">אין חשבונות עדיין</div>
+            <div class="empty-body">לחץ על "פתח חשבון חדש"<br/>וצלם את הקבלה הראשונה שלך</div>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="recent-section">
-      <div class="section-label">פעילות אחרונה</div>
-      <div id="recent-list">
-        <div class="empty-state">
-          <div class="empty-icon">🧾</div>
-          <div class="empty-title">אין חשבונות עדיין</div>
-          <div class="empty-body">לחץ על "פתח חשבון חדש"<br/>וצלם את הקבלה הראשונה שלך</div>
+    <!-- TAB: חשבונות אחרונים -->
+    <div id="tab-history" class="tab-panel" style="display:none">
+      <div class="recent-section">
+        <div class="section-label">כל החשבונות</div>
+        <div id="history-list">
+          <div class="empty-state">
+            <div class="empty-icon">📋</div>
+            <div class="empty-title">אין חשבונות עדיין</div>
+            <div class="empty-body">החשבונות שלך יופיעו כאן</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: לוח חברים -->
+    <div id="tab-friends" class="tab-panel" style="display:none">
+      <div class="recent-section">
+        <div class="section-label">לוח חברים</div>
+        <div id="friends-board">
+          <div class="empty-state">
+            <div class="empty-icon">🏆</div>
+            <div class="empty-title">אין מספיק נתונים עדיין</div>
+            <div class="empty-body">צבור חשבונות כדי לראות<br/>את לוח הדירוג של החברים שלך</div>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="flex-1"></div>
     <div class="bottom-nav">
-      <button class="nav-item active" aria-current="page"><span class="nav-icon">🏠</span><span>בית</span></button>
-      <button class="nav-item" onclick="showScreen('scr-scan')"><span class="nav-icon">📷</span><span>סרוק</span></button>
-      <button class="nav-item" onclick="showScreen('scr-join')"><span class="nav-icon">🔢</span><span>הצטרף</span></button>
-      <button class="nav-item" onclick="handleLogout()"><span class="nav-icon">🚪</span><span>יציאה</span></button>
+      <button class="nav-item active" id="nav-home" onclick="switchTab('home')" aria-current="page"><span class="nav-icon">🏠</span><span>בית</span></button>
+      <button class="nav-item" id="nav-history" onclick="switchTab('history')"><span class="nav-icon">📋</span><span>חשבונות</span></button>
+      <button class="nav-item" id="nav-friends" onclick="switchTab('friends')"><span class="nav-icon">🏆</span><span>לוח חברים</span></button>
     </div>
   </div>
 </div>
@@ -757,9 +786,12 @@ body {
         <button class="btn btn-danger btn-sm" id="close-session-btn-confirm" onclick="closeCurrentSession()">סגור ⛔</button>
       </div>
     </div>
-    <div class="live-bar">
-      <div class="live-dot" role="status" aria-label="פעיל"></div>
-      <span id="live-members-text">1 מחובר</span>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+      <div class="live-bar" style="margin-bottom:0;">
+        <div class="live-dot" role="status" aria-label="פעיל"></div>
+        <span id="live-members-text">1 מחובר</span>
+      </div>
+      <button id="edit-items-btn" onclick="toggleEditMode()" style="display:none;font-size:12px;font-weight:600;color:#C6F135;background:rgba(198,241,53,0.08);border:1px solid rgba(198,241,53,0.2);border-radius:8px;padding:5px 12px;cursor:pointer;font-family:inherit;">✏️ ערוך רשימה</button>
     </div>
   </div>
   <div class="items-scroll">
@@ -789,11 +821,6 @@ body {
       <div style="font-size:20px;font-weight:700;margin-bottom:8px">הכנס את הקוד</div>
       <div style="font-size:14px;color:var(--muted)">6 ספרות שקיבלת מהחבר שפתח את החשבון</div>
     </div>
-    <div class="field" style="margin-bottom:4px;">
-      <label class="field-label" for="join-name">השם שלך</label>
-      <input class="input" type="text" id="join-name" placeholder="לדוגמה: דן" maxlength="20" autocomplete="given-name"/>
-    </div>
-
     <div class="code-6-inputs" role="group" aria-label="קוד 6 ספרות">
       <input class="code-6-box" type="tel" id="join-0" maxlength="1" inputmode="numeric" aria-label="ספרה 1"/>
       <input class="code-6-box" type="tel" id="join-1" maxlength="1" inputmode="numeric" aria-label="ספרה 2"/>
@@ -868,6 +895,30 @@ body {
 </div>
 
 </div><!-- /shell -->
+
+<!-- Close Session Modal -->
+<div id="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;align-items:flex-end;justify-content:center;" onclick="closeModal()">
+  <div style="background:#1E1E2A;border-radius:20px 20px 0 0;padding:28px 24px max(32px,env(safe-area-inset-bottom));width:100%;max-width:430px;direction:rtl;" onclick="event.stopPropagation()">
+    <div style="font-size:18px;font-weight:700;margin-bottom:8px;">סגירת חשבון</div>
+    <div style="font-size:14px;color:#8A8AA8;margin-bottom:24px;line-height:1.5;">האם אתה בטוח שאתה מעוניין לסגור את החשבון?<br/>החברים לא יוכלו להצטרף יותר.</div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <button onclick="confirmCloseSession()" style="min-height:52px;background:#FF4757;color:white;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;">כן, סגור חשבון ⛔</button>
+      <button onclick="closeModal()" style="min-height:52px;background:#1A1A28;color:#F0F0F8;border:1px solid rgba(255,255,255,0.07);border-radius:14px;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit;">ביטול</button>
+    </div>
+  </div>
+</div>
+
+<!-- Avatar Menu -->
+<div id="menu-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;align-items:flex-end;justify-content:center;" onclick="closeMenu()">
+  <div style="background:#1E1E2A;border-radius:20px 20px 0 0;padding:20px 24px max(32px,env(safe-area-inset-bottom));width:100%;max-width:430px;direction:rtl;" onclick="event.stopPropagation()">
+    <div id="menu-user-name" style="font-size:16px;font-weight:700;margin-bottom:18px;color:#C6F135;"></div>
+    <div style="display:flex;flex-direction:column;gap:4px;">
+      <button onclick="closeMenu();showToast('הגדרות — בקרוב!','success')" style="min-height:52px;background:none;color:#F0F0F8;border:none;border-bottom:1px solid rgba(255,255,255,0.07);font-size:16px;font-weight:500;cursor:pointer;font-family:inherit;text-align:right;padding:0 4px;">⚙️  הגדרות</button>
+      <button onclick="closeMenu();showToast('צור קשר — clerq.app','success')" style="min-height:52px;background:none;color:#F0F0F8;border:none;border-bottom:1px solid rgba(255,255,255,0.07);font-size:16px;font-weight:500;cursor:pointer;font-family:inherit;text-align:right;padding:0 4px;">📩  צור קשר</button>
+      <button onclick="closeMenu();handleLogout()" style="min-height:52px;background:none;color:#FF4757;border:none;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit;text-align:right;padding:0 4px;">🚪  התנתק</button>
+    </div>
+  </div>
+</div>
 
 <div class="toast" id="global-toast" role="status" aria-live="polite"></div>
 
@@ -1252,6 +1303,107 @@ function loadHomeScreen(user) {
   }).catch(function() {});
 }
 
+function switchTab(tab) {
+  // Update nav
+  ['home','history','friends'].forEach(function(t) {
+    var btn = document.getElementById('nav-' + t);
+    if (btn) btn.className = 'nav-item' + (t === tab ? ' active' : '');
+  });
+  // Show panel
+  ['home','history','friends'].forEach(function(t) {
+    var panel = document.getElementById('tab-' + t);
+    if (panel) panel.style.display = t === tab ? 'block' : 'none';
+  });
+  // Load data
+  if (tab === 'history') loadHistoryTab();
+  if (tab === 'friends') loadFriendsTab();
+}
+
+function loadHistoryTab() {
+  if (!STATE.user) return;
+  var list = document.getElementById('history-list');
+  list.innerHTML = '<div style="text-align:center;padding:20px;color:#8A8AA8;font-size:14px;">טוען...</div>';
+  db.ref('userSessions/' + STATE.user.id).once('value').then(function(snap) {
+    var data = snap.val();
+    if (!data) { list.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">אין חשבונות עדיין</div></div>'; return; }
+    var sessions = Object.values(data).sort(function(a,b){ return (b.created||0)-(a.created||0); });
+    list.innerHTML = '';
+    sessions.forEach(function(s) {
+      var el = document.createElement('div');
+      el.className = 'history-item';
+      var d = new Date(s.created||Date.now()).toLocaleDateString('he-IL');
+      var status = s.closed ? '🔴 נסגר' : '🟢 פעיל';
+      el.innerHTML =
+        '<div class="history-icon">🧾</div>' +
+        '<div class="history-info">' +
+          '<div class="history-name">' + esc(s.restaurantName || 'חשבון') + '</div>' +
+          '<div class="history-sub">' + d + ' · ' + status + '</div>' +
+        '</div>' +
+        '<div class="history-amount">₪' + Math.round(s.myTotal||0) + '</div>';
+      list.appendChild(el);
+    });
+  }).catch(function(){ list.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">שגיאה בטעינה</div></div>'; });
+}
+
+function loadFriendsTab() {
+  if (!STATE.user) return;
+  var board = document.getElementById('friends-board');
+  board.innerHTML = '<div style="text-align:center;padding:20px;color:#8A8AA8;font-size:14px;">טוען...</div>';
+  db.ref('userSessions/' + STATE.user.id).once('value').then(function(snap) {
+    var data = snap.val();
+    if (!data || Object.keys(data).length < 2) {
+      board.innerHTML = '<div class="empty-state"><div class="empty-icon">🏆</div><div class="empty-title">אין מספיק נתונים</div><div class="empty-body">צבור לפחות 2 חשבונות כדי לראות את לוח הדירוג</div></div>';
+      return;
+    }
+    // Aggregate friend data from sessions
+    var friends = {};
+    Object.values(data).forEach(function(s) {
+      if (!s.users) return;
+      Object.values(s.users).forEach(function(u) {
+        if (u.isHost) return;
+        var name = u.name || 'חבר';
+        if (!friends[name]) friends[name] = { name: name, sessions: 0, totalPaid: 0, avgTip: 0, paySpeed: [] };
+        friends[name].sessions++;
+        if (u.paid) friends[name].totalPaid += (u.amount || 0);
+        if (u.payTime && s.created) friends[name].paySpeed.push(u.payTime - s.created);
+      });
+    });
+    var fList = Object.values(friends);
+    if (fList.length === 0) {
+      board.innerHTML = '<div class="empty-state"><div class="empty-icon">🏆</div><div class="empty-title">אין חברים עדיין</div><div class="empty-body">הזמן חברים לחשבון הבא שלך</div></div>';
+      return;
+    }
+    // Sort by sessions
+    fList.sort(function(a,b){ return b.sessions - a.sessions; });
+    board.innerHTML = '';
+    var medals = ['🥇','🥈','🥉'];
+    fList.slice(0,5).forEach(function(f, i) {
+      var el = document.createElement('div');
+      el.className = 'history-item';
+      el.style.padding = '14px 0';
+      var avgSpeed = f.paySpeed.length ? Math.round(f.paySpeed.reduce(function(a,b){return a+b},0)/f.paySpeed.length/60000) : null;
+      var speedText = avgSpeed !== null ? (avgSpeed < 2 ? '⚡ משלם מהר' : avgSpeed < 10 ? '😊 בסדר' : '🐢 איטי') : '';
+      el.innerHTML =
+        '<div class="history-icon" style="font-size:22px;">' + (medals[i] || '👤') + '</div>' +
+        '<div class="history-info">' +
+          '<div class="history-name">' + esc(f.name) + '</div>' +
+          '<div class="history-sub">' + f.sessions + ' חשבונות' + (speedText ? ' · ' + speedText : '') + '</div>' +
+        '</div>';
+      board.appendChild(el);
+    });
+    // Special badges
+    var fastest = fList.filter(function(f){ return f.paySpeed.length > 0; }).sort(function(a,b){
+      return (a.paySpeed[0]||Infinity) - (b.paySpeed[0]||Infinity);
+    })[0];
+    if (fastest) {
+      var badge = document.createElement('div');
+      badge.style.cssText = 'background:rgba(198,241,53,0.08);border:1px solid rgba(198,241,53,0.2);border-radius:12px;padding:12px 16px;margin-top:12px;font-size:13px;';
+      badge.innerHTML = '⚡ <strong>' + esc(fastest.name) + '</strong> הוא המשלם הכי מהיר שלך!';
+      board.appendChild(badge);
+    }
+  }).catch(function(){ board.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">שגיאה בטעינה</div></div>'; });
+}
+
 function handleLogout() {
   // No confirm needed for logout - just do it
   clearStoredUser();
@@ -1389,6 +1541,7 @@ function createSession() {
   STATE.sessionId   = 'sess_' + Date.now();
   STATE.sessionCode = generateCode();
   STATE.picks       = {};
+  STATE.isHost      = true;
 
   var ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
   var user = STATE.user || { id: SESSION_USER_ID, name: 'יוזם' };
@@ -1452,14 +1605,17 @@ function shareSessionCode() {
 }
 
 function closeCurrentSession() {
-  // Show inline confirmation instead of blocking confirm()
-  const closeBtn = document.getElementById('close-session-btn-confirm');
-  if (closeBtn && closeBtn.dataset.confirmed !== 'yes') {
-    closeBtn.textContent = 'בטוח? לחץ שוב ⛔';
-    closeBtn.dataset.confirmed = 'yes';
-    setTimeout(() => { if(closeBtn) { closeBtn.textContent = 'סגור ⛔'; closeBtn.dataset.confirmed = ''; } }, 3000);
-    return;
-  }
+  var ov = document.getElementById('modal-overlay');
+  if (ov) ov.style.display = 'flex';
+}
+
+function closeModal() {
+  var ov = document.getElementById('modal-overlay');
+  if (ov) ov.style.display = 'none';
+}
+
+function confirmCloseSession() {
+  closeModal();
   var updates = {};
   updates['sessions/' + STATE.sessionId + '/closed'] = true;
   updates['codes/' + STATE.sessionCode + '/closed']   = true;
@@ -1470,9 +1626,48 @@ function closeCurrentSession() {
   });
 }
 
+function openMenu() {
+  var mn = document.getElementById('menu-user-name');
+  if (mn && STATE.user) mn.textContent = STATE.user.name + ' 👋';
+  var ov = document.getElementById('menu-overlay');
+  if (ov) ov.style.display = 'flex';
+}
+
+function closeMenu() {
+  var ov = document.getElementById('menu-overlay');
+  if (ov) ov.style.display = 'none';
+}
+
 /* ═══════════════════════════════════════
    ITEM SELECTION
 ═══════════════════════════════════════ */
+var _editMode = false;
+function toggleEditMode() {
+  _editMode = !_editMode;
+  var btn = document.getElementById('edit-items-btn');
+  if (btn) btn.textContent = _editMode ? '✅ סיים עריכה' : '✏️ ערוך רשימה';
+  renderSessionItems();
+}
+
+function removeItem(idx, e) {
+  e.stopPropagation();
+  STATE.items.splice(idx, 1);
+  delete STATE.picks[idx];
+  // Rebuild picks with new indices
+  var newPicks = {};
+  Object.keys(STATE.picks).forEach(function(k) {
+    var ki = parseInt(k);
+    if (ki < idx) newPicks[k] = STATE.picks[k];
+    else if (ki > idx) newPicks[ki - 1] = STATE.picks[k];
+  });
+  STATE.picks = newPicks;
+  renderSessionItems();
+  // Sync updated items to Firebase
+  if (STATE.sessionId) {
+    db.ref('sessions/' + STATE.sessionId + '/items').set(STATE.items).catch(function(){});
+  }
+}
+
 function showSkeletonItems() {
   var container = document.getElementById('items-container');
   container.innerHTML = '';
@@ -1501,7 +1696,10 @@ function renderSessionItems() {
           '<div class="item-name">' + esc(item.name) + '</div>' +
           '<div class="item-hint" id="item-hint-' + idx + '"></div>' +
         '</div>' +
-        '<div class="item-price" id="item-price-' + idx + '">' + fmt(item.price) + '</div>' +
+        '<div style="display:flex;align-items:center;gap:10px;">' +
+          '<div class="item-price" id="item-price-' + idx + '">' + fmt(item.price) + '</div>' +
+          (_editMode ? '<button onclick="removeItem(' + idx + ',event)" style="width:28px;height:28px;border-radius:50%;background:rgba(255,71,87,0.15);border:1px solid rgba(255,71,87,0.3);color:#FF4757;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">×</button>' : '') +
+        '</div>' +
       '</div>' +
       '<div class="split-panel" id="split-panel-' + idx + '">' +
         '<div class="split-label">כמה אנשים מתחלקים במנה?</div>' +
@@ -1520,6 +1718,9 @@ function renderSessionItems() {
 
   document.getElementById('session-item-count').textContent = STATE.items.length + ' פריטים';
   updateSubtotal();
+  // Show edit button only for host
+  var editBtn = document.getElementById('edit-items-btn');
+  if (editBtn) editBtn.style.display = STATE.isHost ? 'block' : 'none';
 }
 
 function haptic(ms) {
@@ -1715,26 +1916,45 @@ function shareSummary() {
   var sub   = getMySubtotal();
   var tip   = getTipAmount(sub);
   var total = sub + tip;
-  var picks = Object.entries(STATE.picks);
-  var names = picks.slice(0, 3).map(function(p) {
-    return STATE.items[parseInt(p[0])].name;
-  }).join(', ');
-  if (picks.length > 3) names += ' ועוד ' + (picks.length - 3);
 
-  var members = 1;
-  try {
-    var snap = db.ref('sessions/' + STATE.sessionId);
-    // Use local count
-  } catch(e) {}
+  // Build items list
+  var itemLines = Object.entries(STATE.picks).map(function(pair) {
+    var idx   = parseInt(pair[0]);
+    var splits= pair[1];
+    var item  = STATE.items[idx];
+    var share = item.price / splits;
+    var line  = '  • ' + item.name;
+    if (splits > 1) line += ' (÷' + splits + ')';
+    line += ' — ₪' + share.toFixed(2);
+    return line;
+  });
 
-  var text = [
-    '🧾 clerq — פיצול חשבון חכם',
-    '━━━━━━━━━━━━━━━━━',
-    'החלק שלי: ₪' + total.toFixed(2),
-    'פריטים: ' + names,
-    '━━━━━━━━━━━━━━━━━',
-    'clerq.app — split smarter'
-  ].join('\n');
+  // Tip line
+  var tipLine = '';
+  if (STATE.tipMode !== 'none' && tip > 0) {
+    var tipVal = parseFloat(document.getElementById('tip-amount-input').value) || 0;
+    tipLine = STATE.tipMode === 'pct'
+      ? '  טיפ ' + tipVal + '% — ₪' + tip.toFixed(2)
+      : '  טיפ — ₪' + tip.toFixed(2);
+  }
+
+  var lines = [
+    '🧾 clerq — פיצול חשבון',
+    '━━━━━━━━━━━━━━━━━━━━'
+  ].concat(itemLines);
+
+  if (tipLine) {
+    lines.push('');
+    lines.push(tipLine);
+  }
+
+  lines.push('━━━━━━━━━━━━━━━━━━━━');
+  lines.push('💰 סה״כ ששילמתי: ₪' + total.toFixed(2));
+  if (sub !== total) lines.push('  (ללא טיפ: ₪' + sub.toFixed(2) + ')');
+  lines.push('');
+  lines.push('שולח בcluerq.app 🚀');
+
+  var text = lines.join('\n');
 
   if (navigator.share) {
     navigator.share({ title: 'clerq — הסיכום שלי', text: text })
@@ -1841,10 +2061,8 @@ function submitJoin() {
   if (!STATE.foundSession) return;
   var user = STATE.user || { id: SESSION_USER_ID, name: 'חבר' };
   var updates = {};
-  var joinName = document.getElementById('join-name');
-  var memberName = (joinName && joinName.value.trim()) ? joinName.value.trim() : (user ? user.name : 'חבר');
   updates['sessions/' + STATE.foundSession.sessionId + '/users/' + SESSION_USER_ID] = {
-    name:    memberName.slice(0, 20),
+    name:    (user ? user.name : 'חבר'),
     isHost:  false,
     joined:  Date.now()
   };
@@ -1854,6 +2072,7 @@ function submitJoin() {
     STATE.sessionId   = STATE.foundSession.sessionId;
     STATE.sessionCode = STATE.foundSession.code;
     STATE.picks       = {};
+    STATE.isHost      = false;
 
     document.getElementById('session-code-display').textContent = formatCode(STATE.sessionCode);
     listenToSession();
