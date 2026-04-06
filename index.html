@@ -7,7 +7,6 @@
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta http-equiv="X-Content-Type-Options" content="nosniff"/>
-<meta http-equiv="X-Frame-Options" content="DENY"/>
 <title>clerq — פיצול חשבון חכם</title>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
@@ -1728,18 +1727,14 @@ function shareSummary() {
     // Use local count
   } catch(e) {}
 
-  var text =
-    '🧾 clerq — פיצול חשבון חכם
-' +
-    '━━━━━━━━━━━━━━━━━━━━
-' +
-    'החלק שלי: ₪' + total.toFixed(2) + '
-' +
-    'פריטים: ' + names + '
-' +
-    '━━━━━━━━━━━━━━━━━━━━
-' +
-    'clerq.app — split smarter';
+  var text = [
+    '🧾 clerq — פיצול חשבון חכם',
+    '━━━━━━━━━━━━━━━━━',
+    'החלק שלי: ₪' + total.toFixed(2),
+    'פריטים: ' + names,
+    '━━━━━━━━━━━━━━━━━',
+    'clerq.app — split smarter'
+  ].join('\n');
 
   if (navigator.share) {
     navigator.share({ title: 'clerq — הסיכום שלי', text: text })
