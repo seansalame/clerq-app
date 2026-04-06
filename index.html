@@ -466,6 +466,9 @@ body {
 .pay-bit    { background: var(--green); color: #0D0D14; }
 .pay-paybox { background: var(--elev); color: var(--text); border: 1px solid var(--border); }
 .pay-note { text-align: center; font-size: 11px; color: var(--faint); margin-bottom: 14px; }
+  .skeleton { background: linear-gradient(90deg, var(--card) 25%, var(--elev) 50%, var(--card) 75%); background-size: 200% 100%; animation: skel 1.4s ease infinite; border-radius: 16px; }
+  .skel-row  { height: 58px; margin-bottom: 8px; }
+  @keyframes skel { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 </style>
 </head>
 <body>
@@ -787,6 +790,11 @@ body {
       <div style="font-size:20px;font-weight:700;margin-bottom:8px">הכנס את הקוד</div>
       <div style="font-size:14px;color:var(--muted)">6 ספרות שקיבלת מהחבר שפתח את החשבון</div>
     </div>
+    <div class="field" style="margin-bottom:4px;">
+      <label class="field-label" for="join-name">השם שלך</label>
+      <input class="input" type="text" id="join-name" placeholder="לדוגמה: דן" maxlength="20" autocomplete="given-name"/>
+    </div>
+
     <div class="code-6-inputs" role="group" aria-label="קוד 6 ספרות">
       <input class="code-6-box" type="tel" id="join-0" maxlength="1" inputmode="numeric" aria-label="ספרה 1"/>
       <input class="code-6-box" type="tel" id="join-1" maxlength="1" inputmode="numeric" aria-label="ספרה 2"/>
@@ -855,6 +863,7 @@ body {
       </button>
     </div>
     <div class="pay-note">* הלחיצה תפתח את האפליקציה עם הסכום המדויק</div>
+    <button class="btn btn-ghost" style="margin-bottom:8px" onclick="shareSummary()">שתף סיכום 📤</button>
     <button class="btn btn-ghost" style="margin-bottom:8px" onclick="startNew()">חלק חשבון חדש +</button>
   </div>
 </div>
@@ -1261,6 +1270,9 @@ function handleImageSelected(input) {
 
 function startAIScan() {
   if (!_capturedImage) return;
+  var btn = document.getElementById('scan-ai-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'סורק...'; }
+  haptic(10);
   showScreen('scr-loading');
   runLoadingSteps(function() {
     var base64 = _capturedImage.split(',')[1];
@@ -1274,8 +1286,9 @@ function startAIScan() {
       STATE.items = (data.items && data.items.length) ? data.items : getDemoItems();
       if (!data.items || !data.items.length) showToast('לא נמצאו פריטים — טוען דמו', 'success');
       createSession().then(function() {
-        renderSessionItems();
         showScreen('scr-session');
+        showSkeletonItems();
+        setTimeout(renderSessionItems, 400);
       });
     })
     .catch(function(e) {
@@ -1283,8 +1296,9 @@ function startAIScan() {
       showToast('שגיאה — טוען דמו');
       STATE.items = getDemoItems();
       createSession().then(function() {
-        renderSessionItems();
         showScreen('scr-session');
+        showSkeletonItems();
+        setTimeout(renderSessionItems, 400);
       });
     });
   });
@@ -1441,6 +1455,17 @@ function closeCurrentSession() {
 /* ═══════════════════════════════════════
    ITEM SELECTION
 ═══════════════════════════════════════ */
+function showSkeletonItems() {
+  var container = document.getElementById('items-container');
+  container.innerHTML = '';
+  for (var i = 0; i < 5; i++) {
+    var skel = document.createElement('div');
+    skel.className = 'skeleton skel-row';
+    skel.style.animationDelay = (i * 0.1) + 's';
+    container.appendChild(skel);
+  }
+}
+
 function renderSessionItems() {
   STATE.picks = {};
   var container = document.getElementById('items-container');
@@ -1479,7 +1504,12 @@ function renderSessionItems() {
   updateSubtotal();
 }
 
+function haptic(ms) {
+  if (navigator.vibrate) navigator.vibrate(ms || 8);
+}
+
 function toggleItemSelection(idx) {
+  haptic(idx in STATE.picks ? 4 : 10);
   var card  = document.querySelector('[data-idx="' + idx + '"]');
   var check = document.getElementById('item-check-' + idx);
   var panel = document.getElementById('split-panel-' + idx);
@@ -1504,6 +1534,7 @@ function toggleItemSelection(idx) {
 
 function changeSplit(idx, delta, event) {
   event.stopPropagation();
+  haptic(6);
   if (!(idx in STATE.picks)) return;
 
   STATE.picks[idx] = Math.max(1, Math.min(10, STATE.picks[idx] + delta));
@@ -1662,6 +1693,53 @@ function payWithPaybox() {
   }, 400);
 }
 
+function shareSummary() {
+  var sub   = getMySubtotal();
+  var tip   = getTipAmount(sub);
+  var total = sub + tip;
+  var picks = Object.entries(STATE.picks);
+  var names = picks.slice(0, 3).map(function(p) {
+    return STATE.items[parseInt(p[0])].name;
+  }).join(', ');
+  if (picks.length > 3) names += ' ועוד ' + (picks.length - 3);
+
+  var members = 1;
+  try {
+    var snap = db.ref('sessions/' + STATE.sessionId);
+    // Use local count
+  } catch(e) {}
+
+  var text =
+    '🧾 clerq — פיצול חשבון חכם
+' +
+    '━━━━━━━━━━━━━━━━━━━━
+' +
+    'החלק שלי: ₪' + total.toFixed(2) + '
+' +
+    'פריטים: ' + names + '
+' +
+    '━━━━━━━━━━━━━━━━━━━━
+' +
+    'clerq.app — split smarter';
+
+  if (navigator.share) {
+    navigator.share({ title: 'clerq — הסיכום שלי', text: text })
+      .catch(function() { fallbackShare(text); });
+  } else {
+    fallbackShare(text);
+  }
+}
+
+function fallbackShare(text) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(function() {
+      showToast('הסיכום הועתק! 📋', 'success');
+    });
+  } else {
+    showToast('שתף: ' + text.slice(0, 40) + '...', 'success');
+  }
+}
+
 function startNew() {
   STATE.items       = [];
   STATE.picks       = {};
@@ -1749,8 +1827,10 @@ function submitJoin() {
   if (!STATE.foundSession) return;
   var user = STATE.user || { id: SESSION_USER_ID, name: 'חבר' };
   var updates = {};
+  var joinName = document.getElementById('join-name');
+  var memberName = (joinName && joinName.value.trim()) ? joinName.value.trim() : (user ? user.name : 'חבר');
   updates['sessions/' + STATE.foundSession.sessionId + '/users/' + SESSION_USER_ID] = {
-    name:    user.name,
+    name:    memberName.slice(0, 20),
     isHost:  false,
     joined:  Date.now()
   };
@@ -1775,6 +1855,41 @@ function submitJoin() {
    OTP INPUT WIRE-UP
 ═══════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', function() {
+
+  // ── Swipe back gesture ──
+  var touchStartX = 0;
+  var touchStartY = 0;
+  var SWIPE_THRESHOLD = 80;
+
+  var screenHistory = [];
+
+  var _origShowScreen = window.showScreen;
+  window.showScreen = function(id) {
+    var current = document.querySelector('.screen.active');
+    if (current && current.id !== id) {
+      screenHistory.push(current.id);
+      if (screenHistory.length > 10) screenHistory.shift();
+    }
+    _origShowScreen(id);
+  };
+
+  document.addEventListener('touchstart', function(e) {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+
+  document.addEventListener('touchend', function(e) {
+    var dx = e.changedTouches[0].clientX - touchStartX;
+    var dy = e.changedTouches[0].clientY - touchStartY;
+    // Swipe right (RTL = back) from left edge
+    if (dx > SWIPE_THRESHOLD && Math.abs(dy) < 60 && touchStartX < 40) {
+      if (screenHistory.length > 0) {
+        var prev = screenHistory.pop();
+        _origShowScreen(prev);
+        haptic(6);
+      }
+    }
+  }, { passive: true });
 
   // OTP 4-digit inputs
   for (var i = 0; i < 4; i++) {
